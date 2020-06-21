@@ -1,0 +1,2 @@
+# ruptchat
+Windower chat addon
