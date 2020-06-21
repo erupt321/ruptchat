@@ -14,14 +14,23 @@ Timestamps could possible cause some false reads on filters, do recommend you tu
 Console Commands 
 
 //rchat save (Force a chatlog save)
+
 //rchat find <search terms> (Search current selected tab for search terms
+
 //rchat mentions (Shows mention phrases you have saved for tabs)
+
 //rchat addmention <tab> <phrase> (Add mention phrase for tab)
+
 //rchat delmention <tab> <phrase> (Remove mention phrase for tab)
+
 //rchat hide (Hide's text box from showing)
+
 //rchat show (Show hidden text box)
+
 //rchat alpha <0-255> (Change background transparency)
+
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
+
 
 
 **Features**
