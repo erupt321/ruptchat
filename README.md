@@ -3,13 +3,13 @@ Windower chat addon
 
 
 This was originally written as just a text box replacement for tells and checking the
-chatlog without sandbox is your multiboxing.  After coding a majority of it I expanded
-to a almost full chat system replacement.  Still a work in progress making style patterns
+chatlog without sandbox if your multiboxing.  After coding a majority of it I expanded
+to an almost full chat system replacement.  Still a work in progress making style patterns
 for the text.
 
 If mouse input lags, enable hardware mouse in windower settings.
 
-Timestamps could possible cause some false reads on filters, do recommend you turn it off.
+Timestamps could possibly cause some false reads on filters, do recommend you turn it off.
 
 Console Commands 
 
