@@ -5,24 +5,43 @@ _addon.version = '0.2.062120'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
-chatlog without sandbox is your multiboxing.  After coding a majority of it I expanded
-to a almost full chat system replacement.  Still a work in progress making style patterns
+chatlog without using sandbox if your multiboxing.  After coding a majority of it I expanded
+to a bigger chat system replacement.  Still a work in progress making style patterns
 for the text.
 
-If mouse input lags, enable hardware mouse in windower settings.
 
-Timestamps could possibly cause some false reads on filters, do recommend you turn it off.
+===Issues===
+
+**If mouse input lags, enable hardware mouse in windower settings.
+
+**Timestamps could possibly cause some false reads on filters, do recommend you turn it off.
+
+**If you load this addon while battlemod is loaded you'll need to reload if you unload battlemod after.
+
+============
 
 Console Commands 
 
 //rchat save (Force a chatlog save)
+
 //rchat find <search terms> (Search current selected tab for search terms
+
 //rchat mentions (Shows mention phrases you have saved for tabs)
+
 //rchat addmention <tab> <phrase> (Add mention phrase for tab)
+
 //rchat delmention <tab> <phrase> (Remove mention phrase for tab)
+
 //rchat hide (Hide's text box from showing)
+
 //rchat show (Show hidden text box)
+
 //rchat alpha <0-255> (Change background transparency)
+
+//rchat size <font size> (Change font size, this will increase whole window size)
+
+//rchat length <Log Length> (Change log length size)
+
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
 
@@ -112,6 +131,8 @@ find_table = {
 
 
 default_settings = {
+	log_length = 12,
+	log_width = 85,
 	flags = {
 		draggable = false,
 	},
@@ -128,6 +149,7 @@ settings = config.load(default_settings)
 t = texts.new(settings)
 texts.bg_visible(t, true)
 texts.bg_alpha(t, 200)
+
 
 
 
@@ -158,48 +180,51 @@ function valid_tab(tab)
 	end
 	return false
 end
-
-
+-- size 12 = x = 78 y = 18 size 10 = x = 65 y = 15  size 8 = x = 51 y = 12 size 6 = x = 38 y = 9
 cur_map = 1
 image_map = {}
-image_map[0] = { ['x_start'] = 0, ['x_end'] = 80, ['y_start'] = -10, ['y_end'] = 20}
-image_map[0].action = function()
-	menu('All','')
-end
-image_map[1] = { ['x_start'] = 81, ['x_end'] = 160, ['y_start'] = -10, ['y_end'] = 20}
-image_map[1].action = function()
-	menu('Tell','')
-end
-image_map[2] = { ['x_start'] = 161, ['x_end'] = 240, ['y_start'] = -10, ['y_end'] = 20}
-image_map[2].action = function()
-	menu('Linkshell','')
-end
-image_map[3] = { ['x_start'] = 241, ['x_end'] = 320, ['y_start'] = -10, ['y_end'] = 20}
-image_map[3].action = function()
-	menu('Linkshell2','')
-end
-image_map[4] = { ['x_start'] = 320, ['x_end'] = 420, ['y_start'] = -10, ['y_end'] = 20}
-image_map[4].action = function()
-	menu('Party','')
-end
-image_map[5] = { ['x_start'] = 421, ['x_end'] = 500, ['y_start'] = -10, ['y_end'] = 20}
-image_map[5].action = function()
-	menu('Battle','')
-end
-settings.window_visible = true
-image_map[6] = { ['x_start'] = 501, ['x_end'] = 531, ['y_start'] = 0, ['y_end'] = 20}
-image_map[6].action = function()
-	if settings.window_visible then settings.window_visible = false else settings.window_visible = true end
-	config.save(settings, windower.ffxi.get_player().name)
-	reload_text()
-end
-image_map[7] = { ['x_start'] = 0, ['x_end'] = 100, ['y_start'] = 21, ['y_end'] = 40}
-image_map[7].action = function()
-	menu('Bottom','')
+
+function build_maps()
+	x_scale = texts.size(t) * 6.8
+	y_scale = texts.size(t) * 1.5
+	image_map[0] = { ['x_start'] = 0, ['x_end'] = x_scale, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[0].action = function()
+		menu('All','')
+	end
+	image_map[1] = { ['x_start'] = x_scale+1, ['x_end'] = x_scale*2, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[1].action = function()
+		menu('Tell','')
+	end
+	image_map[2] = { ['x_start'] = image_map[1].x_end+1, ['x_end'] = x_scale*3, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[2].action = function()
+		menu('Linkshell','')
+	end
+	image_map[3] = { ['x_start'] = image_map[2].x_end+1, ['x_end'] = x_scale*4, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[3].action = function()
+		menu('Linkshell2','')
+	end
+	image_map[4] = { ['x_start'] = image_map[3].x_end+1, ['x_end'] = x_scale*5, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[4].action = function()
+		menu('Party','')
+	end
+	image_map[5] = { ['x_start'] = image_map[4].x_end+1, ['x_end'] = x_scale*6, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[5].action = function()
+		menu('Battle','')
+	end
+	settings.window_visible = true
+	image_map[6] = { ['x_start'] = image_map[5].x_end+1, ['x_end'] = x_scale*6.8, ['y_start'] = 0, ['y_end'] = y_scale}
+	image_map[6].action = function()
+		if settings.window_visible then settings.window_visible = false else settings.window_visible = true end
+		config.save(settings, windower.ffxi.get_player().name)
+		reload_text()
+	end
+	image_map[7] = { ['x_start'] = 0, ['x_end'] = x_scale*1.5, ['y_start'] = y_scale+1, ['y_end'] = y_scale*2}
+	image_map[7].action = function()
+		menu('Bottom','')
+	end
 end
 
-
-
+build_maps()
 
 function fillspace(spaces)
 	local spacer = ''
@@ -294,12 +319,12 @@ function convert_text(txt,tab_style)
 	end
 	txt = txt:strip_format()
 	txt = timestamp..':'..txt
-	if string.len(txt) > chat_log_env['log_width'] then
+	if string.len(txt) > settings.log_width then
 		local wrap_tmp = ""
 		local wrap_cnt = 0
 		for w in txt:gmatch("([^%s]+)") do
 			wrap_cnt = wrap_cnt+string.len(w)
-			if wrap_cnt < chat_log_env['log_width'] then
+			if wrap_cnt < settings.log_width then
 				wrap_tmp = wrap_tmp..' '..w
 			else
 				wrap_cnt = 0
@@ -348,15 +373,15 @@ function load_chat_tab(scroll_start)
 	if #current_chat == 0 then
 		return
 	end
-	if #current_chat < chat_log_env['log_length'] then
+	if #current_chat < settings.log_length then
 		loop_start = 1
 		loop_end = #current_chat
 	else
-		loop_start = #current_chat - chat_log_env['log_length']
+		loop_start = #current_chat - settings.log_length
 		loop_end = #current_chat
 		if scroll_start then
 			loop_start = scroll_start
-			loop_end = scroll_start + chat_log_env['log_length']
+			loop_end = scroll_start + settings.log_length
 		end
 	end	
 	local temp_table = ''
@@ -401,6 +426,8 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
     end
     if eventtype == 0 then
         if hovered then
+--			t2:text("Mouse X: \\cs(0,255,0)"..x.."/"..texts.pos_x(t).."\\cr Y: \\cs(0,255,0)"..y.."/"..texts.pos_y(t).."\\cr")
+--			t2:visible(true)
 			if dragged then
 				dragged.text:pos(x - dragged.x, y - dragged.y)
 				t2:pos(x - dragged.x, (y - dragged.y)-20)
@@ -453,8 +480,8 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 	elseif eventtype == 10 then
 		if hovered then
 			if last_scroll == 0 then
-				if #chat_tables[current_tab] > chat_log_env['log_length'] then
-					last_scroll = #chat_tables[current_tab] - chat_log_env['log_length']
+				if #chat_tables[current_tab] > settings.log_length then
+					last_scroll = #chat_tables[current_tab] - settings.log_length
 				else
 					last_scroll = #chat_tables[current_tab]
 				end
@@ -464,15 +491,15 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			else
 				current_chat = chat_tables[current_tab]
 			end
-			if #current_chat > chat_log_env['log_length'] then 
-				last_scroll = cap(last_scroll - delta, 1, #current_chat - (chat_log_env['log_length'] - 1))
-				if (last_scroll > (#current_chat - chat_log_env['log_length'])) and chat_log_env['scrolling'] then
-					last_scroll = #current_chat - chat_log_env['log_length']
+			if #current_chat > settings.log_length then 
+				last_scroll = cap(last_scroll - delta, 1, #current_chat - (settings.log_length - 1))
+				if (last_scroll > (#current_chat - settings.log_length)) and chat_log_env['scrolling'] then
+					last_scroll = #current_chat - settings.log_length
 					chat_log_env['scrolling'] = false
 					chat_log_env['scroll_num'] = false
 				else
 					chat_log_env['scrolling'] = true
-					if last_scroll > 0 and last_scroll <= (#current_chat - chat_log_env['log_length']) then
+					if last_scroll > 0 and last_scroll <= (#current_chat - settings.log_length) then
 						chat_log_env['scroll_num'] = last_scroll
 					end
 				end
@@ -547,6 +574,29 @@ function addon_command(...)
 			menu('find',args_joined)
 		elseif cmd == 'alpha' then
 			texts.bg_alpha(t, tonumber(args[1]))
+			settings.bg_alpha = args[1]
+			config.save(settings, windower.ffxi.get_player().name)
+		elseif cmd == 'size' then
+			texts.size(t, tonumber(args[1]))
+			settings.text.size = tonumber(args[1])
+			config.save(settings, windower.ffxi.get_player().name)
+			build_maps()
+		elseif cmd == 'length' then
+			if args[1] and tonumber(args[1]) then
+				settings.log_length = tonumber(args[1])
+				config.save(settings, windower.ffxi.get_player().name)
+				reload_text()
+			else
+				log('Missing or invalid argument')
+			end
+		elseif cmd == 'width' then
+			if args[1] and tonumber(args[1]) then
+				settings.log_width = tonumber(args[1])
+				config.save(settings, windower.ffxi.get_player().name)
+				reload_text()
+			else
+				log('Missing or invalid argument')
+			end
 		elseif cmd == 'tab' then
 			if args[1] and valid_tab(args[1]) then
 				menu(args[1]:sub(1,1):upper()..args[1]:sub(2):lower(),'')
@@ -567,51 +617,51 @@ function addon_command(...)
 			for i,v in pairs(settings.mentions) do
 				if #T(v) > 0 then
 					values = "["..v:format('list').."]"
-					windower.add_to_chat(200,'Tab: '..i..' Values: '..values)
+					log('Tab: '..i..' Values: '..values)
 				end
 			end
 		elseif cmd == 'addmention' then
 			if not args[1] then
-				windower.add_to_chat(200,'No Tab Listed //rchat addmention <tab> <value>')
+				log('No Tab Listed //rchat addmention <tab> <value>')
 				return
 			elseif not valid_tab(args[1]) then
-				windower.add_to_chat(200,args[1]..' Not a valid Tab')
+				log(args[1]..' Not a valid Tab')
 				return
 			end
 			local tab = args[1]:sub(1,1):upper()..args[1]:sub(2):lower()
 			if not args[2] then
-				windower.add_to_chat(200,'No Value Listed //rchat addmention <tab> <value>')
+				log('No Value Listed //rchat addmention <tab> <value>')
 				return
 			end
 			terms = table.concat(args," ",2)
 			if settings.mentions[tab]:contains(terms:lower()) then
-				windower.add_to_chat(200,terms..' Already added to tab ['..tab..']')
+				log(terms..' Already added to tab ['..tab..']')
 				return
 			end
 				settings.mentions[tab]:add(terms)
 				config.save(settings, windower.ffxi.get_player().name)
-				windower.add_to_chat(200,terms..' Added to tab ['..tab..']')
+				log(terms..' Added to tab ['..tab..']')
 		elseif cmd == 'delmention' then
 			if not args[1] then
-				windower.add_to_chat(200,'No Tab Listed //rchat delmention <tab> <value>')
+				log('No Tab Listed //rchat delmention <tab> <value>')
 				return
 			elseif not valid_tab(args[1]) then
-				windower.add_to_chat(200,args[1]..' Not a valid Tab')
+				log(args[1]..' Not a valid Tab')
 				return
 			end
 			local tab = args[1]:sub(1,1):upper()..args[1]:sub(2):lower()
 			if not args[2] then
-				windower.add_to_chat(200,'No Value Listed //rchat delmention <tab> <value>')
+				log('No Value Listed //rchat delmention <tab> <value>')
 				return
 			end
 			terms = table.concat(args," ",2)
 			if not settings.mentions[tab]:contains(terms:lower()) then
-				windower.add_to_chat(200,terms..' not on tab ['..tab..']')
+				log(terms..' not on tab ['..tab..']')
 				return
 			end
 				settings.mentions[tab]:remove(terms)
 				config.save(settings, windower.ffxi.get_player().name)
-				windower.add_to_chat(200,terms..' Removed to tab ['..tab..']')
+				log(terms..' Removed to tab ['..tab..']')
 		elseif cmd == 'show' then
 			t:visible(true)
 		elseif cmd == 'hide' then
@@ -664,44 +714,44 @@ function menu(menuname,c)
 			current_tab = 'All'
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
-			last_scroll = #chat_tables[current_tab] - chat_log_env['log_length']
+			last_scroll = #chat_tables[current_tab] - settings.log_length
 			reload_text()
 		elseif menuname == 'Tell' then
 			current_tab = 'Tell'
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
-			last_scroll = #chat_tables[current_tab] - chat_log_env['log_length']
+			last_scroll = #chat_tables[current_tab] - settings.log_length
 			reload_text()
 		elseif menuname == 'Linkshell' then
 			current_tab = 'Linkshell'
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
-			last_scroll = #chat_tables[current_tab] - chat_log_env['log_length']
+			last_scroll = #chat_tables[current_tab] - settings.log_length
 			reload_text()
 		elseif menuname == 'Linkshell2' then
 			current_tab = 'Linkshell2'
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
-			last_scroll = #chat_tables[current_tab] - chat_log_env['log_length']
+			last_scroll = #chat_tables[current_tab] - settings.log_length
 			reload_text()
 		elseif menuname == 'Party' then
 			current_tab = 'Party'
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
-			last_scroll = #chat_tables[current_tab] - chat_log_env['log_length']
+			last_scroll = #chat_tables[current_tab] - settings.log_length
 			reload_text()
 		elseif menuname == 'Battle' then
 			current_tab = 'Battle'
 			reset_tab()
-			last_scroll = #battle_table - chat_log_env['log_length']
+			last_scroll = #battle_table - settings.log_length
 			reload_text()
 		elseif menuname == 'Bottom' then
 			chat_log_env['scrolling'] = false
 			chat_log_env['scroll_num'] = false
 			if current_tab == 'Battle' then
-				last_scroll = #battle_table - chat_log_env['log_length']
+				last_scroll = #battle_table - settings.log_length
 			else
-				last_scroll = #chat_tables[current_tab] - chat_log_env['log_length']
+				last_scroll = #chat_tables[current_tab] - settings.log_length
 			end
 			reset_tab()
 			reload_text()
@@ -722,7 +772,7 @@ function menu(menuname,c)
 			else
 				local next_item = find_next(c)
 				if not next_item then
-					windower.add_to_chat(200,'No Matches for: '..c)
+					log('No Matches for: '..c)
 					find_table['last_find'] = false
 					chat_log_env['finding'] = false
 					image_map[7].action = function()
@@ -742,7 +792,7 @@ function menu(menuname,c)
 		elseif menuname == 'findnext' then
 			next_item = find_next(find_table['last_find'])
 			if not next_item then
-				windower.add_to_chat(200,'No more matches found')
+				log('No more matches found')
 				find_table['last_find'] = false
 				chat_log_env['finding'] = false
 				image_map[7].action = function()
@@ -834,7 +884,8 @@ function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 		-- cancel logging battle text
 	else
 		if not filter_ids[id] then 
-			modified = string.gsub(original,'\n','')
+			if not battlemod_loaded then modified = original end
+			modified = string.gsub(modified,'\n','')
 			modified = string.gsub(modified,'[\\]+$','')
 			chat_add(id,modified)
 			if not chat_log_env['scrolling'] then reload_text() end
