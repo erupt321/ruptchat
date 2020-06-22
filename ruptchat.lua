@@ -91,8 +91,6 @@ current_tab = 'All'
 all_tabs = {'All','Tell','Linkshell','Linkshell2','Party','Battle'}
 
 chat_log_env = {
-	['log_length'] = 12, -- How many lines to display in log
-	['log_width'] = 85, -- How wide to allow log before word wrap
 	['scrolling'] = false,
 	['scroll_num'] = false,
 	['finding'] = false,
@@ -102,6 +100,7 @@ chat_log_env = {
 	['mention_found'] = false,
 	['mention_count'] = 0,
 	['last_mention_tab'] = false,
+	['last_text_line'] = false,
 }
 
 tab_styles = require('styles')
@@ -120,6 +119,7 @@ tab_ids = {
 
 -- 20 21 22 24 28 29 30 31 35 36 50 56 57 63 81 101 102 110 111 114 122 157 191 209
 battle_ids = { [20]=true,[21]=true,[22]=true,[24]=true,[28]=true,[29]=true,[30]=true,[31]=true,[35]=true,[36]=true,[50]=true,[56]=true,[57]=true,[63]=true,[81]=true,[101]=true,[102]=true,[110]=true,[111]=true,[114]=true,[122]=true,[157]=true,[191]=true,[209]=true }
+duplidoc_ids = { [190]=true }
 filter_ids = { [151]=true,[152]=true }
 chat_tables = {}
 battle_table = {}
@@ -143,13 +143,18 @@ default_settings = {
 		Linkshell2 = S{},
 		Party = S{},
 		Battle = S{},
-	}
+	},
+	text = {
+		size = 10,
+		
+	},
+	bg = {
+		alpha = 200,
+	},
 }
 settings = config.load(default_settings)
 t = texts.new(settings)
 texts.bg_visible(t, true)
-texts.bg_alpha(t, 200)
-
 
 
 
@@ -426,8 +431,13 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
     end
     if eventtype == 0 then
         if hovered then
---			t2:text("Mouse X: \\cs(0,255,0)"..x.."/"..texts.pos_x(t).."\\cr Y: \\cs(0,255,0)"..y.."/"..texts.pos_y(t).."\\cr")
---			t2:visible(true)
+			if chat_debug then
+				local boundry_table = {texts.extents(t)}
+				local x_boundry = boundry_table[1]+texts.pos_x(t)
+				local y_boundry = boundry_table[1]+texts.pos_y(t)
+				t2:text("Mouse X: \\cs(0,255,0)"..x.."/"..texts.pos_x(t).."\\cr Y: \\cs(0,255,0)"..y.."/"..texts.pos_y(t).."\\cr Extents: "..x_boundry..' / '..y_boundry)
+				t2:visible(true)
+			end
 			if dragged then
 				dragged.text:pos(x - dragged.x, y - dragged.y)
 				t2:pos(x - dragged.x, (y - dragged.y)-20)
@@ -574,7 +584,7 @@ function addon_command(...)
 			menu('find',args_joined)
 		elseif cmd == 'alpha' then
 			texts.bg_alpha(t, tonumber(args[1]))
-			settings.bg_alpha = args[1]
+			settings.bg_alpha = tonumber(args[1])
 			config.save(settings, windower.ffxi.get_player().name)
 		elseif cmd == 'size' then
 			texts.size(t, tonumber(args[1]))
@@ -855,6 +865,7 @@ function chat_add(id, chat)
 	end
 	if chat_debug then print('ID: '..id..' Txt: '..chat) end
 	chat = string.gsub(chat,'\n','')
+	chat = string.gsub(chat,string.char(0x07, 0x0A),'')
 	chat = string.gsub(chat,'"','\"')
 	if battle_ids[id] then
 		if id == 20 then
@@ -881,6 +892,13 @@ end
 
 
 function process_incoming_text(original,modified,orig_id,id,injected,blocked)
+	if duplidoc_ids[id] then -- Handle some npc text that comes in duplicate.
+		if modified == chat_log_env['last_text_line'] then
+			return true
+		end
+		chat_log_env['last_text_line'] = modified
+	end
+	
 	if id == 20 and injected then battlemod_loaded = true end
 	if chat_log_env['battle_off'] and battle_ids[id] then
 		-- cancel logging battle text
@@ -925,6 +943,5 @@ windower.register_event('load', function()
 	load_events()
 	reload_text()
 	t2:pos(texts.pos_x(t), (texts.pos_y(t)-20))
-	
 end)
 windower.register_event('logout','unload', unload_events)
