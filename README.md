@@ -3,13 +3,20 @@ Windower chat addon
 
 
 This was originally written as just a text box replacement for tells and checking the
-chatlog without sandbox if your multiboxing.  After coding a majority of it I expanded
-to an almost full chat system replacement.  Still a work in progress making style patterns
+chatlog without using sandbox if your multiboxing.  After coding a majority of it I expanded
+to a bigger chat system replacement.  Still a work in progress making style patterns
 for the text.
 
-If mouse input lags, enable hardware mouse in windower settings.
 
-Timestamps could possibly cause some false reads on filters, do recommend you turn it off.
+===Issues===
+
+**If mouse input lags, enable hardware mouse in windower settings.
+
+**Timestamps could possibly cause some false reads on filters, do recommend you turn it off.
+
+**If you load this addon while battlemod is loaded you'll need to reload if you unload battlemod after.
+
+============
 
 Console Commands 
 
@@ -29,8 +36,11 @@ Console Commands
 
 //rchat alpha <0-255> (Change background transparency)
 
-//rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
+//rchat size <font size> (Change font size, this will increase whole window size)
 
+//rchat length <Log Length> (Change log length size)
+
+//rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
 
 **Features**
