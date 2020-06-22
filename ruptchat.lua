@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.2.062120'
+_addon.version = '0.2beta.062220'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -668,6 +668,8 @@ function addon_command(...)
 			t:visible(false)
 		elseif cmd == 'save' then
 			write_db()
+		elseif cmd == 'debug' then
+			if chat_debug then chat_debug = false else chat_debug = true end
 		end
 	end
 end
