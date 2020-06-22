@@ -11,7 +11,7 @@ for the text.
 
 If mouse input lags, enable hardware mouse in windower settings.
 
-Timestamps could possible cause some false reads on filters, do recommend you turn it off.
+Timestamps could possibly cause some false reads on filters, do recommend you turn it off.
 
 Console Commands 
 
