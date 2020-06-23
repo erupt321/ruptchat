@@ -65,3 +65,5 @@ leave just the tab menu.
 **TODO**
 
 Click action for text box line (Click to reply to tell, etc..)
+
+[My image](username.github.com/erupt321/ruptchat/images/rchat6.gif)
