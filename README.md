@@ -75,10 +75,6 @@ leave just the tab menu.
 
 *Mentions can be added that alert you when a word is mentioned in a tab.
 
-**TODO**
-
-Click action for text box line (Click to reply to tell, etc..)
-
 **Screenshots**
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat6.gif)
@@ -88,3 +84,8 @@ Click action for text box line (Click to reply to tell, etc..)
 
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat9.gif)
+
+**TODO**
+
+	Click action for text box line (Click to reply to tell, etc..)
+
