@@ -82,8 +82,6 @@ leave just the tab menu.
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat8.gif)
 
 
-![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat9.gif)
-
 **TODO**
 
 	Click action for text box line (Click to reply to tell, etc..)
