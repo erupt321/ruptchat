@@ -82,7 +82,13 @@ texts = require('texts')
 config = require('config')
 
 save_delay = 5000
-rupt_savefile = 'chatlogs/'..windower.ffxi.get_player().name..'-current'
+rupt_savefile = ''
+rupt_db = ''
+tab_styles = ''
+if windower.ffxi.get_info().logged_in then
+	rupt_savefile = 'chatlogs/'..windower.ffxi.get_player().name..'-current'
+	rupt_db = files.new(rupt_savefile..'.lua')
+end
 rupt_db = files.new(rupt_savefile..'.lua')
 rupt_table_length = 1000  --How many lines before we throw out lines from 'All' table
 rupt_subtable_length = 500 --How many lines before we throw out lines from sub tables (Tell,Linkshell,etc..)
@@ -102,8 +108,6 @@ chat_log_env = {
 	['last_mention_tab'] = false,
 	['last_text_line'] = false,
 }
-
-tab_styles = require('styles')
 
 tab_ids = {
 	['4']  = 'Tell',
@@ -562,7 +566,7 @@ end
 
 
 function load_db_file()
-	if rupt_db:exists() then
+	if rupt_db ~= '' and rupt_db:exists() then
 		if package.loaded[rupt_savefile] then
 			package.loaded[rupt_savefile] = nil
 			_G[rupt_savefile] = nil
@@ -918,9 +922,13 @@ end
 windower.register_event('addon command', addon_command)
 
 
-
+incoming_text = false
 function load_events()
-	incoming_text = windower.register_event('incoming text',process_incoming_text)
+	if not incoming_text then incoming_text = windower.register_event('incoming text',process_incoming_text) end
+	header()
+	t:visible(true)
+	reload_text()
+	t2:pos(texts.pos_x(t), (texts.pos_y(t)-20))
 end
 
 function unload_events()
@@ -937,11 +945,21 @@ function save_chat_log()
 end
 
 windower.register_event('prerender',save_chat_log)
-windower.register_event('load', function()
-	header()
-	t:visible(true)
+
+windower.register_event('login', function()
+	if windower.ffxi.get_info().logged_in then
+		rupt_savefile = 'chatlogs/'..windower.ffxi.get_player().name..'-current'
+		rupt_db = files.new(rupt_savefile..'.lua')
+		tab_styles = require('styles')
+	end
+	load_db_file()
 	load_events()
-	reload_text()
-	t2:pos(texts.pos_x(t), (texts.pos_y(t)-20))
+	tab_styles = require('styles')
 end)
+
+windower.register_event('load', function()
+	if windower.ffxi.get_info().logged_in and tab_styles == '' then tab_styles = require('styles') end
+	load_events()
+end)
+
 windower.register_event('logout','unload', unload_events)
