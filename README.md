@@ -66,4 +66,4 @@ leave just the tab menu.
 
 Click action for text box line (Click to reply to tell, etc..)
 
-![My image](https://erupt321.github.com/ruptchat/images/rchat6.gif)
+![Image of Rchat](https://erupt321.github.com/ruptchat/images/rchat6.gif)
