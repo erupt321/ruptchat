@@ -73,14 +73,11 @@ leave just the tab menu.
 
 **Screenshots**
 
-<<<<<<< HEAD
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat10.gif)
 
 
-![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat6.gif)
+![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat7.gif)
 
-=======
->>>>>>> 6cbfe6c8be1794fdae03044874f63d56c3a45d47
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat8.gif)
 
