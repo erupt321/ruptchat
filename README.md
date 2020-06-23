@@ -68,8 +68,8 @@ Click action for text box line (Click to reply to tell, etc..)
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat6.gif)
 
-![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat7.gif)
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat8.gif)
+
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat9.gif)
