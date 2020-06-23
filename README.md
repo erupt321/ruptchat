@@ -19,29 +19,29 @@ for the text.
 
 **Console Commands** 
 
-//rchat save (Force a chatlog save)
+	//rchat save (Force a chatlog save)
 
-//rchat find <search terms> (Search current selected tab for search terms
+	//rchat find <search terms> (Search current selected tab for search terms
 
-//rchat mentions (Shows mention phrases you have saved for tabs)
+	//rchat mentions (Shows mention phrases you have saved for tabs)
 
-//rchat addmention <tab> <phrase> (Add mention phrase for tab)
+	//rchat addmention <tab> <phrase> (Add mention phrase for tab)
 
-//rchat delmention <tab> <phrase> (Remove mention phrase for tab)
+	//rchat delmention <tab> <phrase> (Remove mention phrase for tab)
 
-//rchat hide (Hide's text box from showing)
+	//rchat hide (Hide's text box from showing)
 
-//rchat show (Show hidden text box)
+	//rchat show (Show hidden text box)
 
-//rchat alpha <0-255> (Change background transparency)
+	//rchat alpha <0-255> (Change background transparency)
 
-//rchat size <font size> (Change font size, this will increase whole window size)
+	//rchat size <font size> (Change font size, this will increase whole window size)
 
-//rchat length <Log Length> (Change log length size)
+	//rchat length <Log Length> (Change log length size)
 
-//rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
+	//rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
-//rchat undock <tab name> (Opens a second dedicated chat window for that tab)
+	//rchat undock <tab name> (Opens a second dedicated chat window for that tab)
   
 **Settings**
 
