@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.2beta.062220'
+_addon.version = '0.2beta.062320'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -44,6 +44,7 @@ Console Commands
 
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
+//rchat undock <tab name> (Opens a second dedicated chat window for that tab)
 
 **Features**
 
@@ -65,6 +66,7 @@ leave just the tab menu.
 *Mentions can be added that alert you when a word is mentioned in a tab.
 
 **TODO**
+
 Click action for text box line (Click to reply to tell, etc..)
 
 --]]
@@ -107,6 +109,8 @@ chat_log_env = {
 	['mention_count'] = 0,
 	['last_mention_tab'] = false,
 	['last_text_line'] = false,
+	['undocked_window'] = false,
+	['undocked_tab'] = false,
 }
 
 tab_ids = {
@@ -164,6 +168,12 @@ texts.bg_visible(t, true)
 
 t2 = texts.new(default_settings)
 t2:visible(false)
+default_settings.flags.draggable = true
+default_settings.flags.center = true
+t3 = texts.new(default_settings)
+t3:visible(false)
+texts.pad(t3,5)
+
 
 
 chat_debug = false
@@ -310,7 +320,8 @@ function header()
 	else
 		new_text_header = new_text_header..'\n'
 	end
-	load_chat_tab(chat_log_env['scroll_num'])
+	load_chat_tab(chat_log_env['scroll_num'],'main')
+	if chat_log_env['undocked_window'] then load_chat_tab(0,'undocked') end
 end
 
 function convert_text(txt,tab_style)
@@ -368,19 +379,26 @@ function convert_text(txt,tab_style)
 	return txt
 end
 
-function load_chat_tab(scroll_start)
-	new_text = ''
-	if not chat_tables[current_tab] then
-		chat_tables[current_tab] = {}
-		return
-	end
-	if current_tab == 'Battle' then
-		current_chat = battle_table
+function load_chat_tab(scroll_start,window)
+	if window == 'main' then
+		new_text = ''
+		if not chat_tables[current_tab] then
+			chat_tables[current_tab] = {}
+			return
+		end
+		if current_tab == 'Battle' then
+			current_chat = battle_table
+		else
+			current_chat = chat_tables[current_tab]
+		end
+		if #current_chat == 0 then
+			return
+		end
+		tab = current_tab
 	else
-		current_chat = chat_tables[current_tab]
-	end
-	if #current_chat == 0 then
-		return
+		tab = chat_log_env['undocked_tab']
+		current_chat = chat_tables[tab]
+		scroll_start = false
 	end
 	if #current_chat < settings.log_length then
 		loop_start = 1
@@ -409,13 +427,20 @@ function load_chat_tab(scroll_start)
 				if string.sub(current_chat[i],1,2) == '**' then --preformatted on arrival
 					temp_table = string.sub(current_chat[i],3)..'\n'..temp_table
 				else
-					temp_table = convert_text(current_chat[i],current_tab)..'\n'..temp_table
+					temp_table = convert_text(current_chat[i],tab)..'\n'..temp_table
 				end
 			end
 		end
 	end
-	if temp_table ~= '' then
-		new_text = new_text..temp_table
+	if window == 'main' then
+		if temp_table ~= '' then
+			new_text = new_text..temp_table
+		end
+	else
+		if temp_table ~= '' then
+			t3:text('[ \\cs(255,69,0)'..tab..'\\cr ]... .. .\n'..temp_table)
+			t3:visible(true)
+		end
 	end
 end
 
@@ -626,6 +651,12 @@ function addon_command(...)
 						return
 					end
 				end
+			end
+		elseif cmd == 'undock' then
+			if args[1] and valid_tab(args[1]) then
+				chat_log_env['undocked_tab'] = args[1]:sub(1,1):upper()..args[1]:sub(2):lower()
+				chat_log_env['undocked_window'] = true
+				reload_text()
 			end
 		elseif cmd == 'mentions' then
 			for i,v in pairs(settings.mentions) do
@@ -902,7 +933,11 @@ function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 		end
 		chat_log_env['last_text_line'] = modified
 	end
-	
+	if battle_ids[id] then
+		if string.find(modified:lower(),'aoe') then
+			return true --Just filtering this out for now while I figure out what I want to do
+		end
+	end
 	if id == 20 and injected then battlemod_loaded = true end
 	if chat_log_env['battle_off'] and battle_ids[id] then
 		-- cancel logging battle text
