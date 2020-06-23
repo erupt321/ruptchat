@@ -39,22 +39,18 @@ for the text.
 
 	//rchat length <Log Length> (Change log length size)
 
+	//rchat width <Log Width>  (Change log width size; when wordwrap should take effect)
+		
+	//rchat strict_width (Toggle maintaining the max log width; avoid box shrinking and expanding)
+
 	//rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
 	//rchat undock <tab name> (Opens a second dedicated chat window for that tab)
+	
+	//rchat battle_all (Toggle Battle Chat showing in the All tab)
+
+	//rchat battle_off (Toggle Battle Chat being process at all; totally off)
   
-**Settings**
-
-There's two advanced settings still not moved into the settings.xml file:
-
-	['battle_all'] = true, -- Display Battle text in All tab
-	['battle_off'] = false, -- Disable processing Battle text entirely
-
-You can filter out all battle text from the 'All' tab by setting battle_all = false.
-For example used in conjuction with a undocked battle tab can keep a dedicated battle window
-and leave your all tab as more general 'Everything else' text to avoid too much text scrolling.
-
-You can turn off processing battle text fully if battle_off = true.
 
 **Features**
 
@@ -76,6 +72,9 @@ leave just the tab menu.
 *Mentions can be added that alert you when a word is mentioned in a tab.
 
 **Screenshots**
+
+![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat10.gif)
+
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat6.gif)
 

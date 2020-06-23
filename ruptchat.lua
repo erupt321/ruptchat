@@ -42,9 +42,17 @@ Console Commands
 
 //rchat length <Log Length> (Change log length size)
 
+//rchat width <Log Width>  (Change log width size; when wordwrap should take effect)
+
+//rchat strict_width (Toggle maintaining the max log width; avoid box shrinking and expanding)
+
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
 //rchat undock <tab name> (Opens a second dedicated chat window for that tab)
+
+//rchat battle_all (Toggle Battle Chat showing in the All tab)
+
+//rchat battle_off (Toggle Battle Chat being process at all; totally off)
 
 **Features**
 
@@ -102,8 +110,6 @@ chat_log_env = {
 	['scrolling'] = false,
 	['scroll_num'] = false,
 	['finding'] = false,
-	['battle_all'] = true, -- Display Battle text in All tab
-	['battle_off'] = false, -- Disable processing Battle text entirely
 	['last_seen'] = os.time(),
 	['mention_found'] = false,
 	['mention_count'] = 0,
@@ -141,6 +147,9 @@ find_table = {
 default_settings = {
 	log_length = 12,
 	log_width = 85,
+	battle_all = true, -- Display Battle text in All tab
+	battle_off = false, -- Disable processing Battle text entirely
+	strict_width = false,
 	flags = {
 		draggable = false,
 	},
@@ -169,9 +178,9 @@ texts.bg_visible(t, true)
 t2 = texts.new(default_settings)
 t2:visible(false)
 default_settings.flags.draggable = true
-default_settings.flags.center = true
 t3 = texts.new(default_settings)
 t3:visible(false)
+texts.size(t3,settings.text.size)
 texts.pad(t3,5)
 
 
@@ -305,11 +314,16 @@ function header()
 		end
 	end
 	if settings.window_visible then
-		new_text_header = new_text_header..'[ - ]   [rChat]\n'
+		new_text_header = new_text_header..'[ - ]   [rChat]'
 	else
-		new_text_header = new_text_header..'[ + ]   [rChat]\n'
+		new_text_header = new_text_header..'[ + ]   [rChat]'
 	end
-
+	if settings.strict_width then
+		blank_space = (settings.log_width*2.04) - string.len(new_text_header)
+		new_text_header = new_text_header..fillspace(blank_space)..'\n'
+	else
+		new_text_header = new_text_header..'\n'
+	end
 	if chat_log_env['finding'] then
 		new_text_header = new_text_header..'[Find Next]\n'
 		t2:text("Searching for: \\cs(0,255,0)"..find_table['last_find'].."\\cr")
@@ -397,7 +411,11 @@ function load_chat_tab(scroll_start,window)
 		tab = current_tab
 	else
 		tab = chat_log_env['undocked_tab']
-		current_chat = chat_tables[tab]
+		if tab:lower() == 'battle' then
+			current_chat = battle_table
+		else
+			current_chat = chat_tables[tab]
+		end
 		scroll_start = false
 	end
 	if #current_chat < settings.log_length then
@@ -421,10 +439,10 @@ function load_chat_tab(scroll_start,window)
 			end
 		end
 		if current_chat[i] then
-			if current_tab == 'Battle' then
+			if tab == 'Battle' then --everything in battle_table is preformatted
 				temp_table = current_chat[i]..'\n'..temp_table
 			else
-				if string.sub(current_chat[i],1,2) == '**' then --preformatted on arrival
+				if string.sub(current_chat[i],1,2) == '**' then --preformatted on addition to 'All'
 					temp_table = string.sub(current_chat[i],3)..'\n'..temp_table
 				else
 					temp_table = convert_text(current_chat[i],tab)..'\n'..temp_table
@@ -613,10 +631,12 @@ function addon_command(...)
 			menu('find',args_joined)
 		elseif cmd == 'alpha' then
 			texts.bg_alpha(t, tonumber(args[1]))
+			texts.bg_alpha(t3, tonumber(args[1]))
 			settings.bg_alpha = tonumber(args[1])
 			config.save(settings, windower.ffxi.get_player().name)
 		elseif cmd == 'size' then
 			texts.size(t, tonumber(args[1]))
+			texts.size(t3, tonumber(args[1]))
 			settings.text.size = tonumber(args[1])
 			config.save(settings, windower.ffxi.get_player().name)
 			build_maps()
@@ -656,8 +676,46 @@ function addon_command(...)
 			if args[1] and valid_tab(args[1]) then
 				chat_log_env['undocked_tab'] = args[1]:sub(1,1):upper()..args[1]:sub(2):lower()
 				chat_log_env['undocked_window'] = true
+				texts.bg_alpha(t3, texts.bg_alpha(t))
+				texts.size(t3, texts.size(t))
+				reload_text()
+			elseif not args[1] and chat_log_env['undocked_window'] then
+				chat_log_env['undocked_tab'] = false
+				chat_log_env['undocked_windows'] = false
+				t3:visible(false)
 				reload_text()
 			end
+		elseif cmd == 'battle_all' then
+			if settings.battle_all then
+				log('Setting battle_all to false')
+				settings.battle_all = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting battle_all to true')
+				settings.battle_all = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+		elseif cmd == 'battle_off' then
+			if settings.battle_off then
+				log('Setting battle_off to false')
+				settings.battle_off = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting battle_off to true')
+				settings.battle_off = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+		elseif cmd == 'strict_width' then
+			if settings.strict_off then
+				log('Setting strict_width to false')
+				settings.strict_width = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting strict_width to true')
+				settings.strict_width = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+			reload_text()
 		elseif cmd == 'mentions' then
 			for i,v in pairs(settings.mentions) do
 				if #T(v) > 0 then
@@ -910,7 +968,7 @@ function chat_add(id, chat)
 		end
 		local battle_text = convert_text(os.time()..':'..id..':'..chat,'Battle')
 		table.insert(battle_table,battle_text)
-		if chat_log_env['battle_all'] then
+		if settings.battle_all then
 			table.insert(chat_tables['All'],'**'..battle_text)
 		end
 		
@@ -939,7 +997,7 @@ function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 		end
 	end
 	if id == 20 and injected then battlemod_loaded = true end
-	if chat_log_env['battle_off'] and battle_ids[id] then
+	if settings.battle_off and battle_ids[id] then
 		-- cancel logging battle text
 	else
 		if not filter_ids[id] then 
