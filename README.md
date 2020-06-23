@@ -1,7 +1,6 @@
 # ruptchat
 Windower chat addon
 
-
 This was originally written as just a text box replacement for tells and checking the
 chatlog without using sandbox if your multiboxing.  After coding a majority of it I expanded
 to a bigger chat system replacement.  Still a work in progress making style patterns
@@ -10,11 +9,11 @@ for the text.
 
 ===Issues===
 
-**If mouse input lags, enable hardware mouse in windower settings.
+*If mouse input lags, enable hardware mouse in windower settings.
 
-**Timestamps could possibly cause some false reads on filters, do recommend you turn it off.
+*Timestamps could possibly cause some false reads on filters, do recommend you turn it off.
 
-**If you load this addon while battlemod is loaded you'll need to reload if you unload battlemod after.
+*If you load this addon while battlemod is loaded you'll need to reload if you unload battlemod after.
 
 ============
 
@@ -42,6 +41,7 @@ Console Commands
 
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
+//rchat undock <tab name> (Opens a second dedicated chat window for that tab)
 
 **Features**
 
@@ -63,4 +63,5 @@ leave just the tab menu.
 *Mentions can be added that alert you when a word is mentioned in a tab.
 
 **TODO**
+
 Click action for text box line (Click to reply to tell, etc..)
