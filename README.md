@@ -79,7 +79,7 @@ leave just the tab menu.
 
 Click action for text box line (Click to reply to tell, etc..)
 
-__**Screenshots**__
+**Screenshots**
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat6.gif)
 
