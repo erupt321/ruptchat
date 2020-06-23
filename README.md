@@ -77,8 +77,6 @@ leave just the tab menu.
 
 **Screenshots**
 
-![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat6.gif)
-
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat8.gif)
 
