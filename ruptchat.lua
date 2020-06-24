@@ -130,9 +130,9 @@ tab_ids = {
 
 
 -- 20 21 22 24 28 29 30 31 35 36 50 56 57 63 81 101 102 110 111 114 122 157 191 209
-battle_ids = { [20]=true,[21]=true,[22]=true,[24]=true,[28]=true,[29]=true,[30]=true,[31]=true,[35]=true,[36]=true,[50]=true,[56]=true,[57]=true,[63]=true,[81]=true,[101]=true,[102]=true,[110]=true,[111]=true,[114]=true,[122]=true,[157]=true,[191]=true,[209]=true }
+battle_ids = { [20]=true,[21]=true,[22]=true,[23]=true,[24]=true,[28]=true,[29]=true,[30]=true,[31]=true,[35]=true,[36]=true,[50]=true,[56]=true,[57]=true,[63]=true,[81]=true,[101]=true,[102]=true,[110]=true,[111]=true,[114]=true,[122]=true,[157]=true,[191]=true,[209]=true }
 duplidoc_ids = { [190]=true }
-filter_ids = { [24]=true,[31]=true,[151]=true,[152]=true }
+filter_ids = { [23]=true,[24]=true,[31]=true,[151]=true,[152]=true }
 chat_tables = {}
 battle_table = {}
 
@@ -965,10 +965,8 @@ function chat_add(id, chat)
 	chat = string.gsub(chat,string.char(0x07, 0x0A),'')
 	chat = string.gsub(chat,'"','\"')
 	if battle_ids[id] then
-		if id == 20 then
-			if battlemod_loaded and (string.match(chat,'.*scores.*') or string.match(chat,'.*uses.*') or string.match(chat,'.*hits.*')) then
+		if battlemod_loaded and (string.match(chat,'.*scores.*') or string.match(chat,'.*uses.*') or string.match(chat,'.*hits.*') or string.find(chat,'misses') or string.find(chat,'cures')) then
 				return
-			end
 		end
 		local battle_text = convert_text(os.time()..':'..id..':'..chat,'Battle')
 		table.insert(battle_table,battle_text)
@@ -1000,7 +998,9 @@ function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 			return true --Just filtering this out for now while I figure out what I want to do
 		end
 	end
-	if id == 20 and injected then battlemod_loaded = true end
+	if battle_ids[id] and injected then 
+		battlemod_loaded = true
+	end
 	if settings.battle_off and battle_ids[id] then
 		-- cancel logging battle text
 	else
