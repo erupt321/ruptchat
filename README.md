@@ -71,6 +71,15 @@ leave just the tab menu.
 
 *Mentions can be added that alert you when a word is mentioned in a tab.
 
+**Usage Examples**
+
+	My current usage is keeping battle_all = off, this prevents battle log messages in my main log window
+	then I launch a undocked 'battle' window so that I now have a split window setup.  If I want to scroll
+	my battle log I'll just click into battle on my main window and scroll.  If I'm in the middle of a /tell
+	conversation I will change the undocked to 'tell'.  Plenty of options to customize how you want your windows
+	setup through log_length / log_width.  Hopefully in the future I will make style colors more user friendly
+	to develop custom templates(This is not preventing people from already doing it as I've seen).
+
 **Screenshots**
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat10.gif)
@@ -84,5 +93,7 @@ leave just the tab menu.
 
 **TODO**
 
+	Plenty of examples of text that is not being stylized, continue building matches.
+	
 	Click action for text box line (Click to reply to tell, etc..)
 
