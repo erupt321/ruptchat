@@ -48,7 +48,7 @@ Console Commands
 
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
-//rchat undock <tab name> (Opens a second dedicated chat window for that tab)
+//rchat undock [tab name] (Opens a second dedicated chat window for that tab, off if empty)
 
 //rchat battle_all (Toggle Battle Chat showing in the All tab)
 
@@ -115,8 +115,6 @@ chat_log_env = {
 	['mention_count'] = 0,
 	['last_mention_tab'] = false,
 	['last_text_line'] = false,
-	['undocked_window'] = false,
-	['undocked_tab'] = false,
 }
 
 tab_ids = {
@@ -150,6 +148,8 @@ default_settings = {
 	battle_all = true, -- Display Battle text in All tab
 	battle_off = false, -- Disable processing Battle text entirely
 	strict_width = false,
+	undocked_window = false,
+	undocked_tab = 'All',
 	flags = {
 		draggable = false,
 	},
@@ -169,14 +169,17 @@ default_settings = {
 		alpha = 200,
 	},
 }
+
+--Main window
 settings = config.load(default_settings)
 t = texts.new(settings)
 texts.bg_visible(t, true)
 
-
-
+--Notification Window
 t2 = texts.new(default_settings)
 t2:visible(false)
+
+--Undocked Tab Window
 default_settings.flags.draggable = true
 t3 = texts.new(default_settings)
 t3:visible(false)
@@ -335,7 +338,7 @@ function header()
 		new_text_header = new_text_header..'\n'
 	end
 	load_chat_tab(chat_log_env['scroll_num'],'main')
-	if chat_log_env['undocked_window'] then load_chat_tab(0,'undocked') end
+	if settings.undocked_window then load_chat_tab(0,'undocked') end
 end
 
 function convert_text(txt,tab_style)
@@ -410,7 +413,7 @@ function load_chat_tab(scroll_start,window)
 		end
 		tab = current_tab
 	else
-		tab = chat_log_env['undocked_tab']
+		tab = settings.undocked_tab
 		if tab:lower() == 'battle' then
 			current_chat = battle_table
 		else
@@ -674,16 +677,17 @@ function addon_command(...)
 			end
 		elseif cmd == 'undock' then
 			if args[1] and valid_tab(args[1]) then
-				chat_log_env['undocked_tab'] = args[1]:sub(1,1):upper()..args[1]:sub(2):lower()
-				chat_log_env['undocked_window'] = true
+				settings.undocked_tab = args[1]:sub(1,1):upper()..args[1]:sub(2):lower()
+				settings.undocked_window = true
 				texts.bg_alpha(t3, texts.bg_alpha(t))
 				texts.size(t3, texts.size(t))
 				reload_text()
-			elseif not args[1] and chat_log_env['undocked_window'] then
-				chat_log_env['undocked_tab'] = false
-				chat_log_env['undocked_windows'] = false
+				config.save(settings, windower.ffxi.get_player().name)
+			elseif not args[1] and settings.undocked_window then
+				settings.undocked_window = false
 				t3:visible(false)
 				reload_text()
+				config.save(settings, windower.ffxi.get_player().name)
 			end
 		elseif cmd == 'battle_all' then
 			if settings.battle_all then
@@ -1022,6 +1026,9 @@ function load_events()
 	t:visible(true)
 	reload_text()
 	t2:pos(texts.pos_x(t), (texts.pos_y(t)-20))
+	coroutine.sleep(1)
+	boundries = {texts.extents(t)}
+	t3:pos((boundries[1]+texts.pos_x(t)+2),texts.pos_y(t))
 end
 
 function unload_events()

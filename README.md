@@ -45,7 +45,7 @@ for the text.
 
 	//rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
-	//rchat undock <tab name> (Opens a second dedicated chat window for that tab)
+	//rchat undock [tab name] (Opens a second dedicated chat window for that tab, off if empty)
 	
 	//rchat battle_all (Toggle Battle Chat showing in the All tab)
 
