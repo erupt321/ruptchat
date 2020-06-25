@@ -138,9 +138,10 @@ tab_ids = {
 
 
 -- 20 21 22 24 28 29 30 31 35 36 50 56 57 63 81 101 102 110 111 114 122 157 191 209
-battle_ids = { [20]=true,[21]=true,[22]=true,[23]=true,[24]=true,[28]=true,[29]=true,[30]=true,[31]=true,[35]=true,[36]=true,[50]=true,[56]=true,[57]=true,[63]=true,[81]=true,[101]=true,[102]=true,[110]=true,[111]=true,[114]=true,[122]=true,[157]=true,[191]=true,[209]=true }
+battle_ids = { [20]=true,[21]=true,[22]=true,[23]=true,[24]=true,[28]=true,[29]=true,[30]=true,[31]=true,[35]=true,[36]=true,[40]=true,[50]=true,[56]=true,[57]=true,[63]=true,[81]=true,[101]=true,[102]=true,[107]=true,[110]=true,[111]=true,[114]=true,[122]=true,[157]=true,[191]=true,[209]=true }
 duplidoc_ids = { [190]=true }
 filter_ids = { [23]=true,[24]=true,[31]=true,[151]=true,[152]=true }
+pause_ids = { [4]=true,[11]=true,[12]=true,[14]=true,[6]=true,[214]=true,[13]=true,[5]=true,[121]=true,[123]=true,[148]=true, }
 chat_tables = {}
 battle_table = {}
 
@@ -1060,13 +1061,13 @@ end
 function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 	if duplidoc_ids[id] then -- Handle some npc text that comes in duplicate.
 		if modified == chat_log_env['last_text_line'] then
-			return true
+			return
 		end
 		chat_log_env['last_text_line'] = modified
 	end
 	if battle_ids[id] then
 		if string.find(modified:lower(),'aoe') then
-			return true --Just filtering this out for now while I figure out what I want to do
+			return --Just filtering this out for now while I figure out what I want to do
 		end
 	end
 	if battle_ids[id] and injected then 
@@ -1083,7 +1084,11 @@ function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 			if not chat_log_env['scrolling'] then reload_text() end
 		end
 	end
-	if settings.incoming_pause then return true end
+	if settings.incoming_pause then
+		if battle_ids[id] or pause_ids[id] then
+			return true
+		end
+	end
 end
 
 
