@@ -6,6 +6,12 @@ chatlog without using sandbox if your multiboxing.  After coding a majority of i
 to a bigger chat system replacement.  Still a work in progress making style patterns
 for the text.
 
+**Changelog**
+	
+	__06.24.20__
+	Undocked windows, allow a second window to show a specific tab.
+	use //rchat undocked [tab name] to launch new tab or hold down Alt + Click Tab to launch.
+			 
 
 ===Issues===
 

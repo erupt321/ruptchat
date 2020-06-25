@@ -257,6 +257,22 @@ end
 
 build_maps()
 
+function undock(menu)
+	if settings.undocked_window and settings.undocked_tab == menu then
+		settings.undocked_window = false
+		t3:visible(false)
+		reload_text()
+		config.save(settings, windower.ffxi.get_player().name)
+	else
+		settings.undocked_tab = menu
+		settings.undocked_window = true
+		texts.bg_alpha(t3, texts.bg_alpha(t))
+		texts.size(t3, texts.size(t))
+		reload_text()
+		config.save(settings, windower.ffxi.get_player().name)
+	end
+end
+
 function fillspace(spaces)
 	local spacer = ''
 	for i=1,spaces, 1 do
@@ -474,6 +490,16 @@ function cap(val, min, max)
 end
 
 
+alt_down = false
+windower.register_event('keyboard', function(dik,pressed,flags,blocked)
+	if dik == 56 then
+		if pressed then
+			alt_down = true
+		else
+			alt_down = false
+		end
+	end
+end)
 windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
     hovered = texts.hover(t,x,y)
     if blocked then
@@ -539,7 +565,7 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 		end
 	elseif eventtype == 10 then
 		if hovered then
-			if last_scroll == 0 then
+			if last_scroll == 0 or chat_log_env['scroll_num'] == false then
 				if #chat_tables[current_tab] > settings.log_length then
 					last_scroll = #chat_tables[current_tab] - settings.log_length
 				else
@@ -553,17 +579,17 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			end
 			if #current_chat > settings.log_length then 
 				last_scroll = cap(last_scroll - delta, 1, #current_chat - (settings.log_length - 1))
-				if (last_scroll > (#current_chat - settings.log_length)) and chat_log_env['scrolling'] then
+				if (last_scroll >= (#current_chat - settings.log_length)) and chat_log_env['scrolling'] then
 					last_scroll = #current_chat - settings.log_length
 					chat_log_env['scrolling'] = false
 					chat_log_env['scroll_num'] = false
 				else
-					chat_log_env['scrolling'] = true
 					if last_scroll > 0 and last_scroll <= (#current_chat - settings.log_length) then
 						chat_log_env['scroll_num'] = last_scroll
+						chat_log_env['scrolling'] = true
 					end
 				end
---				print('Last Scroll: '..last_scroll..' Table Length: '..#current_chat)
+--				print('Last Scroll: '..last_scroll..' Table Length: '..#current_chat..' / '..(#current_chat - settings.log_length))
 				reload_text()
 			end
 			return true
@@ -677,17 +703,7 @@ function addon_command(...)
 			end
 		elseif cmd == 'undock' then
 			if args[1] and valid_tab(args[1]) then
-				settings.undocked_tab = args[1]:sub(1,1):upper()..args[1]:sub(2):lower()
-				settings.undocked_window = true
-				texts.bg_alpha(t3, texts.bg_alpha(t))
-				texts.size(t3, texts.size(t))
-				reload_text()
-				config.save(settings, windower.ffxi.get_player().name)
-			elseif not args[1] and settings.undocked_window then
-				settings.undocked_window = false
-				t3:visible(false)
-				reload_text()
-				config.save(settings, windower.ffxi.get_player().name)
+				undock(args[1])
 			end
 		elseif cmd == 'battle_all' then
 			if settings.battle_all then
@@ -820,36 +836,60 @@ function menu(menuname,c)
 		local player = windower.ffxi.get_player()
 		local pos = windower.ffxi.get_mob_by_target('me')
 		if menuname == 'All' then
+			if alt_down then
+				undock(menuname)
+				return
+			end
 			current_tab = 'All'
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
 			reload_text()
 		elseif menuname == 'Tell' then
+			if alt_down then
+				undock(menuname)
+				return
+			end
 			current_tab = 'Tell'
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
 			reload_text()
 		elseif menuname == 'Linkshell' then
+			if alt_down then
+				undock(menuname)
+				return
+			end
 			current_tab = 'Linkshell'
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
 			reload_text()
 		elseif menuname == 'Linkshell2' then
+			if alt_down then
+				undock(menuname)
+				return
+			end
 			current_tab = 'Linkshell2'
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
 			reload_text()
 		elseif menuname == 'Party' then
+			if alt_down then
+				undock(menuname)
+				return
+			end
 			current_tab = 'Party'
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
 			reload_text()
 		elseif menuname == 'Battle' then
+			if alt_down then
+				undock(menuname)
+				return
+			end
 			current_tab = 'Battle'
 			reset_tab()
 			last_scroll = #battle_table - settings.log_length
