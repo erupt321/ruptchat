@@ -24,7 +24,7 @@ for the text.
 ============
 
 **Console Commands** 
-
+																			 ■
 	//rchat save (Force a chatlog save)
 
 	//rchat find <search terms> (Search current selected tab for search terms
@@ -56,6 +56,13 @@ for the text.
 	//rchat battle_all (Toggle Battle Chat showing in the All tab)
 
 	//rchat battle_off (Toggle Battle Chat being process at all; totally off)
+	
+	//rchat incoming_pause **EXPERIMENTAL** Will turn off vanilla windows receiving chat
+											this will make your chat log vanish which is more
+											visually appealing, but you'll be solely relying
+											on this addon for all ingame text, which not even 
+											I trust fully yet.  If in doubt just unpause it again.
+
   
 
 **Features**

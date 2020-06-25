@@ -54,6 +54,12 @@ Console Commands
 
 //rchat battle_off (Toggle Battle Chat being process at all; totally off)
 
+//rchat incoming_pause **EXPERIMENTAL** Will turn off vanilla windows receiving chat
+										this will make your chat log vanish which is more
+										visually appealing, but you'll be solely relying
+										on this addon for all ingame text, which not even 
+										I trust fully yet.  If in doubt just unpause it again.
+
 **Features**
 
 *Most usability is point and click.
@@ -150,6 +156,7 @@ default_settings = {
 	strict_width = false,
 	undocked_window = false,
 	undocked_tab = 'All',
+	incoming_pause = false,
 	flags = {
 		draggable = false,
 	},
@@ -736,6 +743,17 @@ function addon_command(...)
 				config.save(settings, windower.ffxi.get_player().name)
 			end
 			reload_text()
+		elseif cmd == 'incoming_pause' then
+			if settings.incoming_pause then
+				log('Setting incoming_pause to false')
+				settings.incoming_pause = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting incoming_pause to true')
+				log('** USE THIS AT YOUR OWN RISK **')
+				settings.incoming_pause = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
 		elseif cmd == 'mentions' then
 			for i,v in pairs(settings.mentions) do
 				if #T(v) > 0 then
@@ -1052,6 +1070,7 @@ function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 			if not chat_log_env['scrolling'] then reload_text() end
 		end
 	end
+	if settings.incoming_pause then return true end
 end
 
 
