@@ -25,7 +25,8 @@ for the text.
 
 ============
 
-**Console Commands** 
+**Console Commands**
+
 																			 ■
 	//rchat save (Force a chatlog save)
 
