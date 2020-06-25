@@ -68,6 +68,10 @@ for the text.
 	visually appealing, but you'll be solely relying
 	on this addon for all ingame text, which not even 
 	I trust fully yet.  If in doubt just unpause it again.
+	
+	I've already seen some events like Domain Invasion have issues
+	because of this option and preventing some npc interactions like
+	turning in trial weapons.
 
   
 
