@@ -12,6 +12,8 @@ for the text.
 	Undocked windows, allow a second window to show a specific tab.
 	use //rchat undocked [tab name] to launch new tab or hold down Alt + Click Tab to launch.
 			 
+	__06.25.20__
+	Add option to lock main window into place.  //rchat drag
 
 ===Issues===
 
