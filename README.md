@@ -57,11 +57,12 @@ for the text.
 
 	//rchat battle_off (Toggle Battle Chat being process at all; totally off)
 	
-	//rchat incoming_pause **EXPERIMENTAL** Will turn off vanilla windows receiving chat
-											this will make your chat log vanish which is more
-											visually appealing, but you'll be solely relying
-											on this addon for all ingame text, which not even 
-											I trust fully yet.  If in doubt just unpause it again.
+	//rchat incoming_pause **EXPERIMENTAL** 
+	Will turn off vanilla windows receiving chat
+	this will make your chat log vanish which is more
+	visually appealing, but you'll be solely relying
+	on this addon for all ingame text, which not even 
+	I trust fully yet.  If in doubt just unpause it again.
 
   
 
