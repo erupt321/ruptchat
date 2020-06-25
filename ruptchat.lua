@@ -36,6 +36,8 @@ Console Commands
 
 //rchat show (Show hidden text box)
 
+//rchat drag (Disable Draggable boxes; requested option)
+
 //rchat alpha <0-255> (Change background transparency)
 
 //rchat size <font size> (Change font size, this will increase whole window size)
@@ -157,6 +159,7 @@ default_settings = {
 	undocked_window = false,
 	undocked_tab = 'All',
 	incoming_pause = false,
+	drag_status = true,
 	flags = {
 		draggable = false,
 	},
@@ -552,7 +555,7 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 		if hovered then
 			local pos_x = texts.pos_x(t)
 			local pos_y = texts.pos_y(t)
-			dragged = {text = t, x = x - pos_x, y = y - pos_y}
+			if settings.drag_status then dragged = {text = t, x = x - pos_x, y = y - pos_y} end
 			return true
 		end
 		end
@@ -752,6 +755,16 @@ function addon_command(...)
 				log('Setting incoming_pause to true')
 				log('** USE THIS AT YOUR OWN RISK **')
 				settings.incoming_pause = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+		elseif cmd == 'drag' then
+			if settings.drag_status then
+				log('Setting drag_status to false')
+				settings.drag_status = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting drag_status to true')
+				settings.drag_status = true
 				config.save(settings, windower.ffxi.get_player().name)
 			end
 		elseif cmd == 'mentions' then

@@ -39,6 +39,8 @@ for the text.
 
 	//rchat show (Show hidden text box)
 
+	//rchat drag (Disable Draggable boxes; requested option)
+
 	//rchat alpha <0-255> (Change background transparency)
 
 	//rchat size <font size> (Change font size, this will increase whole window size)
