@@ -576,17 +576,17 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 		end
 	elseif eventtype == 10 then
 		if hovered then
-			if last_scroll == 0 or chat_log_env['scroll_num'] == false then
-				if #chat_tables[current_tab] > settings.log_length then
-					last_scroll = #chat_tables[current_tab] - settings.log_length
-				else
-					last_scroll = #chat_tables[current_tab]
-				end
-			end
 			if current_tab == 'Battle' then
 				current_chat = battle_table
 			else
 				current_chat = chat_tables[current_tab]
+			end
+			if current_chat and (last_scroll == 0 or chat_log_env['scroll_num'] == false) then
+				if #current_chat > settings.log_length then
+					last_scroll = #current_chat - settings.log_length
+				else
+					last_scroll = #current_chat
+				end
 			end
 			if #current_chat > settings.log_length then 
 				last_scroll = cap(last_scroll - delta, 1, #current_chat - (settings.log_length - 1))
