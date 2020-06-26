@@ -71,9 +71,6 @@ for the text.
 	on this addon for all ingame text, which not even 
 	I trust fully yet.  If in doubt just unpause it again.
 	
-	I've already seen some events like Domain Invasion have issues
-	because of this option and preventing some npc interactions like
-	turning in trial weapons.
 
   
 
@@ -83,10 +80,9 @@ for the text.
 
 *Window is draggable as well as clickable.  
 
-*All tabs are clickable, all text windows are mouse wheel scrollable.
+*All tabs are clickable, all text windows are mouse wheel scrollable.  Holding down ALT and clicking a tab will open a second window for that tab's chat.
 
-*Clicking the [ - ] in the upper right corner will minimize the text box and 
-leave just the tab menu. 
+*Clicking the [ - ] in the upper right corner will minimize the text box and leave just the tab menu. 
 
 *New tells recieved while in a none "All"/"Tell" tab will provide a Notification.
 
@@ -124,4 +120,7 @@ leave just the tab menu.
 	Plenty of examples of text that is not being stylized, continue building matches.
 	
 	Click action for text box line (Click to reply to tell, etc..)
+	
+	If you find chat that has no style formatting you can enable debug with //rchat debug and screenshot
+	the information for that chat line and a style can be developed.
 
