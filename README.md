@@ -14,6 +14,7 @@ for the text.
 			 
 	__06.25.20__
 	Add option to lock main window into place.  //rchat drag
+	Fixed mention from triggering on yourself.
 
 ===Issues===
 

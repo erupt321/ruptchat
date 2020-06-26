@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.2beta.062420'
+_addon.version = '0.2beta.062520'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -141,7 +141,7 @@ tab_ids = {
 battle_ids = { [20]=true,[21]=true,[22]=true,[23]=true,[24]=true,[28]=true,[29]=true,[30]=true,[31]=true,[35]=true,[36]=true,[40]=true,[50]=true,[56]=true,[57]=true,[63]=true,[81]=true,[101]=true,[102]=true,[107]=true,[110]=true,[111]=true,[114]=true,[122]=true,[157]=true,[191]=true,[209]=true }
 duplidoc_ids = { [190]=true }
 filter_ids = { [23]=true,[24]=true,[31]=true,[151]=true,[152]=true }
-pause_ids = { [4]=true,[11]=true,[12]=true,[14]=true,[6]=true,[214]=true,[13]=true,[5]=true,[121]=true,[123]=true,[148]=true, }
+pause_ids = { [4]=true,[11]=true,[12]=true,[14]=true,[6]=true,[90]=true,[214]=true,[13]=true,[5]=true,[121]=true,[123]=true,[148]=true,[207]=true,[208]=true,[204]=true,[1]=true,[59]=true,[91]=true,[7]=true,[0]=true }
 chat_tables = {}
 battle_table = {}
 
@@ -298,9 +298,12 @@ new_text = ''
 function header()
 	if current_tab == 'Tell' or current_tab == 'All' then chat_log_env['last_seen'] = os.time() end
 	if chat_log_env['mention_found'] and current_tab == chat_log_env['last_mention_tab'] then
+		print('Checking Mention')
 		if chat_log_env['mention_count'] > 4 then
+			print('Shut off Mention')
 			chat_log_env['mention_found'] = false
 		else
+			print('Add 1 mention')
 			chat_log_env['mention_count'] = chat_log_env['mention_count'] + 1
 		end
 	end
@@ -998,8 +1001,15 @@ function check_mentions(id, chat)
 		chat_type = tab_ids[tostring(id)]
 	end
 	if #T(settings.mentions['All']) > 0 then
+		local stripped = string.gsub(chat,'[^A-Za-z%s]','')
+		local splitted = split(stripped,' ')
 		for v in settings.mentions['All']:it() do
 			if  string.find(chat:lower(),v:lower())then
+				if v:lower() == windower.ffxi.get_player().name:lower() then
+					if splitted[1] and splitted[1]:lower() == v:lower() then
+						return
+					end
+				end
 				chat_log_env['mention_found'] = true
 				chat_log_env['mention_count'] = 1
 				chat_log_env['last_mention_tab'] = 'All'
