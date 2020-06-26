@@ -463,7 +463,7 @@ function load_chat_tab(scroll_start,window)
 	loop_count = (loop_end - loop_start)
 	for i=loop_end,loop_start,-1 do
 		if not chat_log_env['finding'] then
-			_,count = temp_table:gsub('\n','')
+			_,count = temp_table:gsub('[\r\n]','')
 			if count > loop_count then
 				break
 			end
@@ -1040,7 +1040,7 @@ function chat_add(id, chat)
 		chat_tables['All'] = {}
 	end
 	if chat_debug then print('ID: '..id..' Txt: '..chat) end
-	chat = string.gsub(chat,'\n','')
+	chat = string.gsub(chat,'[\r\n]','')
 	chat = string.gsub(chat,string.char(0x07, 0x0A),'')
 	chat = string.gsub(chat,'"','\"')
 	if battle_ids[id] then
@@ -1089,7 +1089,7 @@ function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 	else
 		if not filter_ids[id] then 
 			if not battlemod_loaded then modified = original end
-			modified = string.gsub(modified,'\n','')
+			modified = string.gsub(modified,'[\r\n]','')
 			modified = string.gsub(modified,'[\\]+$','')
 			chat_add(id,modified)
 			if not chat_log_env['scrolling'] then reload_text() end
