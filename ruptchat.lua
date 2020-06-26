@@ -298,12 +298,9 @@ new_text = ''
 function header()
 	if current_tab == 'Tell' or current_tab == 'All' then chat_log_env['last_seen'] = os.time() end
 	if chat_log_env['mention_found'] and current_tab == chat_log_env['last_mention_tab'] then
-		print('Checking Mention')
 		if chat_log_env['mention_count'] > 4 then
-			print('Shut off Mention')
 			chat_log_env['mention_found'] = false
 		else
-			print('Add 1 mention')
 			chat_log_env['mention_count'] = chat_log_env['mention_count'] + 1
 		end
 	end
