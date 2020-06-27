@@ -75,7 +75,7 @@ return {
 		[5] = '^([0-9]+:[0-9]+:[0-9]+:)(.+)', --Two assholes emoting solo/eachother.
 		[6] = '\\cs('..style_templates['emote_time']..')%1\\cr * \\cs('..style_templates['emote_text']..')%2\\cr',
 		},
-	[20] = {
+	[20] = { -- battle
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
 		[3] = '^(.+[0-9]+:[0-9]+:[0-9]+[^%[]+)%[?('..windower.ffxi.get_player().name..'\'?s?)%]?(.+)',
@@ -91,7 +91,7 @@ return {
 		[13] = '^(.+[0-9]+:[0-9]+:[0-9]+.+%[)([A-Za-z0-9%s]+)(%].*)',
 		[14] = '%1\\cs('..style_templates['battle_name_2']..')%2\\cr%3',
 	},
-	[21] = {
+	[21] = { -- battle
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
 		[3] = '^(.+[0-9]+:[0-9]+:[0-9]+.+)%s?('..windower.ffxi.get_player().name..'\'?s?)%]?(.+)',
@@ -129,7 +129,7 @@ return {
 		[11] = '(.*)%s%s(.*)',
 		[12] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
 	},
-	[28] = {
+	[28] = { --battle
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
 		[3] = '^(.+[0-9]+:[0-9]+:[0-9]+.*)%[([^%]]+)%](.*) ('..windower.ffxi.get_player().name..').*$',
@@ -143,7 +143,7 @@ return {
 		[11] ='(.*)%[([1-9]+)%](.*)',
 		[12] ='%1[\\cs('..style_templates['battle_name_2']..')%2\\cr]%3',
 	},
-	[29] = {
+	[29] = { --battle
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
 		[3] = '^(.+[0-9]+:[0-9]+:[0-9]+.*)%[([^%]]+)%](.*)('..windower.ffxi.get_player().name..').*$',
