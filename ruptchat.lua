@@ -175,7 +175,6 @@ default_settings = {
 	},
 	text = {
 		size = 10,
-		
 	},
 	bg = {
 		alpha = 200,
@@ -938,7 +937,7 @@ function menu(menuname,c)
 			reset_tab()
 			reload_text()
 		elseif menuname == 'find' then
-			c = c:lower()
+			local c = c:lower()
 			if find_table['last_find'] == c then
 				last_scroll = find_next(c)
 				if not last_scroll then
@@ -1042,6 +1041,7 @@ function chat_add(id, chat)
 	end
 	if chat_debug then print('ID: '..id..' Txt: '..chat) end
 	chat = string.gsub(chat,'[\r\n]','')
+	chat = string.gsub(chat,'',' ')
 	chat = string.gsub(chat,string.char(0x07, 0x0A),'')
 	chat = string.gsub(chat,'"','\"')
 	if battle_ids[id] then
