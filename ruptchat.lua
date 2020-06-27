@@ -387,12 +387,20 @@ function convert_text(txt,tab_style)
 		local wrap_tmp = ""
 		local wrap_cnt = 0
 		for w in txt:gmatch("([^%s]+)") do
-			wrap_cnt = wrap_cnt+(string.len(w)+1)
-			if wrap_cnt < settings.log_width then
-				wrap_tmp = wrap_tmp..' '..w
+			cur_len = string.len(w)
+			if cur_len > settings.log_width then
+				end_len = (settings.log_width*0.94) - wrap_cnt
+				suffix = string.sub(w,end_len+1)
+				wrap_tmp = wrap_tmp..' '..string.sub(w,1,end_len)..'\n'..suffix
+				wrap_cnt = string.len(suffix)
 			else
-				wrap_cnt = 0
-				wrap_tmp = wrap_tmp..'\n'..w
+				wrap_cnt = wrap_cnt+(cur_len+1)
+				if wrap_cnt < settings.log_width then
+					wrap_tmp = wrap_tmp..' '..w
+				else
+					wrap_cnt = 0
+					wrap_tmp = wrap_tmp..'\n'..w
+				end
 			end
 		end
 		if wrap_tmp ~= "" then
