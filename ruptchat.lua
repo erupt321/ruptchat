@@ -460,7 +460,11 @@ function load_chat_tab(scroll_start,window)
 		loop_start = 1
 		loop_end = #current_chat
 	else
-		loop_start = #current_chat - settings.log_length
+		if window == 'main' then
+			loop_start = #current_chat - settings.log_length
+		else
+			loop_start = #current_chat - (settings.log_length+1)
+		end
 		loop_end = #current_chat
 		if scroll_start then
 			loop_start = scroll_start
@@ -495,6 +499,9 @@ function load_chat_tab(scroll_start,window)
 	else
 		if temp_table ~= '' then
 			t3:text('[ \\cs(255,69,0)'..tab..'\\cr ]... .. .\n'..temp_table)
+			texts.size(t3, texts.size(t))
+			texts.bg_alpha(t3, texts.bg_alpha(t))
+			texts.font(t3, texts.font(t))
 			t3:visible(true)
 		end
 	end
