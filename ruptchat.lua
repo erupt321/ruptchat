@@ -349,7 +349,7 @@ function header()
 		new_text_header = new_text_header..'[ + ]   [rChat]'
 	end
 	if settings.strict_width then
-		blank_space = (settings.log_width*2.04) - string.len(new_text_header)
+		blank_space = (settings.log_width*1.6) - string.len(new_text_header)
 		new_text_header = new_text_header..fillspace(blank_space)..'\n'
 	else
 		new_text_header = new_text_header..'\n'
@@ -387,7 +387,7 @@ function convert_text(txt,tab_style)
 		local wrap_tmp = ""
 		local wrap_cnt = 0
 		for w in txt:gmatch("([^%s]+)") do
-			wrap_cnt = wrap_cnt+string.len(w)
+			wrap_cnt = wrap_cnt+(string.len(w)+1)
 			if wrap_cnt < settings.log_width then
 				wrap_tmp = wrap_tmp..' '..w
 			else
