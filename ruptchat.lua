@@ -103,6 +103,7 @@ save_delay = 5000
 rupt_savefile = ''
 rupt_db = ''
 tab_styles = ''
+style_templates = ''
 if windower.ffxi.get_info().logged_in then
 	rupt_savefile = 'chatlogs/'..windower.ffxi.get_player().name..'-current'
 	rupt_db = files.new(rupt_savefile..'.lua')
@@ -141,7 +142,7 @@ tab_ids = {
 battle_ids = { [20]=true,[21]=true,[22]=true,[23]=true,[24]=true,[28]=true,[29]=true,[30]=true,[31]=true,[35]=true,[36]=true,[40]=true,[50]=true,[56]=true,[57]=true,[63]=true,[81]=true,[101]=true,[102]=true,[107]=true,[110]=true,[111]=true,[114]=true,[122]=true,[157]=true,[191]=true,[209]=true }
 duplidoc_ids = { [190]=true }
 filter_ids = { [23]=true,[24]=true,[31]=true,[151]=true,[152]=true }
-pause_ids = { [0]=true,[1]=true,[4]=true,[5]=true,[6]=true,[7]=true,[9]=true,[10]=true,[11]=true,[12]=true,[13]=true,[14]=true,[38]=true,[59]=true,[90]=true,[91]=true,[121]=true,[123]=true,[127]=true,[131]=true,[148]=true,[204]=true,[207]=true,[208]=true,[214]=true }
+pause_ids = { [0]=true,[1]=true,[4]=true,[5]=true,[6]=true,[7]=true,[9]=true,[10]=true,[11]=true,[12]=true,[13]=true,[14]=true,[15]=true,[38]=true,[59]=true,[64]=true,[90]=true,[91]=true,[121]=true,[123]=true,[127]=true,[131]=true,[148]=true,[160]=true,[204]=true,[207]=true,[208]=true,[214]=true,[245]=true }
 chat_tables = {}
 battle_table = {}
 
@@ -1138,15 +1139,20 @@ windower.register_event('login', function()
 	if windower.ffxi.get_info().logged_in then
 		rupt_savefile = 'chatlogs/'..windower.ffxi.get_player().name..'-current'
 		rupt_db = files.new(rupt_savefile..'.lua')
+		style_templates = require('templates')
 		tab_styles = require('styles')
 	end
 	load_db_file()
 	load_events()
+	style_templates = require('templates')
 	tab_styles = require('styles')
 end)
 
 windower.register_event('load', function()
-	if windower.ffxi.get_info().logged_in and tab_styles == '' then tab_styles = require('styles') end
+	if windower.ffxi.get_info().logged_in and tab_styles == '' then
+		style_templates = require('templates')
+		tab_styles = require('styles')
+	end
 	load_events()
 end)
 

@@ -7,14 +7,24 @@ to a bigger chat system replacement.  Still a work in progress making style patt
 for the text.
 
 **Changelog**
-	
+
+	__06.26.20__
+	Made a template file now for the styles colors.  You can not modify your own color themes
+	and not worry about them being overwritten by new styles being added.
+	Fixed some of the save file corruption issues with line breaks via moogle/campaign messages
+	Added some more styles for unadded chat id's while I was adding the template settings.
+	Some more id's added to the incoming_pause, have a few people testing id's all day, to try 
+	to get as many safe filtered id's as we can.
+
+	__06.25.20__
+	Add option to lock main window into place.  //rchat drag
+	Fixed mention from triggering on yourself.
+
 	__06.24.20__
 	Undocked windows, allow a second window to show a specific tab.
 	use //rchat undocked [tab name] to launch new tab or hold down Alt + Click Tab to launch.
 			 
-	__06.25.20__
-	Add option to lock main window into place.  //rchat drag
-	Fixed mention from triggering on yourself.
+
 
 ===Issues===
 
