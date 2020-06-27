@@ -1034,6 +1034,7 @@ battlemod_loaded = false
 
 
 function chat_add(id, chat)
+	chat = windower.convert_auto_trans(chat)
 	chat = chat:strip_format()
 	check_mentions(id,chat)
 	if not chat_tables['All'] then
