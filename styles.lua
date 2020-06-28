@@ -249,7 +249,7 @@ return {
 		[5] = '(.*)%s%s(.*)',
 		[6] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
 	},
-	[121] = { --AH / Search
+	[121] = { --AH / Search / DI evals / Synthesis
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)Your (.+) sold',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\crYour \\cs('..style_templates['ah_item']..')%2 \\cr\\cs('..style_templates['ah_text']..')sold.\\cr',
 		[3] = '^([0-9]+:[0-9]+:[0-9]+:)You take the (.+) out(.+)',
@@ -262,6 +262,10 @@ return {
 		[10] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['ah_text']..')%2\\cr[\\cs('..style_templates['ah_highlight']..')%3\\cr]\\cs('..style_templates['ah_text']..')%4\\cr',
 		[11] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[12] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['ah_text']..')%2\\cr',
+		[13] = '(.*)%[.*%),.*cr%](.*)',
+		[14] = '%1%2',
+		[15] = '(.*)(%+).*%[.*%)([0-9]+).*cr%](.*)',
+		[16] = '%1%2%3%4',
 	},
 	[122] = { -- Unable to see
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.+) to see (.+).',

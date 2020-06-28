@@ -1061,7 +1061,7 @@ function chat_add(id, chat)
 	chat = string.gsub(chat,string.char(0x07, 0x0A),'')
 	chat = string.gsub(chat,'"','\"')
 	if battle_ids[id] then
-		if battlemod_loaded and (string.match(chat,'.*scores.*') or string.match(chat,'.*uses.*') or string.match(chat,'.*hits.*') or string.find(chat,'misses') or string.find(chat,'cures')) then
+		if battlemod_loaded and (string.match(chat,'.*scores.*') or string.match(chat,'.*uses.*') or string.match(chat,'.*hits.*') or string.match(chat,'.*spikes deal.*') or string.find(chat,'misses') or string.find(chat,'cures')) then
 				return
 		end
 		local battle_text = convert_text(os.time()..':'..id..':'..chat,'Battle')
