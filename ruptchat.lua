@@ -730,7 +730,7 @@ function addon_command(...)
 			texts.font(t3, args_joined)
 			settings.text.font = args_joined
 			config.save(settings, windower.ffxi.get_player().name)
-			--reload_text()
+			build_maps()
 		elseif cmd == 'length' then
 			if args[1] and tonumber(args[1]) then
 				settings.log_length = tonumber(args[1])
