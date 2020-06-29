@@ -58,6 +58,8 @@ for the text.
 	//rchat alpha <0-255> (Change background transparency)
 
 	//rchat size <font size> (Change font size, this will increase whole window size)
+	
+	//rchat font <font name> (Change font, some fonts that are grossly different sizes will affect clickables)
 
 	//rchat length <Log Length> (Change log length size)
 
