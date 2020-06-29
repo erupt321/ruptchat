@@ -192,7 +192,7 @@ return {
 	[50] = {
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
-		[3] = '^(.+[0-9]+:[0-9]+:[0-9]+[^%[]-)%[?('..windower.ffxi.get_player().name..'\'?s?)%]? (.+)',
+		[3] = '^(.+[0-9]+:[0-9]+:[0-9]+:[^%[]-)%[('..windower.ffxi.get_player().name..'\'?s?)%] (.+)',
 		[4] = '%1[\\cs('..style_templates['battle_text_1']..')%2\\cr] %3',
 		[5] = '^(.+[0-9]+:[0-9]+:[0-9]+:[^%[]-)%[?([^%]\\]+)%]? (.+)',
 		[6] = '%1[\\cs('..style_templates['battle_text_1']..')%2\\cr] %3',
@@ -320,6 +320,7 @@ return {
 		[6] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['instance_queue']..')%2\\cr[\\cs('..style_templates['instance_queue_highlight']..')%3\\cr]\\cs('..style_templates['instance_queue']..')%4\\cr',
 		[7] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[8] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['instance_queue']..')%2\\cr',
+		
 	},
 	[150] = { -- npc chat
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)([^:]+) :(.*)',

@@ -8,6 +8,17 @@ for the text.
 
 **Changelog**
 
+	__06.28.20__
+	Made some more filter changes and added some more id's to the incoming pause list.
+	
+	The bigger change I made was allowing font changes via //rchat font <font name>
+	while this could already be achieved by editing your settings.xml I've also coded
+	a table and formulas that work by the font type to adjust new strict_width / word wrap
+	based on the type of font used, as well as changing the Image Map Formulas for the top bar.  
+	I mapped a few fonts as examples but otherwise it will be up to you to map out fonts
+	through trial and error.  If you do happen to map out some fonts be sure to submit your
+	numbers to me and I'll add it to the list.
+
 	__06.26.20__
 	Made a template file now for the styles colors.  You can not modify your own color themes
 	and not worry about them being overwritten by new styles being added.

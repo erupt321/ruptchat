@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.3.062720.1'
+_addon.version = '0.4.062820.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -41,6 +41,8 @@ Console Commands
 //rchat alpha <0-255> (Change background transparency)
 
 //rchat size <font size> (Change font size, this will increase whole window size)
+
+//rchat font <font name> (Change font, some fonts that are grossly different sizes will affect clickables)
 
 //rchat length <Log Length> (Change log length size)
 
@@ -142,9 +144,26 @@ tab_ids = {
 battle_ids = { [20]=true,[21]=true,[22]=true,[23]=true,[24]=true,[28]=true,[29]=true,[30]=true,[31]=true,[35]=true,[36]=true,[40]=true,[50]=true,[56]=true,[57]=true,[63]=true,[81]=true,[101]=true,[102]=true,[107]=true,[110]=true,[111]=true,[114]=true,[122]=true,[157]=true,[191]=true,[209]=true }
 duplidoc_ids = { [190]=true }
 filter_ids = { [23]=true,[24]=true,[31]=true,[151]=true,[152]=true }
-pause_ids = { [0]=true,[1]=true,[4]=true,[5]=true,[6]=true,[7]=true,[9]=true,[10]=true,[11]=true,[12]=true,[13]=true,[14]=true,[15]=true,[38]=true,[59]=true,[64]=true,[90]=true,[91]=true,[121]=true,[123]=true,[127]=true,[131]=true,[148]=true,[160]=true,[161]=true,[204]=true,[207]=true,[208]=true,[210]=true,[212]=true,[213]=true,[214]=true,[245]=true }
+pause_ids = { [0]=true,[1]=true,[4]=true,[5]=true,[6]=true,[7]=true,[9]=true,[10]=true,[11]=true,[12]=true,[13]=true,[14]=true,[15]=true,[38]=true,[59]=true,[64]=true,[90]=true,[91]=true,[121]=true,[123]=true,[127]=true,[131]=true,[146]=true,[148]=true,[160]=true,[161]=true,[204]=true,[207]=true,[208]=true,[210]=true,[212]=true,[213]=true,[214]=true,[245]=true }
 chat_tables = {}
 battle_table = {}
+
+-- If you care to use a custom font you can play with your own settings here 
+-- Format is {[Header Width Multiplier],[Word Wrap Multiplier],[Click Map Width],[Click Map Height]}
+-- for some just changing your //rchat width will get you more mileage.
+
+font_wrap_sizes = { -- Defaults to 1.9,0.8,1,1 if no font profile found
+	['arial'] = { 1.75,1,1,1 },
+	['microsoft sans serif'] = { 1.8,0.9,1,1 },
+	['chiller'] = { 1.3,0.8,0.92,1.5 },
+	['corbel'] = { 1.95 ,0.8,0.91,1.7 },
+	['papyrus'] = { 2.02,0.4,0.99,1.6},
+	['verdana'] = { 1.6,0.8,1.26,1.6},
+	['poor richard'] = { 2.0,0.50,0.85,1.5},
+	['book antiqua'] = { 1.75,0.8,1.05,1.5},
+	['unispace'] = { 1.0,0.5,1.9,1.5},
+}
+
 
 find_table = {
 	['last_find'] = false,
@@ -227,8 +246,16 @@ cur_map = 1
 image_map = {}
 
 function build_maps()
-	x_scale = texts.size(t) * 6.8
-	y_scale = texts.size(t) * 1.5
+	local x_base = 6.8
+	local y_base = 1.5
+	local font = texts.font(t):lower()
+	if font_wrap_sizes[font] then
+		x_base = x_base*font_wrap_sizes[font][3]
+		y_base = y_base*font_wrap_sizes[font][4]
+	end
+		
+	x_scale = texts.size(t) * x_base
+	y_scale = texts.size(t) * y_base
 	image_map[0] = { ['x_start'] = 0, ['x_end'] = x_scale, ['y_start'] = -10, ['y_end'] = y_scale}
 	image_map[0].action = function()
 		menu('All','')
@@ -296,6 +323,9 @@ start_map = #image_map
 new_text_header = ''
 new_text = ''
 function header()
+	if not font_wrap_sizes[texts.font(t):lower()] then
+		font_wrap_sizes[texts.font(t):lower()] = { 1.9,0.8,1,1 }
+	end
 	if current_tab == 'Tell' or current_tab == 'All' then chat_log_env['last_seen'] = os.time() end
 	if chat_log_env['mention_found'] and current_tab == chat_log_env['last_mention_tab'] then
 		if chat_log_env['mention_count'] > 4 then
@@ -349,7 +379,7 @@ function header()
 		new_text_header = new_text_header..'[ + ]   [rChat]'
 	end
 	if settings.strict_width then
-		blank_space = (settings.log_width*1.6) - string.len(new_text_header)
+		blank_space = (settings.log_width*font_wrap_sizes[texts.font(t):lower()][1]) - string.len(new_text_header)
 		new_text_header = new_text_header..fillspace(blank_space)..'\n'
 	else
 		new_text_header = new_text_header..'\n'
@@ -389,7 +419,7 @@ function convert_text(txt,tab_style)
 		for w in txt:gmatch("([^%s]+)") do
 			cur_len = string.len(w)
 			if cur_len > settings.log_width then
-				end_len = (settings.log_width*0.94) - wrap_cnt
+				end_len = (settings.log_width*font_wrap_sizes[texts.font(t):lower()][2]) - wrap_cnt
 				suffix = string.sub(w,end_len+1)
 				wrap_tmp = wrap_tmp..' '..string.sub(w,1,end_len)..'\n'..suffix
 				wrap_cnt = string.len(suffix)
