@@ -78,6 +78,8 @@ for the text.
 		
 	//rchat strict_width (Toggle maintaining the max log width; avoid box shrinking and expanding)
 
+	//rchat string_length (Toggle maintaining the log length)
+
 	//rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
 	//rchat undock [tab name] (Opens a second dedicated chat window for that tab, off if empty)

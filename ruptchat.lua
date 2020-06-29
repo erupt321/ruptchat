@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.4.062820.1'
+_addon.version = '0.4.062920.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -49,6 +49,8 @@ Console Commands
 //rchat width <Log Width>  (Change log width size; when wordwrap should take effect)
 
 //rchat strict_width (Toggle maintaining the max log width; avoid box shrinking and expanding)
+
+//rchat string_length (Toggle maintaining the log length)
 
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
@@ -161,7 +163,7 @@ font_wrap_sizes = { -- Defaults to 1.9,0.8,1,1 if no font profile found
 	['verdana'] = { 1.6,0.8,1.26,1.6},
 	['poor richard'] = { 2.0,0.50,0.85,1.5},
 	['book antiqua'] = { 1.75,0.8,1.05,1.5},
-	['unispace'] = { 1.0,0.5,1.9,1.5},
+	['unispace'] = { 1.27,1.2,1.9,1.5},
 }
 
 
@@ -177,6 +179,7 @@ default_settings = {
 	battle_all = true, -- Display Battle text in All tab
 	battle_off = false, -- Disable processing Battle text entirely
 	strict_width = false,
+	strict_length = false,
 	undocked_window = false,
 	undocked_tab = 'All',
 	incoming_pause = false,
@@ -241,7 +244,7 @@ function valid_tab(tab)
 	end
 	return false
 end
--- size 12 = x = 78 y = 18 size 10 = x = 65 y = 15  size 8 = x = 51 y = 12 size 6 = x = 38 y = 9
+
 cur_map = 1
 image_map = {}
 
@@ -502,13 +505,21 @@ function load_chat_tab(scroll_start,window)
 		end
 	end	
 	local temp_table = ''
-	loop_count = (loop_end - loop_start)
+	local broke_free = false
+	loop_count = (loop_end - loop_start)-1
 	for i=loop_end,loop_start,-1 do
 		if not chat_log_env['finding'] then
 			_,count = temp_table:gsub('[\r\n]','')
-			if count > loop_count then
+			if count >= loop_count then
+				if settings.strict_length then
+					broke_free = true
+				end
 				break
 			end
+		end
+		if settings.strict_length then
+			--Save a working copy
+			prev_table = temp_table
 		end
 		if current_chat[i] then
 			if tab == 'Battle' then --everything in battle_table is preformatted
@@ -524,7 +535,19 @@ function load_chat_tab(scroll_start,window)
 	end
 	if window == 'main' then
 		if temp_table ~= '' then
-			new_text = new_text..temp_table
+			if broke_free then
+				_,tmp_count = prev_table:gsub('\n','')
+				local new_lines = loop_count - tmp_count
+				local new_line = ''
+				if new_lines > 1 then
+					for i=2,new_lines, 1 do
+						new_line = new_line..'\n'
+					end
+				end
+				new_text = new_text..new_line..prev_table
+			else
+				new_text = new_text..temp_table
+			end
 		end
 	else
 		if temp_table ~= '' then
@@ -795,6 +818,17 @@ function addon_command(...)
 			else
 				log('Setting strict_width to true')
 				settings.strict_width = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+			reload_text()
+		elseif cmd == 'strict_length' then
+			if settings.strict_length then
+				log('Setting strict_length to false')
+				settings.strict_length = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting strict_length to true')
+				settings.strict_length = true
 				config.save(settings, windower.ffxi.get_player().name)
 			end
 			reload_text()
