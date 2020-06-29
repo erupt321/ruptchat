@@ -493,11 +493,7 @@ function load_chat_tab(scroll_start,window)
 		loop_start = 1
 		loop_end = #current_chat
 	else
-		if window == 'main' then
-			loop_start = #current_chat - settings.log_length
-		else
-			loop_start = #current_chat - (settings.log_length+1)
-		end
+		loop_start = #current_chat - settings.log_length
 		loop_end = #current_chat
 		if scroll_start then
 			loop_start = scroll_start
