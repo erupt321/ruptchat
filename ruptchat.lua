@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.4.062920.1'
+_addon.version = '0.4.062920.2'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -98,7 +98,6 @@ require 'tables'
 require 'sets'
 require 'chat'
 require('coroutine')
-res = require('resources')
 files = require('files')
 texts = require('texts')
 config = require('config')
@@ -224,11 +223,11 @@ texts.pad(t3,5)
 chat_debug = false
 
 function split(s, delimiter)
-    result = {};
+    result = {}
     for match in (s..delimiter):gmatch("(.-)"..delimiter) do
-        table.insert(result, match);
+        table.insert(result, match)
     end
-    return result;
+    return result
 end
 
 function cht_date()
@@ -245,7 +244,6 @@ function valid_tab(tab)
 	return false
 end
 
-cur_map = 1
 image_map = {}
 
 function build_maps()
@@ -259,39 +257,39 @@ function build_maps()
 		
 	x_scale = texts.size(t) * x_base
 	y_scale = texts.size(t) * y_base
-	image_map[0] = { ['x_start'] = 0, ['x_end'] = x_scale, ['y_start'] = -10, ['y_end'] = y_scale}
-	image_map[0].action = function()
+	image_map[1] = { ['x_start'] = 0, ['x_end'] = x_scale, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[1].action = function()
 		menu('All','')
 	end
-	image_map[1] = { ['x_start'] = x_scale+1, ['x_end'] = x_scale*2, ['y_start'] = -10, ['y_end'] = y_scale}
-	image_map[1].action = function()
+	image_map[2] = { ['x_start'] = x_scale+1, ['x_end'] = x_scale*2, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[2].action = function()
 		menu('Tell','')
 	end
-	image_map[2] = { ['x_start'] = image_map[1].x_end+1, ['x_end'] = x_scale*3, ['y_start'] = -10, ['y_end'] = y_scale}
-	image_map[2].action = function()
+	image_map[3] = { ['x_start'] = image_map[2].x_end+1, ['x_end'] = x_scale*3, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[3].action = function()
 		menu('Linkshell','')
 	end
-	image_map[3] = { ['x_start'] = image_map[2].x_end+1, ['x_end'] = x_scale*4, ['y_start'] = -10, ['y_end'] = y_scale}
-	image_map[3].action = function()
+	image_map[4] = { ['x_start'] = image_map[3].x_end+1, ['x_end'] = x_scale*4, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[4].action = function()
 		menu('Linkshell2','')
 	end
-	image_map[4] = { ['x_start'] = image_map[3].x_end+1, ['x_end'] = x_scale*5, ['y_start'] = -10, ['y_end'] = y_scale}
-	image_map[4].action = function()
+	image_map[5] = { ['x_start'] = image_map[4].x_end+1, ['x_end'] = x_scale*5, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[5].action = function()
 		menu('Party','')
 	end
-	image_map[5] = { ['x_start'] = image_map[4].x_end+1, ['x_end'] = x_scale*6, ['y_start'] = -10, ['y_end'] = y_scale}
-	image_map[5].action = function()
+	image_map[6] = { ['x_start'] = image_map[5].x_end+1, ['x_end'] = x_scale*6, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[6].action = function()
 		menu('Battle','')
 	end
 	settings.window_visible = true
-	image_map[6] = { ['x_start'] = image_map[5].x_end+1, ['x_end'] = x_scale*6.8, ['y_start'] = 0, ['y_end'] = y_scale}
-	image_map[6].action = function()
+	image_map[7] = { ['x_start'] = image_map[6].x_end+1, ['x_end'] = x_scale*6.8, ['y_start'] = 0, ['y_end'] = y_scale}
+	image_map[7].action = function()
 		if settings.window_visible then settings.window_visible = false else settings.window_visible = true end
 		config.save(settings, windower.ffxi.get_player().name)
 		reload_text()
 	end
-	image_map[7] = { ['x_start'] = 0, ['x_end'] = x_scale*1.5, ['y_start'] = y_scale+1, ['y_end'] = y_scale*2}
-	image_map[7].action = function()
+	image_map[8] = { ['x_start'] = 0, ['x_end'] = x_scale*1.5, ['y_start'] = y_scale+1, ['y_end'] = y_scale*2}
+	image_map[8].action = function()
 		menu('Bottom','')
 	end
 end
@@ -325,9 +323,12 @@ end
 start_map = #image_map
 new_text_header = ''
 new_text = ''
+
 function header()
-	if not font_wrap_sizes[texts.font(t):lower()] then
-		font_wrap_sizes[texts.font(t):lower()] = { 1.9,0.8,1,1 }
+	local cur_font = texts.font(t):lower()
+	
+	if not font_wrap_sizes[cur_font] then
+		font_wrap_sizes[cur_font] = { 1.9,0.8,1,1 }
 	end
 	if current_tab == 'Tell' or current_tab == 'All' then chat_log_env['last_seen'] = os.time() end
 	if chat_log_env['mention_found'] and current_tab == chat_log_env['last_mention_tab'] then
@@ -398,7 +399,9 @@ function header()
 		new_text_header = new_text_header..'\n'
 	end
 	load_chat_tab(chat_log_env['scroll_num'],'main')
-	if settings.undocked_window then load_chat_tab(0,'undocked') end
+	if settings.undocked_window then 
+		load_chat_tab(0,'undocked')
+	end
 end
 
 function convert_text(txt,tab_style)
@@ -414,21 +417,24 @@ function convert_text(txt,tab_style)
 		timestamp = os.date('%X',matches[1])
 		txt = matches[2]
 	end
-	txt = txt:strip_format()
 	txt = timestamp..':'..txt
-	if string.len(txt) > settings.log_width then
+	local slen = string.len
+	local ssub = string.sub
+	local sgsub = string.gsub
+	local log_width = settings.log_width
+	if slen(txt) > log_width then
 		local wrap_tmp = ""
 		local wrap_cnt = 0
 		for w in txt:gmatch("([^%s]+)") do
-			cur_len = string.len(w)
-			if cur_len > settings.log_width then
-				end_len = (settings.log_width*font_wrap_sizes[texts.font(t):lower()][2]) - wrap_cnt
-				suffix = string.sub(w,end_len+1)
-				wrap_tmp = wrap_tmp..' '..string.sub(w,1,end_len)..'\n'..suffix
-				wrap_cnt = string.len(suffix)
+			cur_len = slen(w)
+			if cur_len > log_width then
+				end_len = (log_width*font_wrap_sizes[texts.font(t):lower()][2]) - wrap_cnt
+				suffix = ssub(w,end_len+1)
+				wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
+				wrap_cnt = slen(suffix)
 			else
 				wrap_cnt = wrap_cnt+(cur_len+1)
-				if wrap_cnt < settings.log_width then
+				if wrap_cnt < log_width then
 					wrap_tmp = wrap_tmp..' '..w
 				else
 					wrap_cnt = 0
@@ -440,25 +446,21 @@ function convert_text(txt,tab_style)
 			txt = wrap_tmp
 		end
 	end
-	txt = string.gsub(txt,'^ ','')
-	txt = string.gsub(txt,'[^%z\1-\127]','')
---		print(T(tab_styles[id]):tovstring()..' Table Size: '..#tab_styles[id])
+	txt = sgsub(txt,'^ ','')
+	txt = sgsub(txt,'[^%z\1-\127]','')
 	if tab_styles[id] then
 		styles = tab_styles[id]
-		--print('ID: '..id..' Msg: '..txt)
 		for i=1,#styles,2 do
-
-			txt = string.gsub(txt,styles[i],styles[i+1])
+			txt = sgsub(txt,styles[i],styles[i+1])
 		end
 	else
 		if battle_ids[id] then
-			--print('ID: '..id..' Msg: '..txt)
 			styles = tab_styles['battle']
 		else
 			styles = tab_styles['default']
 		end
 		for i=1,#styles,2 do
-			txt = string.gsub(txt,styles[i],styles[i+1])
+			txt = sgsub(txt,styles[i],styles[i+1])
 		end
 	end
 	return txt
@@ -575,6 +577,7 @@ windower.register_event('keyboard', function(dik,pressed,flags,blocked)
 		end
 	end
 end)
+
 windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
     hovered = texts.hover(t,x,y)
     if blocked then
@@ -602,27 +605,17 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			end
         end
     elseif eventtype == 1 then
-		v = image_map[0]
-		if (x < texts.pos_x(t)+v.x_end and x > texts.pos_x(t)+v.x_start) and (y > texts.pos_y(t)+v.y_start and y < texts.pos_y(t)+v.y_end) then
-			cur_map = 0
-			v[1] = cur_map
-			v.action()
-			return true
-		else
+		local pos_x = texts.pos_x(t)
+		local pos_y = texts.pos_y(t)
 		for i,v in ipairs(image_map) do
-			if (x < texts.pos_x(t)+v.x_end and x > texts.pos_x(t)+v.x_start) and (y > texts.pos_y(t)+v.y_start and y < texts.pos_y(t)+v.y_end) then
-				cur_map = i-start_map
-				v[1] = cur_map
+			if (x < pos_x+v.x_end and x > pos_x+v.x_start) and (y > pos_y+v.y_start and y < pos_y+v.y_end) then
 				v.action()
 				return true
 			end
 		end
 		if hovered then
-			local pos_x = texts.pos_x(t)
-			local pos_y = texts.pos_y(t)
 			if settings.drag_status then dragged = {text = t, x = x - pos_x, y = y - pos_y} end
 			return true
-		end
 		end
     elseif eventtype == 2 then
 		if hovered then
@@ -664,7 +657,6 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 						chat_log_env['scrolling'] = true
 					end
 				end
---				print('Last Scroll: '..last_scroll..' Table Length: '..#current_chat..' / '..(#current_chat - settings.log_length))
 				reload_text()
 			end
 			return true
@@ -683,12 +675,13 @@ function write_db()
 	print('Saving Chatlog')
 	local temp_table = {}
 	--Prune Battle_Log
+	local tinsert = table.insert
 	for i,v in ipairs(chat_tables['All']) do
 		local id = windower.regex.match(v,'[0-9]+:([0-9]+):') or false
 		if (id and id[1] and id[1][1] and battle_ids[tonumber(id[1][1])] == true) or string.sub(v,1,2) == '**' then
 --			table.insert(battle_table,v)
 		else
-			table.insert(temp_table,v)
+			tinsert(temp_table,v)
 		end
 	end
 	chat_tables['All'] = nil
@@ -701,7 +694,7 @@ function write_db()
 			--print('Pruning table: '..i..' Has '..#v..' / '..max_length)
 			temp_table = {}
 			for j=#v-max_length,#v,1 do
-				table.insert(temp_table,v[j])
+				tinsert(temp_table,v[j])
 			end
 			chat_tables[i] = temp_table
 			--print('Table chat_tables['..i..'] = '..#chat_tables[i]..' now.')
@@ -729,7 +722,6 @@ function addon_command(...)
     local cmd = args[1]
 	args:remove(1)
 	local args_joined = table.concat(args," ")
-	local zone = res.zones[windower.ffxi.get_info().zone].en
     if cmd then
 		if cmd == 'find' then
 			menu('find',args_joined)
@@ -923,8 +915,9 @@ function find_next(c)
 	end	
 	find_table['last_index'] = loop_start
 	chat_log_env['finding'] = true
+	local sfind = string.find
 	for i=loop_start,1,-1 do
-		if string.find(current_table[i]:lower(),c) then
+		if sfind(current_table[i]:lower(),c) then
 			if find_table['last_index'] > i then
 				find_table['last_index'] = i
 				return i
@@ -1078,13 +1071,17 @@ function check_mentions(id, chat)
 	elseif tab_ids[tostring(id)] then
 		chat_type = tab_ids[tostring(id)]
 	end
+	local sfind = string.find
 	if #T(settings.mentions['All']) > 0 then
 		local stripped = string.gsub(chat,'[^A-Za-z%s]','')
 		local splitted = split(stripped,' ')
+		local chat_low = chat:lower()
+		local player_name = windower.ffxi.get_player().name:lower()
 		for v in settings.mentions['All']:it() do
-			if  string.find(chat:lower(),v:lower())then
-				if v:lower() == windower.ffxi.get_player().name:lower() then
-					if splitted[1] and splitted[1]:lower() == v:lower() then
+			v = v:lower()
+			if sfind(chat_low,v)then
+				if v == player_name then
+					if splitted[1] and splitted[1]:lower() == v then
 						return
 					end
 				end
@@ -1098,8 +1095,18 @@ function check_mentions(id, chat)
 		end
 	end
 	if chat_type and #T(settings.mentions[chat_type]) > 0 then
+		local stripped = string.gsub(chat,'[^A-Za-z%s]','')
+		local splitted = split(stripped,' ')
+		local chat_low = chat:lower()
+		local player_name = windower.ffxi.get_player().name:lower()
 		for v in settings.mentions[chat_type]:it() do
-			if string.find(chat:lower(),v:lower()) then
+			v = v:lower()
+			if sfind(chat_low,v) then
+				if v == player_name then
+					if splitted[1] and splitted[1]:lower() == v then
+						return
+					end
+				end
 				chat_log_env['mention_found'] = true
 				chat_log_env['mention_count'] = 1
 				chat_log_env['last_mention_tab'] = chat_type
@@ -1122,12 +1129,11 @@ function chat_add(id, chat)
 		chat_tables['All'] = {}
 	end
 	if chat_debug then print('ID: '..id..' Txt: '..chat) end
-	chat = string.gsub(chat,'[\r\n]','')
-	chat = string.gsub(chat,'',' ')
+	chat = string.gsub(chat,'[\r\n]','')
 	chat = string.gsub(chat,string.char(0x07, 0x0A),'')
 	chat = string.gsub(chat,'"','\"')
-	if battle_ids[id] then
-		if battlemod_loaded and (string.match(chat,'.*scores.*') or string.match(chat,'.*uses.*') or string.match(chat,'.*hits.*') or string.match(chat,'.*spikes deal.*') or string.find(chat,'misses') or string.find(chat,'cures')) then
+	if battle_ids[id] then  -- Duplicated messages that battlemod has it's own variants of
+		if battlemod_loaded and (string.find(chat,'scores.') or string.find(chat,'uses') or string.find(chat,'hits') or string.match(chat,'.*spikes deal.*') or string.find(chat,'misses') or string.find(chat,'cures') or string.find(chat,'additional')) then
 				return
 		end
 		local battle_text = convert_text(os.time()..':'..id..':'..chat,'Battle')
@@ -1139,8 +1145,9 @@ function chat_add(id, chat)
 	else
 		table.insert(chat_tables['All'],os.time()..':'..id..':'..chat)
 	end
-	if tab_ids[tostring(id)] then
-		local chat_type = tab_ids[tostring(id)]
+	local tab_id = tab_ids[tostring(id)] or false
+	if tab_id then
+		local chat_type = tab_id
 		if not chat_tables[chat_type] then chat_tables[chat_type] = {} end
 		table.insert(chat_tables[chat_type],os.time()..':'..id..':'..chat)
 	end
@@ -1171,11 +1178,15 @@ function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 		-- cancel logging battle text
 	else
 		if not filter_ids[id] then 
-			if not battlemod_loaded then modified = original end
+			if not battlemod_loaded then 
+				modified = original 
+			end
 			modified = string.gsub(modified,'[\r\n]','')
 			modified = string.gsub(modified,'[\\]+$','')
 			chat_add(id,modified)
-			if not chat_log_env['scrolling'] then reload_text() end
+			if not chat_log_env['scrolling'] then 
+				reload_text() 
+			end
 		end
 	end
 	if settings.incoming_pause then
@@ -1192,14 +1203,18 @@ windower.register_event('addon command', addon_command)
 
 incoming_text = false
 function load_events()
-	if not incoming_text then incoming_text = windower.register_event('incoming text',process_incoming_text) end
+	if not incoming_text then 
+		incoming_text = windower.register_event('incoming text',process_incoming_text)
+	end
 	header()
 	t:visible(true)
 	reload_text()
-	t2:pos(texts.pos_x(t), (texts.pos_y(t)-20))
+	local t_pos_x = texts.pos_x(t)
+	local t_pos_y = texts.pos_y(t)
+	t2:pos(t_pos_x, (t_pos_y-20))
 	coroutine.sleep(1)
 	boundries = {texts.extents(t)}
-	t3:pos((boundries[1]+texts.pos_x(t)+2),texts.pos_y(t))
+	t3:pos((boundries[1]+t_pos_x+2),t_pos_y)
 end
 
 function unload_events()
