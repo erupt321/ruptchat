@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.4.062920.2'
+_addon.version = '0.4.063020.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -48,6 +48,8 @@ Console Commands
 
 //rchat width <Log Width>  (Change log width size; when wordwrap should take effect)
 
+//rchat dwidth <Undocked Width> (Same as Log Width, if set to 0 will use Log_Width settings)
+
 //rchat strict_width (Toggle maintaining the max log width; avoid box shrinking and expanding)
 
 //rchat string_length (Toggle maintaining the log length)
@@ -55,6 +57,8 @@ Console Commands
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
 //rchat undock [tab name] (Opens a second dedicated chat window for that tab, off if empty)
+
+//rchat snapback (When enabled the undocked window will follow your main window)
 
 //rchat battle_all (Toggle Battle Chat showing in the All tab)
 
@@ -175,6 +179,7 @@ find_table = {
 default_settings = {
 	log_length = 12,
 	log_width = 85,
+	log_dwidth = 0, -- 0 Disables and defaults to log_width value
 	battle_all = true, -- Display Battle text in All tab
 	battle_off = false, -- Disable processing Battle text entirely
 	strict_width = false,
@@ -404,24 +409,10 @@ function header()
 	end
 end
 
-function convert_text(txt,tab_style)
-	local line_header = windower.regex.match(txt,'([0-9]+):([0-9]+):(.*)') or false
-	if line_header then
-		matches = line_header[1]
-		timestamp = os.date('%X',matches[1])
-		id = tonumber(matches[2])
-		txt = matches[3]
-	else
-		line_header = windower.regex.match(txt,'([0-9]+):(.*)') or false
-		matches = line_header[1]
-		timestamp = os.date('%X',matches[1])
-		txt = matches[2]
-	end
-	txt = timestamp..':'..txt
+function wrap_text(txt,log_width)
 	local slen = string.len
 	local ssub = string.sub
 	local sgsub = string.gsub
-	local log_width = settings.log_width
 	if slen(txt) > log_width then
 		local wrap_tmp = ""
 		local wrap_cnt = 0
@@ -446,6 +437,58 @@ function convert_text(txt,tab_style)
 			txt = wrap_tmp
 		end
 	end
+	return txt
+end
+
+function convert_text(txt,tab_style)
+	local line_header = windower.regex.match(txt,'([0-9]+):([0-9]+):(.*)') or false
+	if line_header then
+		matches = line_header[1]
+		timestamp = os.date('%X',matches[1])
+		id = tonumber(matches[2])
+		txt = matches[3]
+	else
+		line_header = windower.regex.match(txt,'([0-9]+):(.*)') or false
+		matches = line_header[1]
+		timestamp = os.date('%X',matches[1])
+		txt = matches[2]
+	end
+	txt = timestamp..':'..txt
+	local slen = string.len
+	local ssub = string.sub
+	local sgsub = string.gsub
+	if tab_style == 'main' or settings.log_dwidth == 0 then 
+		log_width = settings.log_width
+	else
+		log_width = settings.log_dwidth
+	end
+	txt = wrap_text(txt,log_width)
+	--[[
+	if slen(txt) > log_width then
+		local wrap_tmp = ""
+		local wrap_cnt = 0
+		for w in txt:gmatch("([^%s]+)") do
+			cur_len = slen(w)
+			if cur_len > log_width then
+				end_len = (log_width*font_wrap_sizes[texts.font(t):lower()][2]) - wrap_cnt
+				suffix = ssub(w,end_len+1)
+				wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
+				wrap_cnt = slen(suffix)
+			else
+				wrap_cnt = wrap_cnt+(cur_len+1)
+				if wrap_cnt < log_width then
+					wrap_tmp = wrap_tmp..' '..w
+				else
+					wrap_cnt = 0
+					wrap_tmp = wrap_tmp..'\n'..w
+				end
+			end
+		end
+		if wrap_tmp ~= "" then
+			txt = wrap_tmp
+		end
+	end
+	--]]
 	txt = sgsub(txt,'^ ','')
 	txt = sgsub(txt,'[^%z\1-\127]','')
 	if tab_styles[id] then
@@ -511,6 +554,18 @@ function load_chat_tab(scroll_start,window)
 			if count >= loop_count then
 				if settings.strict_length then
 					broke_free = true
+					if window ~= 'main' and settings.log_dwidth > 0 then
+						temp_table = prev_table
+						_,count2 = temp_table:gsub('[\r\n]','')
+						local new_lines = loop_count - count2
+						local new_line = ''
+						if new_lines > 0 then
+							for i=1,new_lines, 1 do
+								new_line = new_line..'\n'
+							end
+						end
+						temp_table = new_line..temp_table
+					end
 				end
 				break
 			end
@@ -524,9 +579,14 @@ function load_chat_tab(scroll_start,window)
 				temp_table = current_chat[i]..'\n'..temp_table
 			else
 				if string.sub(current_chat[i],1,2) == '**' then --preformatted on addition to 'All'
-					temp_table = string.sub(current_chat[i],3)..'\n'..temp_table
+					if window ~= 'main' and settings.log_dwidth > 0 then
+						temp_table = wrap_text(string.sub(current_chat[i],3),settings.log_dwidth+20)..'\n'..temp_table
+					else 
+						temp_table = wrap_text(string.sub(current_chat[i],3),settings.log_width+20)..'\n'..temp_table
+					end
+--					temp_table = string.sub(current_chat[i],3)..'\n'..temp_table
 				else
-					temp_table = convert_text(current_chat[i],tab)..'\n'..temp_table
+					temp_table = convert_text(current_chat[i],window)..'\n'..temp_table
 				end
 			end
 		end
@@ -588,13 +648,18 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			if chat_debug then
 				local boundry_table = {texts.extents(t)}
 				local x_boundry = boundry_table[1]+texts.pos_x(t)
-				local y_boundry = boundry_table[1]+texts.pos_y(t)
+				local y_boundry = boundry_table[2]+texts.pos_y(t)
 				t2:text("Mouse X: \\cs(0,255,0)"..x.."/"..texts.pos_x(t).."\\cr Y: \\cs(0,255,0)"..y.."/"..texts.pos_y(t).."\\cr Extents: "..x_boundry..' / '..y_boundry)
 				t2:visible(true)
 			end
 			if dragged then
 				dragged.text:pos(x - dragged.x, y - dragged.y)
 				t2:pos(x - dragged.x, (y - dragged.y)-20)
+				if settings.snapback then
+					local boundry_table = {texts.extents(t)}
+					local x_boundry = boundry_table[1]+texts.pos_x(t)+2
+					t3:pos(x_boundry,texts.pos_y(t))
+				end
 				return true
 			end
 
@@ -758,6 +823,14 @@ function addon_command(...)
 			else
 				log('Missing or invalid argument')
 			end
+		elseif cmd == 'dwidth' then
+			if args[1] and tonumber(args[1]) then
+				settings.log_dwidth = tonumber(args[1])
+				config.save(settings, windower.ffxi.get_player().name)
+				reload_text()
+			else
+				log('Missing or invalid argument')
+			end
 		elseif cmd == 'tab' then
 			if args[1] and valid_tab(args[1]) then
 				menu(args[1]:sub(1,1):upper()..args[1]:sub(2):lower(),'')
@@ -820,6 +893,18 @@ function addon_command(...)
 				config.save(settings, windower.ffxi.get_player().name)
 			end
 			reload_text()
+		elseif cmd == 'snapback' then
+			if settings.snapback then
+				log('Setting snapback to false')
+				settings.snapback = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting snapback to true')
+				settings.snapback = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+			boundries = {texts.extents(t)}
+			t3:pos((boundries[1]+t_pos_x+2),t_pos_y)
 		elseif cmd == 'incoming_pause' then
 			if settings.incoming_pause then
 				log('Setting incoming_pause to false')
@@ -933,7 +1018,7 @@ function reset_tab()
 	find_table['last_find'] = false
 	find_table['last_index'] = 1
 	chat_log_env['finding'] = false
-	image_map[7].action = function()
+	image_map[8].action = function()
 	menu('Bottom','')
 	end
 end

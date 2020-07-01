@@ -8,6 +8,18 @@ for the text.
 
 **Changelog**
 
+
+	__06.30.20__
+	Added log_dwidth, which forces a different width setting on your undocked window so you can
+	have mixed window sizes to suit your screen setup.
+	Added snapback which will force the docked window to follow your main window whenever you drag
+	the main.  You can still move around the undocked while this is enable and it will not snapback
+	until the main window is dragged.
+
+	__06.29.20__
+	Added strict_length, which is the same concept as switch_width but forces logs to never
+	change text box length.
+
 	__06.28.20__
 	Made some more filter changes and added some more id's to the incoming pause list.
 	
@@ -75,6 +87,8 @@ for the text.
 	//rchat length <Log Length> (Change log length size)
 
 	//rchat width <Log Width>  (Change log width size; when wordwrap should take effect)
+	
+	//rchat dwidth <Undocked Width> (Same as Log Width, if set to 0 will use Log_Width settings)
 		
 	//rchat strict_width (Toggle maintaining the max log width; avoid box shrinking and expanding)
 
@@ -83,6 +97,8 @@ for the text.
 	//rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
 	//rchat undock [tab name] (Opens a second dedicated chat window for that tab, off if empty)
+	
+	//rchat snapback (When enabled the undocked window will follow your main window
 	
 	//rchat battle_all (Toggle Battle Chat showing in the All tab)
 
