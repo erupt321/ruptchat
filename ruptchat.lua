@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.4.063020.1'
+_addon.version = '0.4.070120.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -951,7 +951,7 @@ function addon_command(...)
 				log(terms..' Already added to tab ['..tab..']')
 				return
 			end
-				settings.mentions[tab]:add(terms)
+				settings.mentions[tab]:add(terms:lower())
 				config.save(settings, windower.ffxi.get_player().name)
 				log(terms..' Added to tab ['..tab..']')
 		elseif cmd == 'delmention' then
@@ -972,7 +972,7 @@ function addon_command(...)
 				log(terms..' not on tab ['..tab..']')
 				return
 			end
-				settings.mentions[tab]:remove(terms)
+				settings.mentions[tab]:remove(terms:lower())
 				config.save(settings, windower.ffxi.get_player().name)
 				log(terms..' Removed to tab ['..tab..']')
 		elseif cmd == 'show' then
