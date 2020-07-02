@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.4.070120.3'
+_addon.version = '0.4.070220.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -43,6 +43,16 @@ Console Commands
 //rchat size <font size> (Change font size, this will increase whole window size)
 
 //rchat font <font name> (Change font, some fonts that are grossly different sizes will affect clickables)
+
+//rchat stroke_alpha <0-255> (Change text stroke transparency)
+
+//rchat stroke_width <0-10> (Change stroke size)
+
+//rchat stroke_color <#r> <#g> <#b>  (Change stroke color)
+
+//rchat size <font size> (Change font size, this will increase whole window size)
+
+//rchat size <font size> (Change font size, this will increase whole window size)
 
 //rchat length <Log Length> (Change log length size)
 
@@ -768,6 +778,22 @@ function addon_command(...)
 			texts.bg_alpha(t, tonumber(args[1]))
 			texts.bg_alpha(t3, tonumber(args[1]))
 			settings.bg_alpha = tonumber(args[1])
+			config.save(settings, windower.ffxi.get_player().name)
+		elseif cmd == 'stroke_width' then
+			texts.stroke_width(t, tonumber(args[1]))
+			texts.stroke_width(t3, tonumber(args[1]))
+			config.save(settings, windower.ffxi.get_player().name)
+		elseif cmd == 'stroke_color' then
+			if #args > 3 then
+				log('Missing a Color')
+				return
+			end
+			texts.stroke_color(t, tonumber(args[1]),tonumber(args[2]),tonumber(args[3]))
+			texts.stroke_color(t3, tonumber(args[1]),tonumber(args[2]),tonumber(args[3]))
+			config.save(settings, windower.ffxi.get_player().name)
+		elseif cmd == 'stroke_alpha' then
+			texts.stroke_alpha(t, tonumber(args[1]))
+			texts.stroke_alpha(t3, tonumber(args[1]))
 			config.save(settings, windower.ffxi.get_player().name)
 		elseif cmd == 'size' then
 			texts.size(t, tonumber(args[1]))

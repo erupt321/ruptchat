@@ -89,6 +89,12 @@ for the text.
 	//rchat size <font size> (Change font size, this will increase whole window size)
 	
 	//rchat font <font name> (Change font, some fonts that are grossly different sizes will affect clickables)
+	
+	//rchat stroke_alpha <0-255> (Change text stroke transparency)
+
+	//rchat stroke_width <0-10> (Change stroke size)
+
+	//rchat stroke_color <#r> <#g> <#b>  (Change stroke color)
 
 	//rchat length <Log Length> (Change log length size)
 
