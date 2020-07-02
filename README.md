@@ -8,6 +8,12 @@ for the text.
 
 **Changelog**
 
+	__07.01_20__
+	Fixed mentions and redid some of it's processing features, if you have a docked window up for the tab
+	being mentioned it will not display it.  For 'All' mention tracking it always displays the alert and 
+	will go away when you have a 'All' tab opened for at least 5 log inputs.  For mentions on other tabs
+	the mention will go away as soon as you click on the tab.  Fixed some issues where mentions were 
+	coming up from the wrong tabs input.
 
 	__06.30.20__
 	Added log_dwidth, which forces a different width setting on your undocked window so you can
