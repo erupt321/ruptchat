@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.4.070120.2'
+_addon.version = '0.4.070120.3'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -336,7 +336,7 @@ function header()
 		font_wrap_sizes[cur_font] = { 1.9,0.8,1,1 }
 	end
 	if current_tab == 'Tell' or current_tab == 'All' then chat_log_env['last_seen'] = os.time() end
-	if chat_log_env['mention_found'] and current_tab == chat_log_env['last_mention_tab'] then
+	if chat_log_env['mention_found'] and (current_tab == chat_log_env['last_mention_tab'] or (settings.undocked_window and settings.undocked_tab == chat_log_env['last_mention_tab'])) then
 		if chat_log_env['mention_count'] > 4 then
 			chat_log_env['mention_found'] = false
 		else
@@ -463,32 +463,6 @@ function convert_text(txt,tab_style)
 		log_width = settings.log_dwidth
 	end
 	txt = wrap_text(txt,log_width)
-	--[[
-	if slen(txt) > log_width then
-		local wrap_tmp = ""
-		local wrap_cnt = 0
-		for w in txt:gmatch("([^%s]+)") do
-			cur_len = slen(w)
-			if cur_len > log_width then
-				end_len = (log_width*font_wrap_sizes[texts.font(t):lower()][2]) - wrap_cnt
-				suffix = ssub(w,end_len+1)
-				wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
-				wrap_cnt = slen(suffix)
-			else
-				wrap_cnt = wrap_cnt+(cur_len+1)
-				if wrap_cnt < log_width then
-					wrap_tmp = wrap_tmp..' '..w
-				else
-					wrap_cnt = 0
-					wrap_tmp = wrap_tmp..'\n'..w
-				end
-			end
-		end
-		if wrap_tmp ~= "" then
-			txt = wrap_tmp
-		end
-	end
-	--]]
 	txt = sgsub(txt,'^ ','')
 	txt = sgsub(txt,'[^%z\1-\127]','')
 	if tab_styles[id] then
@@ -1024,6 +998,12 @@ function reset_tab()
 	end
 end
 
+function mention_check()
+	if chat_log_env['mention_found'] and current_tab == chat_log_env['last_mention_tab'] then
+		chat_log_env['mention_found'] = false
+	end
+end
+
 function menu(menuname,c)
 		local player = windower.ffxi.get_player()
 		local pos = windower.ffxi.get_mob_by_target('me')
@@ -1036,6 +1016,7 @@ function menu(menuname,c)
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
+			mention_check()
 			reload_text()
 		elseif menuname == 'Tell' then
 			if alt_down then
@@ -1046,6 +1027,7 @@ function menu(menuname,c)
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
+			mention_check()
 			reload_text()
 		elseif menuname == 'Linkshell' then
 			if alt_down then
@@ -1056,6 +1038,7 @@ function menu(menuname,c)
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
+			mention_check()
 			reload_text()
 		elseif menuname == 'Linkshell2' then
 			if alt_down then
@@ -1066,6 +1049,7 @@ function menu(menuname,c)
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
+			mention_check()
 			reload_text()
 		elseif menuname == 'Party' then
 			if alt_down then
@@ -1076,6 +1060,7 @@ function menu(menuname,c)
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
+			mention_check()
 			reload_text()
 		elseif menuname == 'Battle' then
 			if alt_down then
@@ -1085,6 +1070,7 @@ function menu(menuname,c)
 			current_tab = 'Battle'
 			reset_tab()
 			last_scroll = #battle_table - settings.log_length
+			mention_check()
 			reload_text()
 		elseif menuname == 'Bottom' then
 			chat_log_env['scrolling'] = false
@@ -1158,6 +1144,7 @@ function check_mentions(id, chat)
 		chat_type = tab_ids[tostring(id)]
 	end
 	local sfind = string.find
+	if not (chat_type == 'Battle' and settings.battle_all == false) then
 	if #T(settings.mentions['All']) > 0 then
 		local stripped = string.gsub(chat,'[^A-Za-z%s]','')
 		local splitted = split(stripped,' ')
@@ -1174,13 +1161,18 @@ function check_mentions(id, chat)
 				chat_log_env['mention_found'] = true
 				chat_log_env['mention_count'] = 1
 				chat_log_env['last_mention_tab'] = 'All'
+				print('Undocked: '..settings.undocked_tab)
 				t2:text("New Mention @ \\cs(255,69,0)All\\cr: \\cs(0,255,0)"..v.."\\cr")
 				t2:visible(true)
 				return
 			end
 		end
 	end
-	if chat_type and #T(settings.mentions[chat_type]) > 0 then
+	end
+	if chat_type and #T(settings.mentions[chat_type]) > 0 and current_tab ~= chat_type then
+		if settings.undocked_window and settings.undocked_tab == chat_type then
+			return
+		end
 		local stripped = string.gsub(chat,'[^A-Za-z%s]','')
 		local splitted = split(stripped,' ')
 		local chat_low = chat:lower()
