@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.4.070120.1'
+_addon.version = '0.4.070120.2'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -158,15 +158,15 @@ battle_table = {}
 -- for some just changing your //rchat width will get you more mileage.
 
 font_wrap_sizes = { -- Defaults to 1.9,0.8,1,1 if no font profile found
-	['arial'] = { 1.75,1,1,1 },
-	['microsoft sans serif'] = { 1.8,0.9,1,1 },
-	['chiller'] = { 1.3,0.8,0.92,1.5 },
-	['corbel'] = { 1.95 ,0.8,0.91,1.7 },
+	['arial'] = { 1.75,1,1,1.4 },
+	['microsoft sans serif'] = { 1.8,0.9,1,1.4 },
+	['chiller'] = { 1.4,0.7,0.92,1.5 },
+	['corbel'] = { 1.90 ,0.5,0.91,1.7 },
 	['papyrus'] = { 2.02,0.4,0.99,1.6},
 	['verdana'] = { 1.6,0.8,1.26,1.6},
 	['poor richard'] = { 2.0,0.50,0.85,1.5},
-	['book antiqua'] = { 1.75,0.8,1.05,1.5},
-	['unispace'] = { 1.27,1.2,1.9,1.5},
+	['book antiqua'] = { 1.75,0.7,1.05,1.5},
+	['unispace'] = { 1.2,1.2,1.9,1.5},
 }
 
 
@@ -262,27 +262,27 @@ function build_maps()
 		
 	x_scale = texts.size(t) * x_base
 	y_scale = texts.size(t) * y_base
-	image_map[1] = { ['x_start'] = 0, ['x_end'] = x_scale, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[1] = { ['x_start'] = 0, ['x_end'] = x_scale, ['y_start'] = 0, ['y_end'] = y_scale}
 	image_map[1].action = function()
 		menu('All','')
 	end
-	image_map[2] = { ['x_start'] = x_scale+1, ['x_end'] = x_scale*2, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[2] = { ['x_start'] = x_scale+1, ['x_end'] = x_scale*2, ['y_start'] = 0, ['y_end'] = y_scale}
 	image_map[2].action = function()
 		menu('Tell','')
 	end
-	image_map[3] = { ['x_start'] = image_map[2].x_end+1, ['x_end'] = x_scale*3, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[3] = { ['x_start'] = image_map[2].x_end+1, ['x_end'] = x_scale*3, ['y_start'] = 0, ['y_end'] = y_scale}
 	image_map[3].action = function()
 		menu('Linkshell','')
 	end
-	image_map[4] = { ['x_start'] = image_map[3].x_end+1, ['x_end'] = x_scale*4, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[4] = { ['x_start'] = image_map[3].x_end+1, ['x_end'] = x_scale*4, ['y_start'] = 0, ['y_end'] = y_scale}
 	image_map[4].action = function()
 		menu('Linkshell2','')
 	end
-	image_map[5] = { ['x_start'] = image_map[4].x_end+1, ['x_end'] = x_scale*5, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[5] = { ['x_start'] = image_map[4].x_end+1, ['x_end'] = x_scale*5, ['y_start'] = 0, ['y_end'] = y_scale}
 	image_map[5].action = function()
 		menu('Party','')
 	end
-	image_map[6] = { ['x_start'] = image_map[5].x_end+1, ['x_end'] = x_scale*6, ['y_start'] = -10, ['y_end'] = y_scale}
+	image_map[6] = { ['x_start'] = image_map[5].x_end+1, ['x_end'] = x_scale*6, ['y_start'] = 0, ['y_end'] = y_scale}
 	image_map[6].action = function()
 		menu('Battle','')
 	end
@@ -428,7 +428,7 @@ function wrap_text(txt,log_width)
 				if wrap_cnt < log_width then
 					wrap_tmp = wrap_tmp..' '..w
 				else
-					wrap_cnt = 0
+					wrap_cnt = 10
 					wrap_tmp = wrap_tmp..'\n'..w
 				end
 			end
@@ -904,6 +904,7 @@ function addon_command(...)
 				config.save(settings, windower.ffxi.get_player().name)
 			end
 			boundries = {texts.extents(t)}
+			local t_pos_x = texts.pos_x(t)
 			t3:pos((boundries[1]+t_pos_x+2),t_pos_y)
 		elseif cmd == 'incoming_pause' then
 			if settings.incoming_pause then
@@ -1300,6 +1301,7 @@ function load_events()
 	coroutine.sleep(1)
 	boundries = {texts.extents(t)}
 	t3:pos((boundries[1]+t_pos_x+2),t_pos_y)
+	build_maps()
 end
 
 function unload_events()
