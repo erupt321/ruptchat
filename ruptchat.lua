@@ -1319,6 +1319,9 @@ function load_events()
 	coroutine.sleep(1)
 	boundries = {texts.extents(t)}
 	t3:pos((boundries[1]+t_pos_x+2),t_pos_y)
+	t3:stroke_width(texts.stroke_width(t))
+	t3:stroke_alpha(texts.stroke_alpha(t))
+	t3:stroke_color(texts.stroke_color(t))
 	build_maps()
 end
 
