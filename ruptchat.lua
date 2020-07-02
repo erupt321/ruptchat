@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.4.070220.1'
+_addon.version = '0.5.070220.2'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -73,6 +73,8 @@ Console Commands
 //rchat battle_all (Toggle Battle Chat showing in the All tab)
 
 //rchat battle_off (Toggle Battle Chat being process at all; totally off)
+
+//rchat battle_flash (Toggle Battle Messages forced pop on screen with flashing)
 
 //rchat incoming_pause **EXPERIMENTAL** Will turn off vanilla windows receiving chat
 										this will make your chat log vanish which is more
@@ -198,6 +200,7 @@ default_settings = {
 	undocked_tab = 'All',
 	incoming_pause = false,
 	drag_status = true,
+	battle_flash = false,
 	flags = {
 		draggable = false,
 	},
@@ -349,6 +352,7 @@ function header()
 	if chat_log_env['mention_found'] and (current_tab == chat_log_env['last_mention_tab'] or (settings.undocked_window and settings.undocked_tab == chat_log_env['last_mention_tab'])) then
 		if chat_log_env['mention_count'] > 4 then
 			chat_log_env['mention_found'] = false
+			t2:bg_color(0,0,0)
 		else
 			chat_log_env['mention_count'] = chat_log_env['mention_count'] + 1
 		end
@@ -375,6 +379,7 @@ function header()
 						t2:text("New Tell From: \\cs(0,255,0)"..last_from[1][2].."\\cr")
 						t2:visible(true)
 						chat_log_env['mention_found'] = false
+						t2:bg_color(0,0,0)
 						new_text_header = new_text_header..v..'*'..fillspace(leftovers-1)
 					else
 						if not chat_log_env['mention_found'] then
@@ -414,7 +419,7 @@ function header()
 		new_text_header = new_text_header..'\n'
 	end
 	load_chat_tab(chat_log_env['scroll_num'],'main')
-	if settings.undocked_window then 
+	if settings.undocked_window then
 		load_chat_tab(0,'undocked')
 	end
 end
@@ -513,6 +518,9 @@ function load_chat_tab(scroll_start,window)
 		tab = settings.undocked_tab
 		if tab:lower() == 'battle' then
 			current_chat = battle_table
+			if #battle_table < 1 then
+				return
+			end
 		else
 			current_chat = chat_tables[tab]
 		end
@@ -530,12 +538,13 @@ function load_chat_tab(scroll_start,window)
 		end
 	end	
 	local temp_table = ''
+	local prev_table = ''
 	local broke_free = false
 	loop_count = (loop_end - loop_start)-1
 	for i=loop_end,loop_start,-1 do
 		if not chat_log_env['finding'] then
 			_,count = temp_table:gsub('[\r\n]','')
-			if count >= loop_count then
+			if count >= loop_count and prev_table ~= '' then
 				if settings.strict_length then
 					broke_free = true
 					if window ~= 'main' and settings.log_dwidth > 0 then
@@ -871,6 +880,16 @@ function addon_command(...)
 				settings.battle_off = true
 				config.save(settings, windower.ffxi.get_player().name)
 			end
+		elseif cmd == 'battle_flash' then
+			if settings.battle_flash then
+				log('Setting battle_flash to false')
+				settings.battle_flash = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting battle_flash to true')
+				settings.battle_flash = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
 		elseif cmd == 'strict_width' then
 			if settings.strict_off then
 				log('Setting strict_width to false')
@@ -1027,6 +1046,7 @@ end
 function mention_check()
 	if chat_log_env['mention_found'] and current_tab == chat_log_env['last_mention_tab'] then
 		chat_log_env['mention_found'] = false
+		t2:bg_color(0,0,0)
 	end
 end
 
@@ -1195,9 +1215,16 @@ function check_mentions(id, chat)
 		end
 	end
 	end
-	if chat_type and #T(settings.mentions[chat_type]) > 0 and current_tab ~= chat_type then
-		if settings.undocked_window and settings.undocked_tab == chat_type then
-			return
+	if chat_type and #T(settings.mentions[chat_type]) > 0 then
+		if settings.battle_flash and chat_type == 'Battle' then
+			--force this to process if battle_flash is true and this is a battle message
+		else
+			if current_tab == chat_type then
+				return
+			end
+			if settings.undocked_window and settings.undocked_tab == chat_type then
+				return
+			end
 		end
 		local stripped = string.gsub(chat,'[^A-Za-z%s]','')
 		local splitted = split(stripped,' ')
@@ -1214,7 +1241,11 @@ function check_mentions(id, chat)
 				chat_log_env['mention_found'] = true
 				chat_log_env['mention_count'] = 1
 				chat_log_env['last_mention_tab'] = chat_type
-				t2:text("New Mention @ \\cs(255,69,0)"..chat_type.."\\cr: \\cs(0,255,0)"..v.."\\cr")
+				if chat_type == 'Battle' and settings.battle_flash then					
+					t2:text("New Mention @ \\cs(255,69,0)"..chat_type.."\\cr: \\cs(0,255,0)"..v.."\\cr "..stripped)
+				else
+					t2:text("New Mention @ \\cs(255,69,0)"..chat_type.."\\cr: \\cs(0,255,0)"..v.."\\cr")
+				end
 				t2:visible(true)
 				return
 			end
@@ -1233,7 +1264,7 @@ function chat_add(id, chat)
 		chat_tables['All'] = {}
 	end
 	if chat_debug then print('ID: '..id..' Txt: '..chat) end
-	chat = string.gsub(chat,'[\r\n]','')
+	chat = string.gsub(chat,'[\r\n]','')
 	chat = string.gsub(chat,string.char(0x07, 0x0A),'')
 	chat = string.gsub(chat,'"','\"')
 	if battle_ids[id] then  -- Duplicated messages that battlemod has it's own variants of
@@ -1332,6 +1363,11 @@ end
 
 last_save = os.clock()-560
 function save_chat_log()
+	if chat_log_env['mention_found'] and settings.battle_flash then
+		local t = os.clock()%1 -- Flashing colors from Byrth's answering machine
+		t2:bg_color(255,150+100*math.sin(t*math.pi),150+100*math.sin(t*math.pi))
+		t3:bg_color(0,0,0)
+	end
 	if os.clock() > last_save+save_delay then
 		write_db()
 		last_save = os.clock()

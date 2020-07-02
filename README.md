@@ -8,7 +8,16 @@ for the text.
 
 **Changelog**
 
-	__07.01_20__
+	__07.02.20__
+	New setting Battle_flash.  This is a toggle for mentions that have to do with the battle log.
+	If this is enable it'll flash the mention it finds along with the words on that line, this is 
+	useful for abilities, when it's on it also bypasses certain mention properties like ignoring
+	if your currently viewing the battle window.  All other mentions should still work like normal.
+	I'm hoping this will be somewhat how people were wanting monster abilities to alert them.
+	Also fixed some bugs with tabs not loading correctly on a reload, specifically empty tabs.
+	Fixed a battle log style that was showing a [cr on the beginning of the spell cast.
+
+	__07.01.20__
 	Fixed mentions and redid some of it's processing features, if you have a docked window up for the tab
 	being mentioned it will not display it.  For 'All' mention tracking it always displays the alert and 
 	will go away when you have a 'All' tab opened for at least 5 log inputs.  For mentions on other tabs
@@ -115,6 +124,8 @@ for the text.
 	//rchat battle_all (Toggle Battle Chat showing in the All tab)
 
 	//rchat battle_off (Toggle Battle Chat being process at all; totally off)
+
+	//rchat battle_flash (Toggle Battle Messages forced pop on screen with flashing)
 	
 	//rchat incoming_pause **EXPERIMENTAL** 
 	
