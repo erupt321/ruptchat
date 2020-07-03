@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.070220.2'
+_addon.version = '0.5.070220.3'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -350,7 +350,7 @@ function header()
 	end
 	if current_tab == 'Tell' or current_tab == 'All' then chat_log_env['last_seen'] = os.time() end
 	if chat_log_env['mention_found'] and (current_tab == chat_log_env['last_mention_tab'] or (settings.undocked_window and settings.undocked_tab == chat_log_env['last_mention_tab'])) then
-		if chat_log_env['mention_count'] > 4 then
+		if chat_log_env['mention_count'] > 6 then
 			chat_log_env['mention_found'] = false
 			t2:bg_color(0,0,0)
 		else
@@ -1365,7 +1365,7 @@ last_save = os.clock()-560
 function save_chat_log()
 	if chat_log_env['mention_found'] and settings.battle_flash then
 		local t = os.clock()%1 -- Flashing colors from Byrth's answering machine
-		t2:bg_color(255,150+100*math.sin(t*math.pi),150+100*math.sin(t*math.pi))
+		t2:bg_color(100,100+150*math.sin(t*math.pi),100+150*math.sin(t*math.pi))
 		t3:bg_color(0,0,0)
 	end
 	if os.clock() > last_save+save_delay then
