@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.070220.3'
+_addon.version = '0.5.070220.4'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -1136,7 +1136,7 @@ function menu(menuname,c)
 					windower.ffxi.add_to_chat(200,'No more matches found')
 					return
 				else
-					image_map[7].action = function()
+					image_map[8].action = function()
 						menu('findnext','')
 						end
 					chat_log_env['scroll_num'] = last_scroll
@@ -1148,12 +1148,12 @@ function menu(menuname,c)
 					log('No Matches for: '..c)
 					find_table['last_find'] = false
 					chat_log_env['finding'] = false
-					image_map[7].action = function()
+					image_map[8].action = function()
 					menu('Bottom','')
 					end
 					return
 				else
-					image_map[7].action = function()
+					image_map[8].action = function()
 						menu('findnext','')
 					end
 					find_table['last_find'] = c
@@ -1168,7 +1168,7 @@ function menu(menuname,c)
 				log('No more matches found')
 				find_table['last_find'] = false
 				chat_log_env['finding'] = false
-				image_map[7].action = function()
+				image_map[8].action = function()
 				menu('Bottom','')
 				end
 				chat_log_env['scrolling'] = true
