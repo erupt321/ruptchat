@@ -288,7 +288,7 @@ return {
 		[4] = '\\cs('..style_templates['timestamp']..')%1\\cr[\\cs('..style_templates['addon_log_header']..')%2\\cr]\\cs('..style_templates['addon_log']..')%3\\cr',
 		[5] = '^([0-9]+:[0-9]+:[0-9]+:)([^:]+): (.*)',
 		[6] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['addon_log_header']..')%2\\cr -> %3',
-		[7] = '^(.+[0-9]+:[0-9]+:[0-9]+.+)('..windower.ffxi.get_player().name..'\'?s?)%]? obtains a(.+)',
+		[7] = '^(.+[0-9]+:[0-9]+:[0-9]+.+)('..windower.ffxi.get_player().name..'\'?s?)%]? obtains an?(.+)',
 		[8] = '\\cs('..style_templates['timestamp']..')%1\\cr[\\cs('..style_templates['player_name_1']..')%2\\cr] obtains a\\cs('..style_templates['obtains_item']..')%3\\cr',
 		[9] = '^([0-9]+:[0-9]+:[0-9]+:)(.+)%.',
 		[10] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['obtains_text']..')%2\\cr.',

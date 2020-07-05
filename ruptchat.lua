@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.070220.4'
+_addon.version = '0.5.070420.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -233,7 +233,7 @@ t2:visible(false)
 default_settings.flags.draggable = true
 t3 = texts.new(default_settings)
 t3:visible(false)
-texts.size(t3,settings.text.size)
+t3:size(settings.text.size)
 texts.pad(t3,5)
 
 
@@ -350,11 +350,10 @@ function header()
 	end
 	if current_tab == 'Tell' or current_tab == 'All' then chat_log_env['last_seen'] = os.time() end
 	if chat_log_env['mention_found'] and (current_tab == chat_log_env['last_mention_tab'] or (settings.undocked_window and settings.undocked_tab == chat_log_env['last_mention_tab'])) then
-		if chat_log_env['mention_count'] > 6 then
+		if chat_log_env['mention_count'] < os.clock() then
 			chat_log_env['mention_found'] = false
 			t2:bg_color(0,0,0)
-		else
-			chat_log_env['mention_count'] = chat_log_env['mention_count'] + 1
+			t2:visible(false)
 		end
 	end
 	local buffer = 15
@@ -1184,6 +1183,7 @@ function menu(menuname,c)
 end
 
 function check_mentions(id, chat)
+	chat_type = nil
 	if battle_ids[id] then
 		chat_type = 'Battle'
 	elseif tab_ids[tostring(id)] then
@@ -1205,11 +1205,11 @@ function check_mentions(id, chat)
 					end
 				end
 				chat_log_env['mention_found'] = true
-				chat_log_env['mention_count'] = 1
+				chat_log_env['mention_count'] = os.clock()+30
 				chat_log_env['last_mention_tab'] = 'All'
-				print('Undocked: '..settings.undocked_tab)
 				t2:text("New Mention @ \\cs(255,69,0)All\\cr: \\cs(0,255,0)"..v.."\\cr")
 				t2:visible(true)
+				t2:bg_color(0,0,0)
 				return
 			end
 		end
@@ -1239,12 +1239,13 @@ function check_mentions(id, chat)
 					end
 				end
 				chat_log_env['mention_found'] = true
-				chat_log_env['mention_count'] = 1
+				chat_log_env['mention_count'] = os.clock()+30
 				chat_log_env['last_mention_tab'] = chat_type
 				if chat_type == 'Battle' and settings.battle_flash then					
 					t2:text("New Mention @ \\cs(255,69,0)"..chat_type.."\\cr: \\cs(0,255,0)"..v.."\\cr "..stripped)
 				else
 					t2:text("New Mention @ \\cs(255,69,0)"..chat_type.."\\cr: \\cs(0,255,0)"..v.."\\cr")
+					t2:bg_color(0,0,0)
 				end
 				t2:visible(true)
 				return
@@ -1363,7 +1364,7 @@ end
 
 last_save = os.clock()-560
 function save_chat_log()
-	if chat_log_env['mention_found'] and settings.battle_flash then
+	if chat_log_env['mention_found'] and settings.battle_flash and chat_log_env['last_mention_tab'] == 'Battle' then
 		local t = os.clock()%1 -- Flashing colors from Byrth's answering machine
 		t2:bg_color(100,100+150*math.sin(t*math.pi),100+150*math.sin(t*math.pi))
 		t3:bg_color(0,0,0)
