@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.070420.1'
+_addon.version = '0.5.071120.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -55,6 +55,8 @@ Console Commands
 //rchat size <font size> (Change font size, this will increase whole window size)
 
 //rchat length <Log Length> (Change log length size)
+
+//rchat dlength <Undocked Length> (Same as Log Length, if set to 0 will use Log_Length settings)
 
 //rchat width <Log Width>  (Change log width size; when wordwrap should take effect)
 
@@ -192,6 +194,7 @@ default_settings = {
 	log_length = 12,
 	log_width = 85,
 	log_dwidth = 0, -- 0 Disables and defaults to log_width value
+	log_dlength = 0, -- 0 Disable and defaults to log_length value
 	battle_all = true, -- Display Battle text in All tab
 	battle_off = false, -- Disable processing Battle text entirely
 	strict_width = false,
@@ -513,6 +516,7 @@ function load_chat_tab(scroll_start,window)
 			return
 		end
 		tab = current_tab
+		length = settings.log_length
 	else
 		tab = settings.undocked_tab
 		if tab:lower() == 'battle' then
@@ -524,16 +528,19 @@ function load_chat_tab(scroll_start,window)
 			current_chat = chat_tables[tab]
 		end
 		scroll_start = false
+		if settings.log_dlength and settings.log_dlength > 0 then
+			length = settings.log_dlength
+		end
 	end
-	if #current_chat < settings.log_length then
+	if #current_chat < length then
 		loop_start = 1
 		loop_end = #current_chat
 	else
-		loop_start = #current_chat - settings.log_length
+		loop_start = #current_chat - length
 		loop_end = #current_chat
 		if scroll_start then
 			loop_start = scroll_start
-			loop_end = scroll_start + settings.log_length
+			loop_end = scroll_start + length
 		end
 	end	
 	local temp_table = ''
@@ -834,6 +841,14 @@ function addon_command(...)
 		elseif cmd == 'dwidth' then
 			if args[1] and tonumber(args[1]) then
 				settings.log_dwidth = tonumber(args[1])
+				config.save(settings, windower.ffxi.get_player().name)
+				reload_text()
+			else
+				log('Missing or invalid argument')
+			end
+		elseif cmd == 'dlength' then
+			if args[1] and tonumber(args[1]) then
+				settings.log_dlength = tonumber(args[1])
 				config.save(settings, windower.ffxi.get_player().name)
 				reload_text()
 			else

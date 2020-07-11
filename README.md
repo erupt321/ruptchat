@@ -107,6 +107,8 @@ for the text.
 
 	//rchat length <Log Length> (Change log length size)
 
+	//rchat dlength <Undocked Length> (Same as Log Length, if set to 0 will use Log_Length settings)
+
 	//rchat width <Log Width>  (Change log width size; when wordwrap should take effect)
 	
 	//rchat dwidth <Undocked Width> (Same as Log Width, if set to 0 will use Log_Width settings)
