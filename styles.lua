@@ -223,6 +223,14 @@ return {
 		[3] = '^(.+[0-9]+:[0-9]+:[0-9]+.-)('..windower.ffxi.get_player().name..') ([A-Za-z]+) .-([^%(]+)%(([^%)]+)%)',
 		[4] = '%1[\\cs('..style_templates['battle_text_1']..')%2\\cr] %3 ->\\cs('..style_templates['battle_name_2']..')%4\\cr(%5)',
 	},
+	[81] = { -- You used item
+		[1] = '^([0-9]+:[0-9]+:[0-9]+.+)%[('..windower.ffxi.get_player().name..')%](.+)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr[\\cs('..style_templates['battle_text_1']..')%2\\cr] %3',
+		[3] = '^([0-9]+:[0-9]+:[0-9]+.+)%[([^%]]+)%](.+)',
+		[4] = '\\cs('..style_templates['timestamp']..')%1\\cr[\\cs('..style_templates['battle_name_2']..')%2\\cr] %3',
+		[5] = '(.*)%s%s(.*)',
+		[6] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
+	},
 	[90] = { -- Use item
 		[1] = '^([0-9]+:[0-9]+:[0-9]+.+)%[('..windower.ffxi.get_player().name..')%](.+)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr[\\cs('..style_templates['battle_text_1']..')%2\\cr] %3',
