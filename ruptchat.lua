@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.071120.1'
+_addon.version = '0.5.072620.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -77,6 +77,10 @@ Console Commands
 //rchat battle_off (Toggle Battle Chat being process at all; totally off)
 
 //rchat battle_flash (Toggle Battle Messages forced pop on screen with flashing)
+
+//rchat chatinput (Toggle a small box showing currently typed text)
+
+//rchat inputlocation (Toggle if the chatinput box is on Top or Bottom orientation)
 
 //rchat incoming_pause **EXPERIMENTAL** Will turn off vanilla windows receiving chat
 										this will make your chat log vanish which is more
@@ -204,6 +208,8 @@ default_settings = {
 	incoming_pause = false,
 	drag_status = true,
 	battle_flash = false,
+	chat_input = false,
+	chat_input_placement = 1,
 	flags = {
 		draggable = false,
 	},
@@ -238,6 +244,12 @@ t3 = texts.new(default_settings)
 t3:visible(false)
 t3:size(settings.text.size)
 texts.pad(t3,5)
+--Text Input Window
+t4 = texts.new(default_settings)
+t4:visible(false)
+t4:size(settings.text.size)
+t4:bg_alpha(255)
+
 
 
 
@@ -645,15 +657,22 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
     if eventtype == 0 then
         if hovered then
 			if chat_debug then
-				local boundry_table = {texts.extents(t)}
-				local x_boundry = boundry_table[1]+texts.pos_x(t)
-				local y_boundry = boundry_table[2]+texts.pos_y(t)
+				local x_extent,y_extent = texts.extents(t)
+				local x_boundry = x_extent+texts.pos_x(t)
+				local y_boundry = y_extent+texts.pos_y(t)
 				t2:text("Mouse X: \\cs(0,255,0)"..x.."/"..texts.pos_x(t).."\\cr Y: \\cs(0,255,0)"..y.."/"..texts.pos_y(t).."\\cr Extents: "..x_boundry..' / '..y_boundry)
 				t2:visible(true)
 			end
 			if dragged then
 				dragged.text:pos(x - dragged.x, y - dragged.y)
+				_,y_extent = texts.extents(t)
 				t2:pos(x - dragged.x, (y - dragged.y)-20)
+				if settings.chat_input_placement == 1 then
+					t4:pos(x - dragged.x, (y - dragged.y)+y_extent)
+				else
+					t4:pos(x - dragged.x, (y - dragged.y)-40)
+				end
+				
 				if settings.snapback then
 					local boundry_table = {texts.extents(t)}
 					local x_boundry = boundry_table[1]+texts.pos_x(t)+2
@@ -948,6 +967,31 @@ function addon_command(...)
 				log('Setting incoming_pause to true')
 				log('** USE THIS AT YOUR OWN RISK **')
 				settings.incoming_pause = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+		elseif cmd == 'chatinput' then
+			if settings.chat_input then
+				log('Setting chat_input to false')
+				settings.chat_input = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting chat_input to true')
+				settings.chat_input = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+		elseif cmd == 'inputlocation' then
+			local t_pos_x = texts.pos_x(t)
+			local t_pos_y = texts.pos_y(t)
+			local x_extent,y_extent = texts.extents(t)
+			if settings.chat_input_placement == 1 then
+				log('Setting chat_input_placement to Top')
+				settings.chat_input_placement = 2
+				t4:pos(t_pos_x, (t_pos_y-40))
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting chat_input_placement to Bottom')
+				settings.chat_input_placement = 1
+				t4:pos(t_pos_x,(t_pos_y+y_extent))
 				config.save(settings, windower.ffxi.get_player().name)
 			end
 		elseif cmd == 'drag' then
@@ -1364,11 +1408,16 @@ function load_events()
 	local t_pos_y = texts.pos_y(t)
 	t2:pos(t_pos_x, (t_pos_y-20))
 	coroutine.sleep(1)
-	boundries = {texts.extents(t)}
-	t3:pos((boundries[1]+t_pos_x+2),t_pos_y)
+	x_extent,y_extent = texts.extents(t)
+	t3:pos((x_extent+t_pos_x+2),t_pos_y)
 	t3:stroke_width(texts.stroke_width(t))
 	t3:stroke_alpha(texts.stroke_alpha(t))
 	t3:stroke_color(texts.stroke_color(t))
+	if settings.chat_input_placement == 1 then
+		t4:pos(t_pos_x,(t_pos_y+y_extent))
+	else
+		t4:pos(t_pos_x,(t_pos_y-40))
+	end
 	build_maps()
 end
 
@@ -1379,6 +1428,15 @@ end
 
 last_save = os.clock()-560
 function save_chat_log()
+	if settings.chat_input and windower.chat.is_open() then
+		chat,_ = windower.chat.get_input()
+		chat = windower.convert_auto_trans(chat)
+		chat = chat:strip_format()
+		t4:text(chat)
+		t4:show()
+	else
+		t4:hide()
+	end
 	if chat_log_env['mention_found'] and settings.battle_flash and chat_log_env['last_mention_tab'] == 'Battle' then
 		local t = os.clock()%1 -- Flashing colors from Byrth's answering machine
 		t2:bg_color(100,100+150*math.sin(t*math.pi),100+150*math.sin(t*math.pi))

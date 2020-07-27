@@ -8,6 +8,12 @@ for the text.
 
 **Changelog**
 
+	__07.26.20__
+	Fixed some chat filters in the battle log.  Added a new feature to display chat input the client
+	is receiving.  Possible uses are if you were not wanting to look at the clients chat input box
+	or you prefer to see the text you type more towards the center of the screen.  Does not disable
+	the actual ingame chat box from displaying.
+
 	__07.02.20__
 	New setting Battle_flash.  This is a toggle for mentions that have to do with the battle log.
 	If this is enable it'll flash the mention it finds along with the words on that line, this is 
@@ -128,6 +134,10 @@ for the text.
 	//rchat battle_off (Toggle Battle Chat being process at all; totally off)
 
 	//rchat battle_flash (Toggle Battle Messages forced pop on screen with flashing)
+	
+	//rchat chatinput (Toggle a small box showing currently typed text)
+
+	//rchat inputlocation (Toggle if the chatinput box is on Top or Bottom orientation)
 	
 	//rchat incoming_pause **EXPERIMENTAL** 
 	
