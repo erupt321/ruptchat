@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.072620.1'
+_addon.version = '0.5.073020.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -458,7 +458,7 @@ function wrap_text(txt,log_width)
 					wrap_tmp = wrap_tmp..' '..w
 				else
 					wrap_cnt = 10
-					wrap_tmp = wrap_tmp..'\n'..w
+					wrap_tmp = wrap_tmp..'\n'..fillspace(9)..w
 				end
 			end
 		end
@@ -632,6 +632,7 @@ end
 
 
 dragged = nil
+clicked = false
 last_scroll = 0
 function cap(val, min, max)
     return val > max and max or val < min and min or val
@@ -655,6 +656,9 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
         return
     end
     if eventtype == 0 then
+		if clicked then
+			return true
+		end
         if hovered then
 			if chat_debug then
 				local x_extent,y_extent = texts.extents(t)
@@ -671,8 +675,7 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 					t4:pos(x - dragged.x, (y - dragged.y)+y_extent)
 				else
 					t4:pos(x - dragged.x, (y - dragged.y)-40)
-				end
-				
+				end	
 				if settings.snapback then
 					local boundry_table = {texts.extents(t)}
 					local x_boundry = boundry_table[1]+texts.pos_x(t)+2
@@ -687,12 +690,13 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 				return true
 			end
         end
-    elseif eventtype == 1 then
+    elseif eventtype == 1 then  --click
 		local pos_x = texts.pos_x(t)
 		local pos_y = texts.pos_y(t)
 		for i,v in ipairs(image_map) do
 			if (x < pos_x+v.x_end and x > pos_x+v.x_start) and (y > pos_y+v.y_start and y < pos_y+v.y_end) then
 				v.action()
+				clicked = true
 				return true
 			end
 		end
@@ -700,7 +704,11 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			if settings.drag_status then dragged = {text = t, x = x - pos_x, y = y - pos_y} end
 			return true
 		end
-    elseif eventtype == 2 then
+    elseif eventtype == 2 then --click off
+		if clicked then
+			clicked = false
+			return true
+		end
 		if hovered then
 			if dragged then
 				config.save(settings, windower.ffxi.get_player().name)

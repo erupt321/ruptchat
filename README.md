@@ -7,6 +7,10 @@ to a bigger chat system replacement.  Still a work in progress making style patt
 for the text.
 
 **Changelog**
+	
+	__07.30.20__
+	Fixed a bug if you tried to drag when you clicked a menu header, would trigger a movement drag
+	in the client.  Thanks Akaden for pointing that one out!
 
 	__07.26.20__
 	Fixed some chat filters in the battle log.  Added a new feature to display chat input the client
