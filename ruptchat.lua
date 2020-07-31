@@ -998,6 +998,7 @@ function addon_command(...)
 			end
 			boundries = {texts.extents(t)}
 			local t_pos_x = texts.pos_x(t)
+                        local t_pos_y = texts.pos_y(t)
 			t3:pos((boundries[1]+t_pos_x+2),t_pos_y)
 		elseif cmd == 'incoming_pause' then
 			if settings.incoming_pause then
