@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.073020.2'
+_addon.version = '0.5.073020.3'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -443,7 +443,11 @@ function header()
 	else
 		new_text_header = new_text_header..'\n'
 	end
-	load_chat_tab(chat_log_env['scroll_num'],'main')
+	if not chat_log_env['scrolling'] then
+		load_chat_tab(false,'main')
+	else
+		load_chat_tab(chat_log_env['scroll_num'],'main')
+	end
 	if settings.undocked_window then
 		load_chat_tab(0,'undocked')
 	end
@@ -543,8 +547,10 @@ function load_chat_tab(scroll_start,window)
 	else
 		if window == 'undocked' then
 			tab = settings.undocked_tab
+			scroll_start = false
 		elseif window == 'Drops' then
 			tab = 'Drops'
+--			scroll_start = false
 		end
 		if tab:lower() == 'battle' then
 			current_chat = battle_table
@@ -554,7 +560,7 @@ function load_chat_tab(scroll_start,window)
 		else
 			current_chat = chat_tables[tab]
 		end
-		scroll_start = false
+
 		if settings.log_dlength and settings.log_dlength > 0 then
 			length = settings.log_dlength
 		end
@@ -746,11 +752,19 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			end
 		end
 	elseif eventtype == 10 then
-		if hovered then
+		if hovered or (settings.split_drops and texts.hover(t5,x,y)) then
 			if current_tab == 'Battle' then
 				current_chat = battle_table
 			else
 				current_chat = chat_tables[current_tab]
+			end
+			if texts.hover(t5,x,y) then
+				current_chat = chat_tables['Drops']
+				last_scroll_type = 'drops'
+			elseif not chat_log_env['scrolling'] then
+				last_scroll_type = 'main'
+				chat_log_env['scroll_num'] = false
+				last_scroll = #current_chat
 			end
 			if current_chat and (last_scroll == 0 or chat_log_env['scroll_num'] == false) then
 				if #current_chat > settings.log_length then
@@ -771,7 +785,16 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 						chat_log_env['scrolling'] = true
 					end
 				end
-				reload_text()
+				if texts.hover(t5,x,y) then
+					if chat_log_env['scrolling'] then
+						load_chat_tab(chat_log_env['scroll_num'],'Drops')
+						chat_log_env['scrolling'] = false
+					else 
+						load_chat_tab(0,'Drops')
+					end
+				else
+					reload_text()
+				end
 			end
 			return true
 		end
@@ -1377,7 +1400,7 @@ function chat_add(id, chat)
 			if string.find(chat,'find') or string.find(chat,'obtains') then
 				if not chat_tables['Drops'] then chat_tables['Drops'] = {} end
 				table.insert(chat_tables['Drops'],os.time()..':'..id..':'..chat)
-				load_chat_tab(0,'Drops')
+				load_chat_tab(false,'Drops')
 				drops_timer = os.clock()+30
 				return
 			end
