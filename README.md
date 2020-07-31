@@ -11,6 +11,9 @@ for the text.
 	__07.30.20__
 	Fixed a bug if you tried to drag when you clicked a menu header, would trigger a movement drag
 	in the client.  Thanks Akaden for pointing that one out!
+	Added Split Drops option, which allows you to send drops to a pop up window that fades after 30
+	seconds.   Once this is active drops will start to save to their own table as well in the save
+	system which means you can store more drop history as well.
 
 	__07.26.20__
 	Fixed some chat filters in the battle log.  Added a new feature to display chat input the client
@@ -142,6 +145,11 @@ for the text.
 	//rchat chatinput (Toggle a small box showing currently typed text)
 
 	//rchat inputlocation (Toggle if the chatinput box is on Top or Bottom orientation)
+	
+	//rchat splitdrops (Toggle if you'd like drops to goto their own window)
+				*Drops window fades after 30 seconds from last addition*
+
+	//rchat showdrops (Forces drops window to open for 120 seconds)
 	
 	//rchat incoming_pause **EXPERIMENTAL** 
 	

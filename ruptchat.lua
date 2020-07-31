@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.073020.1'
+_addon.version = '0.5.073020.2'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -81,6 +81,11 @@ Console Commands
 //rchat chatinput (Toggle a small box showing currently typed text)
 
 //rchat inputlocation (Toggle if the chatinput box is on Top or Bottom orientation)
+
+//rchat splitdrops (Toggle if you'd like drops to goto their own window)
+				*Drops window fades after 30 seconds from last addition*
+
+//rchat showdrops (Forces drops window to open for 120 seconds)
 
 //rchat incoming_pause **EXPERIMENTAL** Will turn off vanilla windows receiving chat
 										this will make your chat log vanish which is more
@@ -210,6 +215,7 @@ default_settings = {
 	battle_flash = false,
 	chat_input = false,
 	chat_input_placement = 1,
+	split_drops = false,
 	flags = {
 		draggable = false,
 	},
@@ -249,7 +255,12 @@ t4 = texts.new(default_settings)
 t4:visible(false)
 t4:size(settings.text.size)
 t4:bg_alpha(255)
-
+--Drops Window
+t5 = texts.new(default_settings)
+t5:visible(false)
+t5:size(settings.text.size)
+t5:bg_alpha(settings.bg.alpha)
+t5:pos(300,300)
 
 
 
@@ -530,7 +541,11 @@ function load_chat_tab(scroll_start,window)
 		tab = current_tab
 		length = settings.log_length
 	else
-		tab = settings.undocked_tab
+		if window == 'undocked' then
+			tab = settings.undocked_tab
+		elseif window == 'Drops' then
+			tab = 'Drops'
+		end
 		if tab:lower() == 'battle' then
 			current_chat = battle_table
 			if #battle_table < 1 then
@@ -620,11 +635,19 @@ function load_chat_tab(scroll_start,window)
 		end
 	else
 		if temp_table ~= '' then
-			t3:text('[ \\cs(255,69,0)'..tab..'\\cr ]... .. .\n'..temp_table)
-			texts.size(t3, texts.size(t))
-			texts.bg_alpha(t3, texts.bg_alpha(t))
-			texts.font(t3, texts.font(t))
-			t3:visible(true)
+			if window == 'undocked' then
+				t3:text('[ \\cs(255,69,0)'..tab..'\\cr ]... .. .\n'..temp_table)
+				texts.size(t3, texts.size(t))
+				texts.bg_alpha(t3, texts.bg_alpha(t))
+				texts.font(t3, texts.font(t))
+				t3:visible(true)
+			elseif window == 'Drops' then
+				t5:text('[ \\cs(255,69,0)'..tab..'\\cr ]... .. .\n'..temp_table)
+				texts.size(t5, texts.size(t))
+				texts.bg_alpha(t5, texts.bg_alpha(t))
+				texts.font(t5, texts.font(t))
+				t5:visible(true)
+			end
 		end
 	end
 end
@@ -1002,6 +1025,20 @@ function addon_command(...)
 				t4:pos(t_pos_x,(t_pos_y+y_extent))
 				config.save(settings, windower.ffxi.get_player().name)
 			end
+		elseif cmd == 'splitdrops' then
+			if settings.split_drops then
+				log('Setting split_drops to false')
+				settings.split_drops = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting split_drops to true')
+				settings.split_drops = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+		elseif cmd == 'showdrops' then
+			drops_timer = os.clock()+120
+			load_chat_tab(0,'Drops')
+			t5:show()
 		elseif cmd == 'drag' then
 			if settings.drag_status then
 				log('Setting drag_status to false')
@@ -1335,6 +1372,17 @@ function chat_add(id, chat)
 	chat = string.gsub(chat,'[\r\n]','')
 	chat = string.gsub(chat,string.char(0x07, 0x0A),'')
 	chat = string.gsub(chat,'"','\"')
+	if settings.split_drops then
+		if id == 121 or id == 127 then
+			if string.find(chat,'find') or string.find(chat,'obtains') then
+				if not chat_tables['Drops'] then chat_tables['Drops'] = {} end
+				table.insert(chat_tables['Drops'],os.time()..':'..id..':'..chat)
+				load_chat_tab(0,'Drops')
+				drops_timer = os.clock()+30
+				return
+			end
+		end
+	end
 	if battle_ids[id] then  -- Duplicated messages that battlemod has it's own variants of
 		if battlemod_loaded and (string.find(chat,'scores.') or string.find(chat,'uses') or string.find(chat,'hits') or string.match(chat,'.*spikes deal.*') or string.find(chat,'misses') or string.find(chat,'cures') or string.find(chat,'additional')) then
 				return
@@ -1444,6 +1492,11 @@ function save_chat_log()
 		t4:show()
 	else
 		t4:hide()
+	end
+	if settings.split_drops and texts.visible(t5) then
+		if os.clock() > drops_timer then
+			t5:hide()
+		end
 	end
 	if chat_log_env['mention_found'] and settings.battle_flash and chat_log_env['last_mention_tab'] == 'Battle' then
 		local t = os.clock()%1 -- Flashing colors from Byrth's answering machine
