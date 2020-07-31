@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.073120.2'
+_addon.version = '0.5.073120.3'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -134,6 +134,7 @@ rupt_savefile = ''
 rupt_db = ''
 tab_styles = ''
 style_templates = ''
+drops_timer = os.clock()
 if windower.ffxi.get_info().logged_in then
 	rupt_savefile = 'chatlogs/'..windower.ffxi.get_player().name..'-current'
 	rupt_db = files.new(rupt_savefile..'.lua')
@@ -1394,7 +1395,7 @@ function chat_add(id, chat)
 				if not chat_tables['Drops'] then chat_tables['Drops'] = {} end
 				table.insert(chat_tables['Drops'],os.time()..':'..id..':'..chat)
 				if #chat_tables['Drops'] > settings.log_length then
-					scroll = #chat_tables['Drops'] - settings.log_length+1
+					scroll = #chat_tables['Drops'] - settings.log_length
 				else
 					scroll = 0
 				end
