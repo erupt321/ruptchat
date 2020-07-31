@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.073120.1'
+_addon.version = '0.5.073120.2'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -751,7 +751,6 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			elseif not chat_log_env['scrolling'] then
 				last_scroll_type = 'main'
 				chat_log_env['scroll_num'] = false
-				last_scroll = #current_chat
 			end
 			if current_chat and (last_scroll == 0 or chat_log_env['scroll_num'] == false) then
 				if #current_chat > settings.log_length then
@@ -776,8 +775,9 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 					if chat_log_env['scrolling'] then
 						load_chat_tab(chat_log_env['scroll_num'],'Drops')
 						chat_log_env['scrolling'] = false
-					else 
-						load_chat_tab(0,'Drops')
+					else
+						last_scroll = cap(last_scroll - delta, 1, #current_chat - (settings.log_length - 1))
+						load_chat_tab(last_scroll,'Drops')
 					end
 				else
 					reload_text()
@@ -1048,7 +1048,12 @@ function addon_command(...)
 			end
 		elseif cmd == 'showdrops' then
 			drops_timer = os.clock()+120
-			load_chat_tab(0,'Drops')
+			if #chat_tables['Drops'] > settings.log_length then
+				scroll = #chat_tables['Drops'] - settings.log_length+1
+			else
+				scroll = 0
+			end
+			load_chat_tab(scroll,'Drops')
 			t5:show()
 		elseif cmd == 'drag' then
 			if settings.drag_status then
@@ -1388,7 +1393,12 @@ function chat_add(id, chat)
 			if string.find(chat,'find') or string.find(chat,'obtains') then
 				if not chat_tables['Drops'] then chat_tables['Drops'] = {} end
 				table.insert(chat_tables['Drops'],os.time()..':'..id..':'..chat)
-				load_chat_tab(false,'Drops')
+				if #chat_tables['Drops'] > settings.log_length then
+					scroll = #chat_tables['Drops'] - settings.log_length+1
+				else
+					scroll = 0
+				end
+				load_chat_tab(scroll,'Drops')
 				drops_timer = os.clock()+30
 				return
 			end
