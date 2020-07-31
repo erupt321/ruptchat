@@ -275,13 +275,15 @@ return {
 		[15] = '(.*)(%+).*%[.*%)([0-9]+).*cr%](.*)',
 		[16] = '%1%2%3%4',
 	},
-	[122] = { -- Unable to see
+	[122] = { -- Unable to see / Auto-Target
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.+) to see (.+).',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['battle_unable_see']..')%2 to see \\cr-> \\cs('..style_templates['battle_name_2']..')%3\\cr',
-		[3] = '^([0-9]+:[0-9]+:[0-9]+:)(.+) is out of range.*$',
-		[4] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['battle_name_2']..')%2\\cr is out of range.',
-		[5] = '^([0-9]+:[0-9]+:[0-9]+:)(.+) lose sight of (.+).',
-		[6] = '\\cs('..style_templates['timestamp']..')%1\\cr%2 lose sight of \\cs('..style_templates['battle_name_2']..')%3\\cr.',
+		[3] = '^([0-9]+:[0-9]+:[0-9]+:)(.+).',
+		[4] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['battle_text_1']..')%2\\cr',
+		[5] = '^([0-9]+:[0-9]+:[0-9]+:)(.+) is out of range.*$',
+		[6] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['battle_name_2']..')%2\\cr is out of range.',
+		[7] = '^([0-9]+:[0-9]+:[0-9]+:)(.+) lose sight of (.+).',
+		[8] = '\\cs('..style_templates['timestamp']..')%1\\cr%2 lose sight of \\cs('..style_templates['battle_name_2']..')%3\\cr.',
 	},
 	[123] = { -- Level of difficulty
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.-)([0-9]+)(.*)',

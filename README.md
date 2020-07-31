@@ -8,6 +8,11 @@ for the text.
 
 **Changelog**
 	
+	__07.31.20__
+	Fixed some large bugs with how battle text was behaving in the 'All' tab.  I had not used battle
+	text in the 'All' tab for so long I haven't tested if I had broken it, and I guess I did a long
+	while ago.  Fixed some other style errors and misspells.
+	
 	__07.30.20__
 	Fixed a bug if you tried to drag when you clicked a menu header, would trigger a movement drag
 	in the client.  Thanks Akaden for pointing that one out!

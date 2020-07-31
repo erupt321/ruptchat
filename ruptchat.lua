@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.073020.3'
+_addon.version = '0.5.073120.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -64,7 +64,7 @@ Console Commands
 
 //rchat strict_width (Toggle maintaining the max log width; avoid box shrinking and expanding)
 
-//rchat string_length (Toggle maintaining the log length)
+//rchat strict_length (Toggle maintaining the log length)
 
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
@@ -473,7 +473,7 @@ function wrap_text(txt,log_width)
 					wrap_tmp = wrap_tmp..' '..w
 				else
 					wrap_cnt = 10
-					wrap_tmp = wrap_tmp..'\n'..fillspace(9)..w
+					wrap_tmp = wrap_tmp..'\n'..w
 				end
 			end
 		end
@@ -607,20 +607,7 @@ function load_chat_tab(scroll_start,window)
 			prev_table = temp_table
 		end
 		if current_chat[i] then
-			if tab == 'Battle' then --everything in battle_table is preformatted
-				temp_table = current_chat[i]..'\n'..temp_table
-			else
-				if string.sub(current_chat[i],1,2) == '**' then --preformatted on addition to 'All'
-					if window ~= 'main' and settings.log_dwidth > 0 then
-						temp_table = wrap_text(string.sub(current_chat[i],3),settings.log_dwidth+20)..'\n'..temp_table
-					else 
-						temp_table = wrap_text(string.sub(current_chat[i],3),settings.log_width+20)..'\n'..temp_table
-					end
---					temp_table = string.sub(current_chat[i],3)..'\n'..temp_table
-				else
-					temp_table = convert_text(current_chat[i],window)..'\n'..temp_table
-				end
-			end
+			temp_table = convert_text(current_chat[i],window)..'\n'..temp_table
 		end
 	end
 	if window == 'main' then
@@ -1410,10 +1397,12 @@ function chat_add(id, chat)
 		if battlemod_loaded and (string.find(chat,'scores.') or string.find(chat,'uses') or string.find(chat,'hits') or string.match(chat,'.*spikes deal.*') or string.find(chat,'misses') or string.find(chat,'cures') or string.find(chat,'additional')) then
 				return
 		end
-		local battle_text = convert_text(os.time()..':'..id..':'..chat,'Battle')
-		table.insert(battle_table,battle_text)
+--		local battle_text = convert_text(os.time()..':'..id..':'..chat,'Battle')
+--		table.insert(battle_table,battle_text)
+		table.insert(battle_table,os.time()..':'..id..':'..chat)
 		if settings.battle_all then
-			table.insert(chat_tables['All'],'**'..battle_text)
+--			table.insert(chat_tables['All'],'**'..battle_text)
+			table.insert(chat_tables['All'],os.time()..':'..id..':'..chat)
 		end
 		
 	else
