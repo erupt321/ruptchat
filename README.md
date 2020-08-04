@@ -8,6 +8,13 @@ for the text.
 
 **Changelog**
 	
+	__08.04.20__
+	Added Drop window in previous version, fixed some issues it caused with the find function.
+	Drop window is scrollable just like the main window.
+	use //rchat splitdrops to enable
+	Added Archive setting, this will make permanent archive files by CharacterName-Month.log.
+	Use //rchat archive to enable
+	
 	__07.31.20__
 	Fixed some large bugs with how battle text was behaving in the 'All' tab.  I had not used battle
 	text in the 'All' tab for so long I haven't tested if I had broken it, and I guess I did a long

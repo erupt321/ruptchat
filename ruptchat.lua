@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.073120.3'
+_addon.version = '0.5.080420.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -86,6 +86,8 @@ Console Commands
 				*Drops window fades after 30 seconds from last addition*
 
 //rchat showdrops (Forces drops window to open for 120 seconds)
+
+//rchat archive (Turns on Archiving, this will make permanent monthly log files)
 
 //rchat incoming_pause **EXPERIMENTAL** Will turn off vanilla windows receiving chat
 										this will make your chat log vanish which is more
@@ -217,6 +219,7 @@ default_settings = {
 	chat_input = false,
 	chat_input_placement = 1,
 	split_drops = false,
+	archive = false,
 	flags = {
 		draggable = false,
 	},
@@ -444,7 +447,7 @@ function header()
 	else
 		new_text_header = new_text_header..'\n'
 	end
-	if not chat_log_env['scrolling'] then
+	if not chat_log_env['scrolling'] and not chat_log_env['finding'] then
 		load_chat_tab(false,'main')
 	else
 		load_chat_tab(chat_log_env['scroll_num'],'main')
@@ -1056,6 +1059,16 @@ function addon_command(...)
 			end
 			load_chat_tab(scroll,'Drops')
 			t5:show()
+		elseif cmd == 'archive' then
+			if settings.archive then
+				log('Setting archive to false')
+				settings.archive = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting archive to true')
+				settings.archive = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
 		elseif cmd == 'drag' then
 			if settings.drag_status then
 				log('Setting drag_status to false')
@@ -1389,6 +1402,13 @@ function chat_add(id, chat)
 	chat = string.gsub(chat,'[\r\n]','')
 	chat = string.gsub(chat,string.char(0x07, 0x0A),'')
 	chat = string.gsub(chat,'"','\"')
+	if settings.archive then
+		archive_filename = files.new('chatlogs/'..windower.ffxi.get_player().name..'-'..os.date('%Y%m')..'.log')
+		if not files.exists(archive_filename) then
+			files.create(archive_filename)
+		end
+		files.append(archive_filename,os.date('[%x@%X]')..':'..id..':'..chat..'\n')
+	end
 	if settings.split_drops then
 		if id == 121 or id == 127 then
 			if string.find(chat,'find') or string.find(chat,'obtains') then
