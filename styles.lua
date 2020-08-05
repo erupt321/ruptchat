@@ -366,6 +366,10 @@ return {
 		[11] = '^(.+[0-9]+:[0-9]+:[0-9]+:[^A-Z]+)([A-Za-z%s]+):? ([0-9]+)',
 		[12] = '%1[\\cs('..style_templates['checkparam']..')%2\\cr] = %3',
 	},
+	[206] = { -- echo
+		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['echo_text']..')%2\\cr',
+	},
 	[207] = { -- Addon
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(%a+):(.*)', --Addon log message
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr[\\cs('..style_templates['addon_log_header']..')%2\\cr]\\cs('..style_templates['addon_log']..')%3\\cr',
