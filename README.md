@@ -6,7 +6,20 @@ chatlog without using sandbox if your multiboxing.  After coding a majority of i
 to a bigger chat system replacement.  Still a work in progress making style patterns
 for the text.
 
+
+**Templates**
+
+	The templates.lua file is where color codes for the addon are stored.  If I happen to make abilities
+	update that adds new colors to the file and you have a custom version of templates.lua then just 
+	add the whatever settings lines are missing to your templates.lua, they'll always be at the end of
+	the file.  I probably will allow custom named templates and have new settings automatically get added
+	to user template files in the future but for now that will be the workaround.
+
+
 **Changelog**
+	
+	__08.05.20__
+	Added a echo color to the styles / template file.
 	
 	__08.04.20__
 	Added Drop window in previous version, fixed some issues it caused with the find function.
