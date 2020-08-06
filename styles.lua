@@ -150,9 +150,9 @@ return {
 	[29] = { --battle
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
-		[3] = '^(.+[0-9]+:[0-9]+:[0-9]+.*)%[([^%]]+)%](.*)('..windower.ffxi.get_player().name..').*$',
+		[3] = '^(.+[0-9]+:[0-9]+:[0-9]+.*)%[([^%]]+)%](.*) ('..windower.ffxi.get_player().name..').*$',
 		[4] = '%1[\\cs('..style_templates['battle_name_2']..')%2\\cr]%3\\cs('..style_templates['battle_text_1']..') %4\\cr',
-		[5] = '(.*)%> ('..windower.ffxi.get_player().name..')',
+		[5] = '(.*)%-> ('..windower.ffxi.get_player().name..')',
 		[6] = '%1-> \\cs('..style_templates['battle_text_1']..')%2\\cr',
 		[7] = '^(.+[0-9]+:[0-9]+:[0-9]+.+)%[([^%]]+)%] (.+)',
 		[8] = '%1[\\cs('..style_templates['battle_name_2']..')%2\\cr] %3',
