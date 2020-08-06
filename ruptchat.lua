@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.080620.1'
+_addon.version = '0.5.080620.2'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -569,6 +569,8 @@ function load_chat_tab(scroll_start,window)
 
 		if settings.log_dlength and settings.log_dlength > 0 then
 			length = settings.log_dlength
+		else
+			length = settings.log_length
 		end
 	end
 	if #current_chat < length then
@@ -807,12 +809,12 @@ function write_db()
 	--Prune Battle_Log
 	local tinsert = table.insert
 	for i,v in ipairs(chat_tables['All']) do
-		local id = windower.regex.match(v,'[0-9]+:([0-9]+):') or false
-		if (id and id[1] and id[1][1] and battle_ids[tonumber(id[1][1])] == true) or string.sub(v,1,2) == '**' then
+--		local id = windower.regex.match(v,'[0-9]+:([0-9]+):') or false
+--		if (id and id[1] and id[1][1] and battle_ids[tonumber(id[1][1])] == true) or string.sub(v,1,2) == '**' then
 --			table.insert(battle_table,v)
-		else
+--		else
 			tinsert(temp_table,v)
-		end
+--		end
 	end
 	chat_tables['All'] = nil
 	chat_tables['All'] = temp_table
@@ -1430,7 +1432,7 @@ function chat_add(id, chat)
 		end
 	end
 	if battle_ids[id] then  -- Duplicated messages that battlemod has it's own variants of
-		if battlemod_loaded and (string.find(chat,'scores.') or string.find(chat,'uses') or string.find(chat,'hits') or string.match(chat,'.*spikes deal.*') or string.find(chat,'misses') or string.find(chat,'cures') or string.find(chat,'additional')) then
+		if id == 20 and battlemod_loaded and (string.find(chat,'scores.') or string.find(chat,'uses') or string.find(chat,'hits') or string.match(chat,'.*spikes deal.*') or string.find(chat,'misses') or string.find(chat,'cures') or string.find(chat,'additional') or string.find(chat,'retaliates'))then
 				return
 		end
 --		local battle_text = convert_text(os.time()..':'..id..':'..chat,'Battle')
