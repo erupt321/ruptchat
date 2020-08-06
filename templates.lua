@@ -54,4 +54,5 @@ return {
 	['linkshell2_text'] = '0,255,0',
 	['linkshell2_name'] = '128,128,0',
 	['echo_text'] = '240,230,140',
+	['zone_name'] = '221,255,153',
 }

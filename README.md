@@ -18,6 +18,13 @@ for the text.
 
 **Changelog**
 	
+	__08.06.20__
+	Reworked many of the battle filters, and some of the other filters that can glitch
+	out here and there with double spaces or reives Area names being misformated.  Also
+	added a format for Zone in message, which means I added a color to the template for that
+	as well.  I also added 2 more chat id's to the incoming_pause list,  I haven't had anything
+	issues with these yet.
+	
 	__08.05.20__
 	Added a echo color to the styles / template file.
 	
