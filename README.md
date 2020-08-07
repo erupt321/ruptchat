@@ -24,6 +24,9 @@ for the text.
 	Archive textlines will buffer until the next scheduled log write.  You can always force the log
 	to write by either reloading the addon or using //rchat save.
 	I also updated a style format that was causing Erase's to not display properly.
+	Added //rchat dropswindow toggle.
+	If splitdrops is active this will enable or disable the window from popping up unless you do abilities
+	//rchat showdrops to force it.
 	
 	__08.06.20__
 	Reworked many of the battle filters, and some of the other filters that can glitch
@@ -187,6 +190,8 @@ for the text.
 	
 	//rchat splitdrops (Toggle if you'd like drops to goto their own window)
 				*Drops window fades after 30 seconds from last addition*
+				
+	//rchat dropswindow (Toggle if pop up window for split drops shows up automatically)
 
 	//rchat showdrops (Forces drops window to open for 120 seconds)
 	

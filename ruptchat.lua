@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.080720.1'
+_addon.version = '0.5.080720.2'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -84,6 +84,8 @@ Console Commands
 
 //rchat splitdrops (Toggle if you'd like drops to goto their own window)
 				*Drops window fades after 30 seconds from last addition*
+
+//rchat dropswindow (Toggle if pop up window for split drops shows up automatically)
 
 //rchat showdrops (Forces drops window to open for 120 seconds)
 
@@ -222,6 +224,7 @@ default_settings = {
 	chat_input = false,
 	chat_input_placement = 1,
 	split_drops = false,
+	drops_window = true,
 	archive = false,
 	flags = {
 		draggable = false,
@@ -374,6 +377,8 @@ end
 start_map = #image_map
 new_text_header = ''
 new_text = ''
+queue_reload_text = false
+reload_clock = os.clock()+1
 
 function header()
 	local cur_font = texts.font(t):lower()
@@ -805,7 +810,7 @@ function reload_text()
 end
 
 function write_db()
-	print('Saving Chatlog')
+	local start_time = os.clock()
 	local temp_table = {}
 	--Prune Battle_Log
 	local tinsert = table.insert
@@ -835,15 +840,21 @@ function write_db()
 	end
 	rupt_db:write('return ' ..T(chat_tables):tovstring())
 	if settings.archive and #archive_table > 0 then
+		local archive_clock = os.clock()
+		print('Chatlog Save Finished in '..(archive_clock - start_time)..'s, Archiving New Text')
 		archive_filename = files.new('chatlogs/'..windower.ffxi.get_player().name..'-'..os.date('%Y%m')..'.log')
 		if not files.exists(archive_filename) then
 			files.create(archive_filename)
 		end
-		table.insert(archive_table,os.date('[%x@%X]')..':'..id..':'..chat)
-		for i,v in pairs(archive_table) do
-			files.append(archive_filename,v..'\n')
-		end
+		local fappend = files.append
+		fappend(archive_filename,table.concat(archive_table,'\n'))
+--		for i,v in pairs(archive_table) do
+--			fappend(archive_filename,v..'\n')
+--		end
 		archive_table = {}
+--		print('Archived in '..(os.clock()-archive_clock)..'s')
+	else
+		print('Saved Chatlog')
 	end
 end
 
@@ -1064,6 +1075,16 @@ function addon_command(...)
 			else
 				log('Setting split_drops to true')
 				settings.split_drops = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+		elseif cmd == 'dropswindow' then
+			if settings.drops_window then
+				log('Setting drops_window to false')
+				settings.drops_window = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting drops_window to true')
+				settings.drops_window = true
 				config.save(settings, windower.ffxi.get_player().name)
 			end
 		elseif cmd == 'showdrops' then
@@ -1433,8 +1454,10 @@ function chat_add(id, chat)
 				else
 					scroll = 0
 				end
-				load_chat_tab(scroll,'Drops')
-				drops_timer = os.clock()+30
+				if settings.drops_window then
+					load_chat_tab(scroll,'Drops')
+					drops_timer = os.clock()+30
+				end
 				return
 			end
 		end
@@ -1460,7 +1483,10 @@ function chat_add(id, chat)
 		if not chat_tables[chat_type] then chat_tables[chat_type] = {} end
 		table.insert(chat_tables[chat_type],os.time()..':'..id..':'..chat)
 	end
-	reload_text()
+	if not queue_reload_text then --Avoid having 8 messages that are received at the same time process
+		queue_reload_text = true
+		reload_clock = os.clock()+1
+	end
 end
 
 
@@ -1564,6 +1590,10 @@ function save_chat_log()
 	if os.clock() > last_save+save_delay then
 		write_db()
 		last_save = os.clock()
+	end
+	if queue_reload_text and reload_clock < os.clock() then
+		reload_text()
+		queue_reload_text = false
 	end
 end
 
