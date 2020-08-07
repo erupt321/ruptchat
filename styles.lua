@@ -41,6 +41,10 @@ return {
 		[5] = '^([0-9]+:[0-9]+:[0-9]+:)(.+)', --Two assholes emoting solo/eachother.
 		[6] = '\\cs('..style_templates['emote_time']..')%1\\cr * \\cs('..style_templates['emote_text']..')%2\\cr',
 		},
+	[8] = { -- Default settings for React use this ID
+		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['battle_dmg_1']..')%2\\cr',
+	},
 	[9] = { -- Say
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(%a+)%s:(.*)', --Addon log message
 		[2] = '\\cs('..style_templates['say_time']..')%1\\cr[\\cs('..style_templates['say_person']..')%2\\cr]\\cs('..style_templates['say_text']..')%3\\cr',
