@@ -18,6 +18,13 @@ for the text.
 
 **Changelog**
 	
+	__08.07.20__
+	After some testing with the archive feature I have changed the way writes are performed to
+	not degrade performance under heavy logging situations like cleaving or alliance fights.
+	Archive textlines will buffer until the next scheduled log write.  You can always force the log
+	to write by either reloading the addon or using //rchat save.
+	I also updated a style format that was causing Erase's to not display properly.
+	
 	__08.06.20__
 	Reworked many of the battle filters, and some of the other filters that can glitch
 	out here and there with double spaces or reives Area names being misformated.  Also
