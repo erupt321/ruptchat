@@ -27,6 +27,9 @@ for the text.
 	Added //rchat dropswindow toggle.
 	If splitdrops is active this will enable or disable the window from popping up unless you do abilities
 	//rchat showdrops to force it.
+	I also redid how the chat windows are updated to avoid the window processing 8 times a second
+	when chat packet comes in with multiple entries.  Window should just process after last one to make
+	things smoother.
 	
 	__08.06.20__
 	Reworked many of the battle filters, and some of the other filters that can glitch
