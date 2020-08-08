@@ -1,4 +1,4 @@
-# ruptchat
+# rChat
 Windower chat addon
 
 This was originally written as just a text box replacement for tells and checking the
@@ -17,6 +17,9 @@ for the text.
 
 
 **Changelog**
+	
+	__08.08.20__
+	Changed autotranslate phrases to show up with {}'s in the chatlog and be easier to see.
 	
 	__08.07.20__
 	After some testing with the archive feature I have changed the way writes are performed to
@@ -73,7 +76,7 @@ for the text.
 	if your currently viewing the battle window.  All other mentions should still work like normal.
 	I'm hoping this will be somewhat how people were wanting monster abilities to alert them.
 	Also fixed some bugs with tabs not loading correctly on a reload, specifically empty tabs.
-	Fixed a battle log style that was showing a [cr on the beginning of the spell cast.
+	Fixed a battle log style that was showing a cr on the beginning of the spell cast.
 
 	__07.01.20__
 	Fixed mentions and redid some of it's processing features, if you have a docked window up for the tab
@@ -119,7 +122,9 @@ for the text.
 	__06.24.20__
 	Undocked windows, allow a second window to show a specific tab.
 	use //rchat undocked [tab name] to launch new tab or hold down Alt + Click Tab to launch.
-			 
+	
+	__06.11.20__
+	First test version.
 
 
 ===Issues===
@@ -198,13 +203,13 @@ for the text.
 
 	//rchat showdrops (Forces drops window to open for 120 seconds)
 	
-	//rchat incoming_pause **EXPERIMENTAL** 
+	//rchat incoming_pause 
 	
 	Will turn off vanilla windows receiving chat
 	this will make your chat log vanish which is more
-	visually appealing, but you'll be solely relying
-	on this addon for all ingame text, which not even 
-	I trust fully yet.  If in doubt just unpause it again.
+	visually appealing.  This can possibly cause issues
+	with certain npcs, if you have any issues with a certain
+	npc action just turn it off and let me know which caused it.
 	
 
   
@@ -221,11 +226,17 @@ for the text.
 
 *New tells recieved while in a none "All"/"Tell" tab will provide a Notification.
 
-*Search system for searching through current tab.  Can click to search next until finished.
+*Search system for searching through current tab.  //rchat find Can click to search next until finished.
 
 *Can save as much chat log lines as you'd like but anything over 5000 can lag during save.
 
+*Seperate drops table to filter it out from you main log or provide focus on drops, is scrollable.
+
 *Mentions can be added that alert you when a word is mentioned in a tab.
+
+*Archive system to save permanent logs of your chat history in monthly files.
+
+*Themes file to making your own custom color themes.
 
 **Usage Examples**
 

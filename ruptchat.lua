@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.5.080720.2'
+_addon.version = '0.6.080820.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -69,6 +69,7 @@ Console Commands
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
 //rchat undock [tab name] (Opens a second dedicated chat window for that tab, off if empty)
+You may also hold down the Alt key and click on a tab name to open a undocked window.
 
 //rchat snapback (When enabled the undocked window will follow your main window)
 
@@ -91,11 +92,12 @@ Console Commands
 
 //rchat archive (Turns on Archiving, this will make permanent monthly log files)
 
-//rchat incoming_pause **EXPERIMENTAL** Will turn off vanilla windows receiving chat
-										this will make your chat log vanish which is more
-										visually appealing, but you'll be solely relying
-										on this addon for all ingame text, which not even 
-										I trust fully yet.  If in doubt just unpause it again.
+//rchat incoming_pause 
+Will turn off vanilla windows receiving chat
+this will make your chat log vanish which is more
+visually appealing.  This can possibly cause issues
+with certain npcs, if you have any issues with a certain
+npc action just turn it off and let me know which caused it.
 
 **Features**
 
@@ -244,6 +246,11 @@ default_settings = {
 		alpha = 200,
 	},
 }
+
+
+
+
+
 
 --Main window
 settings = config.load(default_settings)
@@ -520,7 +527,7 @@ function convert_text(txt,tab_style)
 	end
 	txt = wrap_text(txt,log_width)
 	txt = sgsub(txt,'^ ','')
-	txt = sgsub(txt,'[^%z\1-\127]','')
+	txt = sgsub(txt,'[^%z\1-\176]','')
 	if tab_styles[id] then
 		styles = tab_styles[id]
 		for i=1,#styles,2 do
@@ -1429,13 +1436,15 @@ battlemod_loaded = false
 
 
 function chat_add(id, chat)
-	chat = windower.convert_auto_trans(chat)
-	chat = chat:strip_format()
+	chat = chat:strip_colors()
+    chat = string.gsub(chat,string.char(0xEF, 0x27),'{')
+    chat = string.gsub(chat,string.char(0xEF, 0x28)..'.','}')
+	if chat_debug then print('ID: '..id..' Txt: '..chat) end
+
 	check_mentions(id,chat)
 	if not chat_tables['All'] then
 		chat_tables['All'] = {}
 	end
-	if chat_debug then print('ID: '..id..' Txt: '..chat) end
 	chat = string.gsub(chat,'[\r\n]','')
 	chat = string.gsub(chat,string.char(0x81, 0xA8),'->')
 	chat = string.gsub(chat,string.char(0x81, 0xA9),'<-')
