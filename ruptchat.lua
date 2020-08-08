@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.6.080820.1'
+_addon.version = '0.6.080820.2'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -527,7 +527,7 @@ function convert_text(txt,tab_style)
 	end
 	txt = wrap_text(txt,log_width)
 	txt = sgsub(txt,'^ ','')
-	txt = sgsub(txt,'[^%z\1-\176]','')
+	txt = sgsub(txt,'[^%z\1-\127]','')
 	if tab_styles[id] then
 		styles = tab_styles[id]
 		for i=1,#styles,2 do
