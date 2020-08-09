@@ -457,6 +457,10 @@ return {
 	[212] = { -- Unity
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['unity_chat']..')%2\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['unity_chat']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['unity_chat']..')',
 	},
 	[213] = {
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)[^<]+<([^>]+)>(.*)',
