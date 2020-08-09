@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.6.080820.2'
+_addon.version = '0.6.080820.3'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -1437,8 +1437,8 @@ battlemod_loaded = false
 
 function chat_add(id, chat)
 	chat = chat:strip_colors()
-    chat = string.gsub(chat,string.char(0xEF, 0x27),'{')
-    chat = string.gsub(chat,string.char(0xEF, 0x28)..'.','}')
+    chat = string.gsub(chat,string.char(0xEF, 0x27),'{:')
+    chat = string.gsub(chat,string.char(0xEF, 0x28)..'.',':}')
 	if chat_debug then print('ID: '..id..' Txt: '..chat) end
 
 	check_mentions(id,chat)

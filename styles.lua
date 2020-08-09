@@ -8,30 +8,54 @@ return {
 	[1] = { -- Say
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(%a+)%s:(.*)',
 		[2] = '\\cs('..style_templates['say_time']..')%1\\cr[\\cs('..style_templates['say_person']..')%2\\cr]\\cs('..style_templates['say_text']..')%3\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['say_text']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['say_text']..')',
 	},
 	[2] = {
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)([^%[]+)%[([^%]]+)%](.*)',
 		[2] = '\\cs('..style_templates['shout_time']..')%1\\cr%2[\\cs('..style_templates['shout_person']..')%3\\cr]\\cs('..style_templates['shout_text']..')%4\\cr',
 		[3] = '(.+)\n(.+)\\cr',
 		[4] = '%1\\cr\n\\cs('..style_templates['shout_text']..')%2\\cr',
+		[5] = '{:',
+		[6] = '\\cs(0,255,0){\\cr\\cs('..style_templates['shout_text']..')',
+		[7] = ':}',
+		[8] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['shout_text']..')',
 		},
 	[3] = {
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)([^%[]+)%[([^%]]+)%](.*)',
 		[2] = '\\cs('..style_templates['yell_time']..')%1\\cr%2[\\cs('..style_templates['yell_person']..')%3\\cr]\\cs('..style_templates['yell_text']..')%4\\cr',
 		[3] = '(.+)\n(.+)\\cr',
 		[4] = '%1\\cr\n\\cs('..style_templates['yell_text']..')%2\\cr',
+		[5] = '{:',
+		[6] = '\\cs(0,255,0){\\cr\\cs('..style_templates['yell_text']..')',
+		[7] = ':}',
+		[8] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['yell_text']..')',
 		},
-	[4] = {
+	[4] = { -- Tell
 		[1] = '^([0-9]+:[0-9]+:[0-9]+):>>([^:]+):(.*)$',
-		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr>>\\cs('..style_templates['outgoing_tell_name']..')%2\\cr:\\cs('..style_templates['outgoing_tell_text']..')%3\\cr'
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr>>\\cs('..style_templates['outgoing_tell_name']..')%2\\cr:\\cs('..style_templates['outgoing_tell_text']..')%3\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['outgoing_tell_text']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['outgoing_tell_text']..')',
 		},
-	[5] = {
+	[5] = {  -- party
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)[^%(]+%(([^%)]+)%)(.*)',
-		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr<\\cs('..style_templates['party_name']..')%2\\cr>\\cs('..style_templates['party_text']..')%3\\cr'
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr<\\cs('..style_templates['party_name']..')%2\\cr>\\cs('..style_templates['party_text']..')%3\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['party_text']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['party_text']..')',
 		},
-	[6] = {
+	[6] = { --ls1
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)[^<]+<([^>]+)>(.*)',
-		[2] = '\\cs('..style_templates['linkshell1_time']..')%1\\cr<\\cs('..style_templates['linkshell1_name']..')%2\\cr>\\cs('..style_templates['linkshell1_text']..')%3\\cr'
+		[2] = '\\cs('..style_templates['linkshell1_time']..')%1\\cr<\\cs('..style_templates['linkshell1_name']..')%2\\cr>\\cs('..style_templates['linkshell1_text']..')%3\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['linkshell1_text']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['linkshell1_text']..')',
 		},
 	[7] = { -- outgoing emote
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.+)( '..windower.ffxi.get_player().name..' )(.*)', --Someone Emoting you
@@ -48,28 +72,40 @@ return {
 	[9] = { -- Say
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(%a+)%s:(.*)', --Addon log message
 		[2] = '\\cs('..style_templates['say_time']..')%1\\cr[\\cs('..style_templates['say_person']..')%2\\cr]\\cs('..style_templates['say_text']..')%3\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['say_text']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['say_text']..')',
 	},
-	[10] = {
+	[10] = {  -- shout
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)([^%[]+)%[([^%]]+)%](.*)',
 		[2] = '\\cs('..style_templates['shout_time']..')%1\\cr%2[\\cs('..style_templates['shout_person']..')%3\\cr]\\cs('..style_templates['shout_text']..')%4\\cr',
 		[3] = '(.+)\n(.+)\\cr',
 		[4] = '%1\\cr\n\\cs('..style_templates['shout_text']..')%2\\cr',
+		[5] = '{:',
+		[6] = '\\cs(0,255,0){\\cr\\cs('..style_templates['shout_text']..')',
+		[7] = ':}',
+		[8] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['shout_text']..')',
 		},
-	[11] = {
+	[11] = { -- yell
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)([^%[]+)%[([^%]]+)%](.*)',
 		[2] = '\\cs('..style_templates['yell_time']..')%1\\cr%2[\\cs('..style_templates['yell_person']..')%3\\cr]\\cs('..style_templates['yell_text']..')%4\\cr',
 		[3] = '(.+)\n(.+)\\cr',
 		[4] = '%1\\cr\n\\cs('..style_templates['yell_text']..')%2\\cr',
+		[5] = '{:',
+		[6] = '\\cs(0,255,0){\\cr\\cs('..style_templates['yell_text']..')',
+		[7] = ':}',
+		[8] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['yell_text']..')',
 		},
-	[12] = {
+	[12] = { -- tell
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)([^>]+)>>(.*)$',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['incoming_tell_name']..')%2\\cr>>\\cs('..style_templates['incoming_tell_text']..')%3\\cr'
 		},
-	[13] = {
+	[13] = {  --party
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)[^%(]+%(([^%)]+)%)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr<\\cs('..style_templates['party_name']..')%2\\cr>\\cs('..style_templates['party_text']..')%3\\cr'
 		},
-	[14] = {
+	[14] = { -- ls1
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)[^<]+<([^>]+)>(.*)',
 		[2] = '\\cs('..style_templates['linkshell1_time']..')%1\\cr<\\cs('..style_templates['linkshell1_name']..')%2\\cr>\\cs('..style_templates['linkshell1_text']..')%3\\cr'
 		},
@@ -424,11 +460,19 @@ return {
 	},
 	[213] = {
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)[^<]+<([^>]+)>(.*)',
-		[2] = '\\cs('..style_templates['linkshell2_time']..')%1\\cr<\\cs('..style_templates['linkshell2_name']..')%2\\cr>\\cs('..style_templates['linkshell2_text']..')%3\\cr'
+		[2] = '\\cs('..style_templates['linkshell2_time']..')%1\\cr<\\cs('..style_templates['linkshell2_name']..')%2\\cr>\\cs('..style_templates['linkshell2_text']..')%3\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['linkshell2_text']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['linkshell2_text']..')',
 		},
 	[214] = {
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)[^<]+<([^>]+)>(.*)',
-		[2] = '\\cs('..style_templates['linkshell2_time']..')%1\\cr<\\cs('..style_templates['linkshell2_name']..')%2\\cr>\\cs('..style_templates['linkshell2_text']..')%3\\cr'
+		[2] = '\\cs('..style_templates['linkshell2_time']..')%1\\cr<\\cs('..style_templates['linkshell2_name']..')%2\\cr>\\cs('..style_templates['linkshell2_text']..')%3\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['linkshell2_text']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['linkshell2_text']..')',
 		},
 	['default'] = {  --failsafe's if no id checks out it'll try to use these.
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(%a+):(.*)', --Addon log message
