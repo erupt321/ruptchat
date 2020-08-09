@@ -20,6 +20,7 @@ for the text.
 	
 	__08.08.20__
 	Changed autotranslate phrases to show up with {}'s in the chatlog and be easier to see.
+	Added some more effects to Autotranslate bracers, colored them like they are in vanilla chat!
 	
 	__08.07.20__
 	After some testing with the archive feature I have changed the way writes are performed to
