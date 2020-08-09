@@ -107,7 +107,11 @@ return {
 		},
 	[14] = { -- ls1
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)[^<]+<([^>]+)>(.*)',
-		[2] = '\\cs('..style_templates['linkshell1_time']..')%1\\cr<\\cs('..style_templates['linkshell1_name']..')%2\\cr>\\cs('..style_templates['linkshell1_text']..')%3\\cr'
+		[2] = '\\cs('..style_templates['linkshell1_time']..')%1\\cr<\\cs('..style_templates['linkshell1_name']..')%2\\cr>\\cs('..style_templates['linkshell1_text']..')%3\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['linkshell1_text']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['linkshell1_text']..')',
 		},
 	[15] = { -- incoming emote
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.+)( '..windower.ffxi.get_player().name..' )(.*)', --Someone Emoting you
