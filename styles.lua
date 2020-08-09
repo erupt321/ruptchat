@@ -342,6 +342,8 @@ return {
 		[14] = '%1%2',
 		[15] = '(.*)(%+).*%[.*%)([0-9]+).*cr%](.*)',
 		[16] = '%1%2%3%4',
+		[17] = 'sell an(.+)to',
+		[18] = 'sell an\\cs(0,255,0)%1\\cr\\cs('..style_templates['ah_text']..')to',
 	},
 	[122] = { -- Unable to see / Auto-Target
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.+) to see (.+).',
@@ -400,7 +402,8 @@ return {
 		[8] = '\\cs('..style_templates['timestamp']..')%1\\cr%2 key item:\\cs('..style_templates['addon_log_header']..')%3\\cr',
 		[9] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[10] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['instance_queue']..')%2\\cr',
-		
+		[11] = 'Obtained:(.+%.)',
+		[12] = 'Obtained:\\cs(0,255,0)%1\\cr',
 	},
 	[150] = { -- npc chat
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)([^:]+) :(.*)',
