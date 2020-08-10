@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.6.080820.3'
+_addon.version = '0.6.081020.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -971,6 +971,10 @@ function addon_command(...)
 		elseif cmd == 'undock' then
 			if args[1] and valid_tab(args[1]) then
 				undock(args[1])
+			else
+				if settings.undocked_tab then
+					undock(settings.undocked_tab)
+				end
 			end
 		elseif cmd == 'battle_all' then
 			if settings.battle_all then
