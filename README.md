@@ -17,6 +17,8 @@ for the text.
 
 
 **Changelog**
+
+
 	__08.11.20__
 	This is a big update as in I've rewritten alot of the backend on tab handling and made click maps
 	fully dynamic.  This all in preparation for one of the funner features I've been able to release.
