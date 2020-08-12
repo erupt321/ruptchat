@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.6.081020.1'
+_addon.version = '0.7.081120.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -134,6 +134,7 @@ require('coroutine')
 files = require('files')
 texts = require('texts')
 config = require('config')
+tab_channels = require('tabs')
 
 save_delay = 5000
 rupt_savefile = ''
@@ -146,11 +147,8 @@ if windower.ffxi.get_info().logged_in then
 	rupt_db = files.new(rupt_savefile..'.lua')
 end
 rupt_db = files.new(rupt_savefile..'.lua')
-rupt_table_length = 1000  --How many lines before we throw out lines from 'All' table
+rupt_table_length = 1000  --How many lines before we throw out lines from all_tabname table
 rupt_subtable_length = 500 --How many lines before we throw out lines from sub tables (Tell,Linkshell,etc..)
-
-current_tab = 'All'
-all_tabs = {'All','Tell','Linkshell','Linkshell2','Party','Battle'}
 
 chat_log_env = {
 	['scrolling'] = false,
@@ -161,17 +159,6 @@ chat_log_env = {
 	['mention_count'] = 0,
 	['last_mention_tab'] = false,
 	['last_text_line'] = false,
-}
-
-tab_ids = {
-	['4']  = 'Tell',
-	['12'] = 'Tell',
-	['14'] = 'Linkshell',
-	['6'] = 'Linkshell',
-	['214'] = 'Linkshell2',
-	['213'] = 'Linkshell2',
-	['13'] = 'Party',
-	['5'] = 'Party',
 }
 
 
@@ -219,7 +206,7 @@ default_settings = {
 	strict_width = false,
 	strict_length = false,
 	undocked_window = false,
-	undocked_tab = 'All',
+	undocked_tab = all_tabname,
 	incoming_pause = false,
 	drag_status = true,
 	battle_flash = false,
@@ -248,8 +235,26 @@ default_settings = {
 }
 
 
+tab_ids = {}
+all_tabs = {}
+for _,v in ipairs(tab_channels['Tabs']) do
+	table.insert(all_tabs,v.name)
+	default_settings['mentions'][v.name] = S{}
+	for _,cid in pairs(v.ids) do
+		print('Name: ',v.name,' ID: ',cid)
+		tab_ids[tostring(cid)] = v.name
+	end
+	if v.tab_type == 'Battle' then
+		battle_tabname = v.name
+	end
+	if v.tab_type == 'All' then
+		all_tabname = v.name
+	end
+end
 
 
+
+current_tab = all_tabname
 
 
 --Main window
@@ -308,6 +313,7 @@ end
 image_map = {}
 
 function build_maps()
+	image_map = {}
 	local x_base = 6.8
 	local y_base = 1.5
 	local font = texts.font(t):lower()
@@ -315,43 +321,31 @@ function build_maps()
 		x_base = x_base*font_wrap_sizes[font][3]
 		y_base = y_base*font_wrap_sizes[font][4]
 	end
-		
 	x_scale = texts.size(t) * x_base
 	y_scale = texts.size(t) * y_base
-	image_map[1] = { ['x_start'] = 0, ['x_end'] = x_scale, ['y_start'] = 0, ['y_end'] = y_scale}
-	image_map[1].action = function()
-		menu('All','')
+	for i,v in ipairs(all_tabs) do
+		if i == 1 then
+			image_map[i] = { ['x_start'] = 0, ['x_end'] = x_scale*i, ['y_start'] = 0, ['y_end'] = y_scale}
+		elseif i == 2 then
+			image_map[i] = { ['x_start'] = x_scale+1, ['x_end'] = x_scale*i, ['y_start'] = 0, ['y_end'] = y_scale}
+		elseif i > 2 then
+			image_map[i] = { ['x_start'] = image_map[i-1].x_end+1, ['x_end'] = x_scale*i, ['y_start'] = 0, ['y_end'] = y_scale}
+		end
+		image_map[i].action = function(current_menu)
+			menu(current_menu,'')
+		end
 	end
-	image_map[2] = { ['x_start'] = x_scale+1, ['x_end'] = x_scale*2, ['y_start'] = 0, ['y_end'] = y_scale}
-	image_map[2].action = function()
-		menu('Tell','')
-	end
-	image_map[3] = { ['x_start'] = image_map[2].x_end+1, ['x_end'] = x_scale*3, ['y_start'] = 0, ['y_end'] = y_scale}
-	image_map[3].action = function()
-		menu('Linkshell','')
-	end
-	image_map[4] = { ['x_start'] = image_map[3].x_end+1, ['x_end'] = x_scale*4, ['y_start'] = 0, ['y_end'] = y_scale}
-	image_map[4].action = function()
-		menu('Linkshell2','')
-	end
-	image_map[5] = { ['x_start'] = image_map[4].x_end+1, ['x_end'] = x_scale*5, ['y_start'] = 0, ['y_end'] = y_scale}
-	image_map[5].action = function()
-		menu('Party','')
-	end
-	image_map[6] = { ['x_start'] = image_map[5].x_end+1, ['x_end'] = x_scale*6, ['y_start'] = 0, ['y_end'] = y_scale}
-	image_map[6].action = function()
-		menu('Battle','')
-	end
+	i = #image_map
 	settings.window_visible = true
-	image_map[7] = { ['x_start'] = image_map[6].x_end+1, ['x_end'] = x_scale*6.8, ['y_start'] = 0, ['y_end'] = y_scale}
-	image_map[7].action = function()
+	image_map[i+1] = { ['x_start'] = image_map[i].x_end+1, ['x_end'] = x_scale*6.8, ['y_start'] = 0, ['y_end'] = y_scale}
+	image_map[i+1].action = function(current_menu)
 		if settings.window_visible then settings.window_visible = false else settings.window_visible = true end
 		config.save(settings, windower.ffxi.get_player().name)
 		reload_text()
 	end
-	image_map[8] = { ['x_start'] = 0, ['x_end'] = x_scale*1.5, ['y_start'] = y_scale+1, ['y_end'] = y_scale*2}
-	image_map[8].action = function()
-		menu('Bottom','')
+	image_map[i+2] = { ['x_start'] = 0, ['x_end'] = x_scale*1.5, ['y_start'] = y_scale+1, ['y_end'] = y_scale*2}
+	image_map[i+2].action = function(current_menu)
+			menu(current_menu,'')
 	end
 end
 
@@ -393,7 +387,7 @@ function header()
 	if not font_wrap_sizes[cur_font] then
 		font_wrap_sizes[cur_font] = { 1.9,0.8,1,1 }
 	end
-	if current_tab == 'Tell' or current_tab == 'All' then chat_log_env['last_seen'] = os.time() end
+	if current_tab == 'Tell' or current_tab == all_tabname then chat_log_env['last_seen'] = os.time() end
 	if chat_log_env['mention_found'] and (current_tab == chat_log_env['last_mention_tab'] or (settings.undocked_window and settings.undocked_tab == chat_log_env['last_mention_tab'])) then
 		if chat_log_env['mention_count'] < os.clock() then
 			chat_log_env['mention_found'] = false
@@ -550,10 +544,11 @@ function load_chat_tab(scroll_start,window)
 	if window == 'main' then
 		new_text = ''
 		if not chat_tables[current_tab] then
+			print(current_tab)
 			chat_tables[current_tab] = {}
 			return
 		end
-		if current_tab == 'Battle' then
+		if current_tab == battle_tabname then
 			current_chat = battle_table
 		else
 			current_chat = chat_tables[current_tab]
@@ -571,12 +566,13 @@ function load_chat_tab(scroll_start,window)
 			tab = 'Drops'
 --			scroll_start = false
 		end
-		if tab:lower() == 'battle' then
+		if tab:lower() == battle_tabname:lower() then
 			current_chat = battle_table
 			if #battle_table < 1 then
 				return
 			end
 		else
+			if not chat_tables[tab] then chat_tables[tab] = {} end
 			current_chat = chat_tables[tab]
 		end
 
@@ -589,6 +585,7 @@ function load_chat_tab(scroll_start,window)
 	if #current_chat < length then
 		loop_start = 1
 		loop_end = #current_chat
+		loop_count = length-1
 	else
 		loop_start = #current_chat - length
 		loop_end = #current_chat
@@ -596,11 +593,11 @@ function load_chat_tab(scroll_start,window)
 			loop_start = scroll_start
 			loop_end = scroll_start + length
 		end
+		loop_count = (loop_end - loop_start)-1
 	end	
 	local temp_table = ''
 	local prev_table = ''
 	local broke_free = false
-	loop_count = (loop_end - loop_start)-1
 	for i=loop_end,loop_start,-1 do
 		if not chat_log_env['finding'] then
 			_,count = temp_table:gsub('[\r\n]','')
@@ -679,11 +676,7 @@ end
 alt_down = false
 windower.register_event('keyboard', function(dik,pressed,flags,blocked)
 	if dik == 56 then
-		if pressed then
-			alt_down = true
-		else
-			alt_down = false
-		end
+		alt_down = pressed
 	end
 end)
 
@@ -732,7 +725,7 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 		local pos_y = texts.pos_y(t)
 		for i,v in ipairs(image_map) do
 			if (x < pos_x+v.x_end and x > pos_x+v.x_start) and (y > pos_y+v.y_start and y < pos_y+v.y_end) then
-				v.action()
+				v.action(i)
 				clicked = true
 				return true
 			end
@@ -761,7 +754,7 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 		end
 	elseif eventtype == 10 then
 		if hovered or (settings.split_drops and texts.hover(t5,x,y)) then
-			if current_tab == 'Battle' then
+			if current_tab == battle_tabname then
 				current_chat = battle_table
 			else
 				current_chat = chat_tables[current_tab]
@@ -821,7 +814,7 @@ function write_db()
 	local temp_table = {}
 	--Prune Battle_Log
 	local tinsert = table.insert
-	for i,v in ipairs(chat_tables['All']) do
+	for i,v in ipairs(chat_tables[all_tabname]) do
 --		local id = windower.regex.match(v,'[0-9]+:([0-9]+):') or false
 --		if (id and id[1] and id[1][1] and battle_ids[tonumber(id[1][1])] == true) or string.sub(v,1,2) == '**' then
 --			table.insert(battle_table,v)
@@ -829,11 +822,11 @@ function write_db()
 			tinsert(temp_table,v)
 --		end
 	end
-	chat_tables['All'] = nil
-	chat_tables['All'] = temp_table
+	chat_tables[all_tabname] = nil
+	chat_tables[all_tabname] = temp_table
 	--Prune Length
 	for i,v in pairs(chat_tables) do
-		if i == 'All' then max_length = rupt_table_length else max_length = rupt_subtable_length end
+		if i == all_tabname then max_length = rupt_table_length else max_length = rupt_subtable_length end
 		--print('Processing table: '..i..' With Length: '..#v)
 		if #v > max_length then
 			--print('Pruning table: '..i..' Has '..#v..' / '..max_length)
@@ -954,7 +947,12 @@ function addon_command(...)
 			end
 		elseif cmd == 'tab' then
 			if args[1] and valid_tab(args[1]) then
-				menu(args[1]:sub(1,1):upper()..args[1]:sub(2):lower(),'')
+				for i=1,#all_tabs,1 do
+					if args[1]:lower() == all_tabs[i]:lower() then
+						menu(i,'')
+						return
+					end
+				end
 			elseif not args[1] then
 				for i=1,#all_tabs,1 do
 					if current_tab == all_tabs[i] then
@@ -963,7 +961,7 @@ function addon_command(...)
 						else
 							next_tab = i+1
 						end
-						menu(all_tabs[next_tab],'')
+						menu(next_tab,'')
 						return
 					end
 				end
@@ -1189,7 +1187,7 @@ function addon_command(...)
 end
 
 function find_next(c)
-	if current_tab == 'Battle' then
+	if current_tab == battle_tabname then
 		current_table = battle_table
 	else
 		current_table = chat_tables[current_tab]
@@ -1219,8 +1217,8 @@ function reset_tab()
 	find_table['last_find'] = false
 	find_table['last_index'] = 1
 	chat_log_env['finding'] = false
-	image_map[8].action = function()
-	menu('Bottom','')
+	image_map[#image_map].action = function(current_menu)
+	menu(current_menu,'')
 	end
 end
 
@@ -1231,85 +1229,31 @@ function mention_check()
 	end
 end
 
-function menu(menuname,c)
+function menu(menunumber,c)
 		local player = windower.ffxi.get_player()
-		local pos = windower.ffxi.get_mob_by_target('me')
-		if menuname == 'All' then
+		if tonumber(menunumber) ~= nil and all_tabs[menunumber] then -- generic menus
+			menuname = all_tabs[menunumber]
 			if alt_down then
 				undock(menuname)
 				return
 			end
-			current_tab = 'All'
+			current_tab = menuname
 			reset_tab()
 			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
 			last_scroll = #chat_tables[current_tab] - settings.log_length
 			mention_check()
 			reload_text()
-		elseif menuname == 'Tell' then
-			if alt_down then
-				undock(menuname)
-				return
-			end
-			current_tab = 'Tell'
-			reset_tab()
-			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
-			last_scroll = #chat_tables[current_tab] - settings.log_length
-			mention_check()
-			reload_text()
-		elseif menuname == 'Linkshell' then
-			if alt_down then
-				undock(menuname)
-				return
-			end
-			current_tab = 'Linkshell'
-			reset_tab()
-			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
-			last_scroll = #chat_tables[current_tab] - settings.log_length
-			mention_check()
-			reload_text()
-		elseif menuname == 'Linkshell2' then
-			if alt_down then
-				undock(menuname)
-				return
-			end
-			current_tab = 'Linkshell2'
-			reset_tab()
-			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
-			last_scroll = #chat_tables[current_tab] - settings.log_length
-			mention_check()
-			reload_text()
-		elseif menuname == 'Party' then
-			if alt_down then
-				undock(menuname)
-				return
-			end
-			current_tab = 'Party'
-			reset_tab()
-			if not chat_tables[current_tab] then chat_tables[current_tab] = {} end
-			last_scroll = #chat_tables[current_tab] - settings.log_length
-			mention_check()
-			reload_text()
-		elseif menuname == 'Battle' then
-			if alt_down then
-				undock(menuname)
-				return
-			end
-			current_tab = 'Battle'
-			reset_tab()
-			last_scroll = #battle_table - settings.log_length
-			mention_check()
-			reload_text()
-		elseif menuname == 'Bottom' then
+		elseif menunumber == #image_map then  --Bottom menu
 			chat_log_env['scrolling'] = false
 			chat_log_env['scroll_num'] = false
-			if current_tab == 'Battle' then
+			if current_tab == battle_tabname then
 				last_scroll = #battle_table - settings.log_length
 			else
 				last_scroll = #chat_tables[current_tab] - settings.log_length
 			end
 			reset_tab()
 			reload_text()
-		elseif menuname == 'find' then
+		elseif menunumber == 'find' then  --Triggered from addon_command, remakes image_map fn = findnext
 			local c = c:lower()
 			if find_table['last_find'] == c then
 				last_scroll = find_next(c)
@@ -1317,7 +1261,7 @@ function menu(menuname,c)
 					windower.ffxi.add_to_chat(200,'No more matches found')
 					return
 				else
-					image_map[8].action = function()
+					image_map[#image_map].action = function(current_menu)
 						menu('findnext','')
 						end
 					chat_log_env['scroll_num'] = last_scroll
@@ -1329,12 +1273,13 @@ function menu(menuname,c)
 					log('No Matches for: '..c)
 					find_table['last_find'] = false
 					chat_log_env['finding'] = false
-					image_map[8].action = function()
-					menu('Bottom','')
+					image_map[#image_map].action = function(current_menu)
+					menu(current_menu,'')
 					end
 					return
 				else
-					image_map[8].action = function()
+					print('Going to Find Next')
+					image_map[#image_map].action = function(current_menu)
 						menu('findnext','')
 					end
 					find_table['last_find'] = c
@@ -1343,14 +1288,14 @@ function menu(menuname,c)
 					reload_text()
 				end
 			end
-		elseif menuname == 'findnext' then
+		elseif menunumber == 'findnext' then
 			next_item = find_next(find_table['last_find'])
 			if not next_item then
 				log('No more matches found')
 				find_table['last_find'] = false
 				chat_log_env['finding'] = false
-				image_map[8].action = function()
-				menu('Bottom','')
+				image_map[#image_map].action = function(current_menu)
+				menu(current_menu,'')
 				end
 				chat_log_env['scrolling'] = true
 				reload_text()
@@ -1367,18 +1312,18 @@ end
 function check_mentions(id, chat)
 	chat_type = nil
 	if battle_ids[id] then
-		chat_type = 'Battle'
+		chat_type = battle_tabname
 	elseif tab_ids[tostring(id)] then
 		chat_type = tab_ids[tostring(id)]
 	end
 	local sfind = string.find
-	if not (chat_type == 'Battle' and settings.battle_all == false) then
-	if #T(settings.mentions['All']) > 0 then
+	if not (chat_type == battle_tabname and settings.battle_all == false) then
+	if #T(settings.mentions[all_tabname]) > 0 then
 		local stripped = string.gsub(chat,'[^A-Za-z%s]','')
 		local splitted = split(stripped,' ')
 		local chat_low = chat:lower()
 		local player_name = windower.ffxi.get_player().name:lower()
-		for v in settings.mentions['All']:it() do
+		for v in settings.mentions[all_tabname]:it() do
 			v = v:lower()
 			if sfind(chat_low,v)then
 				if v == player_name then
@@ -1388,7 +1333,7 @@ function check_mentions(id, chat)
 				end
 				chat_log_env['mention_found'] = true
 				chat_log_env['mention_count'] = os.clock()+30
-				chat_log_env['last_mention_tab'] = 'All'
+				chat_log_env['last_mention_tab'] = all_tabname
 				t2:text("New Mention @ \\cs(255,69,0)All\\cr: \\cs(0,255,0)"..v.."\\cr")
 				t2:visible(true)
 				t2:bg_color(0,0,0)
@@ -1398,7 +1343,7 @@ function check_mentions(id, chat)
 	end
 	end
 	if chat_type and #T(settings.mentions[chat_type]) > 0 then
-		if settings.battle_flash and chat_type == 'Battle' then
+		if settings.battle_flash and chat_type == battle_tabname then
 			--force this to process if battle_flash is true and this is a battle message
 		else
 			if current_tab == chat_type then
@@ -1423,7 +1368,7 @@ function check_mentions(id, chat)
 				chat_log_env['mention_found'] = true
 				chat_log_env['mention_count'] = os.clock()+30
 				chat_log_env['last_mention_tab'] = chat_type
-				if chat_type == 'Battle' and settings.battle_flash then					
+				if chat_type == battle_tabname and settings.battle_flash then					
 					t2:text("New Mention @ \\cs(255,69,0)"..chat_type.."\\cr: \\cs(0,255,0)"..v.."\\cr "..stripped)
 				else
 					t2:text("New Mention @ \\cs(255,69,0)"..chat_type.."\\cr: \\cs(0,255,0)"..v.."\\cr")
@@ -1446,8 +1391,8 @@ function chat_add(id, chat)
 	if chat_debug then print('ID: '..id..' Txt: '..chat) end
 
 	check_mentions(id,chat)
-	if not chat_tables['All'] then
-		chat_tables['All'] = {}
+	if not chat_tables[all_tabname] then
+		chat_tables[all_tabname] = {}
 	end
 	chat = string.gsub(chat,'[\r\n]','')
 	chat = string.gsub(chat,string.char(0x81, 0xA8),'->')
@@ -1481,14 +1426,18 @@ function chat_add(id, chat)
 		end
 --		local battle_text = convert_text(os.time()..':'..id..':'..chat,'Battle')
 --		table.insert(battle_table,battle_text)
-		table.insert(battle_table,os.time()..':'..id..':'..chat)
+		if not T(tab_channels['Battle_Exclusions']):contains(id) then
+			table.insert(battle_table,os.time()..':'..id..':'..chat)
+		end
 		if settings.battle_all then
---			table.insert(chat_tables['All'],'**'..battle_text)
-			table.insert(chat_tables['All'],os.time()..':'..id..':'..chat)
+--			table.insert(chat_tables[all_tabname],'**'..battle_text)
+			table.insert(chat_tables[all_tabname],os.time()..':'..id..':'..chat)
 		end
 		
 	else
-		table.insert(chat_tables['All'],os.time()..':'..id..':'..chat)
+		if not T(tab_channels['All_Exclusions']):contains(id) then
+			table.insert(chat_tables[all_tabname],os.time()..':'..id..':'..chat)
+		end
 	end
 	local tab_id = tab_ids[tostring(id)] or false
 	if tab_id then
@@ -1595,7 +1544,7 @@ function save_chat_log()
 			t5:hide()
 		end
 	end
-	if chat_log_env['mention_found'] and settings.battle_flash and chat_log_env['last_mention_tab'] == 'Battle' then
+	if chat_log_env['mention_found'] and settings.battle_flash and chat_log_env['last_mention_tab'] == battle_tabname then
 		local t = os.clock()%1 -- Flashing colors from Byrth's answering machine
 		t2:bg_color(100,100+150*math.sin(t*math.pi),100+150*math.sin(t*math.pi))
 		t3:bg_color(0,0,0)
@@ -1618,6 +1567,7 @@ windower.register_event('login', function()
 		rupt_db = files.new(rupt_savefile..'.lua')
 		style_templates = require('templates')
 		tab_styles = require('styles')
+
 	end
 	load_db_file()
 	load_events()

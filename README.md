@@ -17,6 +17,35 @@ for the text.
 
 
 **Changelog**
+	__08.11.20__
+	This is a big update as in I've rewritten alot of the backend on tab handling and made click maps
+	fully dynamic.  This all in preparation for one of the funner features I've been able to release.
+	
+	Customizable Tabs.
+	
+	You now have a tabs.lua file which includes all the tab settings for the addon.  Within this file
+	you can add and delete tabs, Rename them, change the ordering.  You can also create new custom tabs
+	which you can put custom chat id's you'd like them to receive.
+	
+	One example: 
+
+	You set ['All_Exclusions'] = {148,161}
+	This will now filter out chat id's 148, and 161 from the 'All' type tab.  Which are instance queue
+	messages and moogle/campaign messages.
+	
+	Now we make a Custom Tab with this in your tabs.lua.
+	{name='Custom',ids={148, 161},tab_type='Normal'},
+	
+	Now all queue messages and moogle messages will filter into that tab solely.  The same can be
+	done with battle chat types to record spell casts perhaps in their own tab.
+	
+	You can combine Tell/LS1/LS2 into a single tab if you'd like.
+	On initial reload when you've renamed tabs your tables will be empty.  You can modify your chat log
+	and rename old tables to your new ones if you want your history to resume.
+	
+	If you'd like to figure out what chat id's are to what, I have very brief descriptions for quite a few
+	of them in the styles.lua file.  But just enable //rchat debug and you can see what id's go for what
+	chat types to use in your custom settings.
 	
 	__08.08.20__
 	Changed autotranslate phrases to show up with {}'s in the chatlog and be easier to see.
