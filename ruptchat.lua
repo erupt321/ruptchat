@@ -241,7 +241,6 @@ for _,v in ipairs(tab_channels['Tabs']) do
 	table.insert(all_tabs,v.name)
 	default_settings['mentions'][v.name] = S{}
 	for _,cid in pairs(v.ids) do
-		print('Name: ',v.name,' ID: ',cid)
 		tab_ids[tostring(cid)] = v.name
 	end
 	if v.tab_type == 'Battle' then
@@ -544,7 +543,6 @@ function load_chat_tab(scroll_start,window)
 	if window == 'main' then
 		new_text = ''
 		if not chat_tables[current_tab] then
-			print(current_tab)
 			chat_tables[current_tab] = {}
 			return
 		end
@@ -1278,7 +1276,6 @@ function menu(menunumber,c)
 					end
 					return
 				else
-					print('Going to Find Next')
 					image_map[#image_map].action = function(current_menu)
 						menu('findnext','')
 					end
