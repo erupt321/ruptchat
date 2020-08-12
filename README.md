@@ -279,10 +279,10 @@ for the text.
 
 **Screenshots**
 
-![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat10.gif)
+![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/chatwindow7.gif)
 
 
-![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat11.gif)
+![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/chatwindow9.gif)
 
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat7.gif)
