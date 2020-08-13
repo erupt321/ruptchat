@@ -17,6 +17,8 @@ for the text.
 
 
 **Changelog**
+
+
 	__08.11.20__
 	This is a big update as in I've rewritten alot of the backend on tab handling and made click maps
 	fully dynamic.  This all in preparation for one of the funner features I've been able to release.
@@ -279,10 +281,10 @@ for the text.
 
 **Screenshots**
 
-![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat10.gif)
+![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/chatwindow7.gif)
 
 
-![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat11.gif)
+![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/chatwindow9.gif)
 
 
 ![Image of Rchat](https://github.com/erupt321/ruptchat/blob/master/images/rchat7.gif)
