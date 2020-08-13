@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.7.081120.1'
+_addon.version = '0.7.081220.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -1475,6 +1475,7 @@ function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 			if not battlemod_loaded then 
 				modified = original 
 			end
+			modified = string.gsub(modified,'\\','\\\\')
 			modified = string.gsub(modified,'[\r\n]','')
 			modified = string.gsub(modified,'[\\]+$','')
 			chat_add(id,modified)
