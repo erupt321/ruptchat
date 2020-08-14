@@ -18,6 +18,9 @@ for the text.
 
 **Changelog**
 
+	__08.13.20__
+	Mostly backend cleaning up code and seperating the single file lua into seperate packages.
+
 
 	__08.11.20__
 	This is a big update as in I've rewritten alot of the backend on tab handling and made click maps
