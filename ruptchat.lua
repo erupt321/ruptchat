@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.8.081420.1'
+_addon.version = '0.8.081520.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -185,6 +185,12 @@ TextWindow.Drops:visible(false)
 TextWindow.Drops:size(settings.text.size)
 TextWindow.Drops:bg_alpha(settings.bg.alpha)
 TextWindow.Drops:pos(300,300)
+
+--Setup Window
+TextWindow.setup = texts.new({flags = {draggable=false}})
+TextWindow.setup:visible(false)
+TextWindow.setup:size(settings.text.size)
+texts.pad(TextWindow.setup,5)
 
 Scrolling_Windows = {'main','undocked','Drops'}
 
@@ -429,7 +435,7 @@ function addon_command(...)
 				config.save(settings, windower.ffxi.get_player().name)
 			end
 		elseif cmd == 'strict_width' then
-			if settings.strict_off then
+			if settings.strict_width then
 				log('Setting strict_width to false')
 				settings.strict_width = false
 				config.save(settings, windower.ffxi.get_player().name)
@@ -608,8 +614,41 @@ function addon_command(...)
 			if chat_debug then chat_debug = false else chat_debug = true end
 		end
 	end
+	if TextWindow.setup:visible() then
+		setup_menu()
+	end
 end
 windower.register_event('addon command', addon_command)
+
+function setup_menu()
+	local setup_text = '[ \\cs(255,69,0)Setup\\cr ]... .. .\n'
+	for _,v in ipairs(setup_window_toggles) do
+		setup_text = setup_text..'['..v..'] = '
+		if settings[v] then
+			setup_text = setup_text..'\\cs(0,255,0)On\\cr Off\n'
+		else
+			setup_text = setup_text..'On \\cs(255,0,0)Off\\cr\n'
+		end
+	end
+	texts.size(TextWindow.setup, texts.size(TextWindow.main))
+	texts.bg_alpha(TextWindow.setup, texts.bg_alpha(TextWindow.main))
+	texts.font(TextWindow.setup, texts.font(TextWindow.main))
+	TextWindow.setup:text(setup_text)
+	if ext_x and ext_x > 10 then
+		local main_ext_x,main_ext_y = TextWindow.main:extents()
+		local main_pos_x,main_pos_y = TextWindow.main:pos()
+		TextWindow.setup:pos((main_pos_x+main_ext_x)-ext_x,(main_pos_y-ext_y))
+		TextWindow.setup:visible(true)
+	else
+		ext_x,ext_y = TextWindow.setup:extents()
+		local main_ext_x,main_ext_y = TextWindow.main:extents()
+		local main_pos_x,main_pos_y = TextWindow.main:pos()
+		TextWindow.setup:pos((main_pos_x+main_ext_x)-ext_x,(main_pos_y-ext_y))
+		TextWindow.setup:visible(true)
+		coroutine.schedule(setup_menu,0.1)
+	end
+	build_maps()
+end
 
 function find_next(c)
 	if current_tab == battle_tabname then
@@ -642,7 +681,7 @@ function reset_tab()
 	find_table['last_find'] = false
 	find_table['last_index'] = 1
 	chat_log_env['finding'] = false
-	image_map[#image_map].action = function(current_menu)
+	main_map_left[#main_map_left].action = function(current_menu)
 	menu(current_menu,'')
 	end
 end
@@ -661,7 +700,7 @@ function menu(menunumber,c)
 			last_scroll = #chat_tables[current_tab] - settings.log_length
 			mention_check()
 			reload_text()
-		elseif menunumber == #image_map then  --Bottom menu
+		elseif menunumber == #main_map_left then  --Bottom menu
 			chat_log_env['scrolling'] = false
 			--chat_log_env['scroll_num'] = false
 			if current_tab == battle_tabname then
@@ -671,7 +710,7 @@ function menu(menunumber,c)
 			end
 			reset_tab()
 			reload_text()
-		elseif menunumber == 'find' then  --Triggered from addon_command, remakes image_map fn = findnext
+		elseif menunumber == 'find' then  --Triggered from addon_command, remakes main_map_left fn = findnext
 			local c = c:lower()
 			if find_table['last_find'] == c then
 				last_scroll = find_next(c)
@@ -679,7 +718,7 @@ function menu(menunumber,c)
 					windower.ffxi.add_to_chat(200,'No more matches found')
 					return
 				else
-					image_map[#image_map].action = function(current_menu)
+					main_map_left[#main_map_left].action = function(current_menu)
 						menu('findnext','')
 						end
 					chat_log_env['scroll_num']['main'] = last_scroll
@@ -691,12 +730,12 @@ function menu(menunumber,c)
 					log('No Matches for: '..c)
 					find_table['last_find'] = false
 					chat_log_env['finding'] = false
-					image_map[#image_map].action = function(current_menu)
+					main_map_left[#main_map_left].action = function(current_menu)
 					menu(current_menu,'')
 					end
 					return
 				else
-					image_map[#image_map].action = function(current_menu)
+					main_map_left[#main_map_left].action = function(current_menu)
 						menu('findnext','')
 					end
 					find_table['last_find'] = c
@@ -711,7 +750,7 @@ function menu(menunumber,c)
 				log('No more matches found')
 				find_table['last_find'] = false
 				chat_log_env['finding'] = false
-				image_map[#image_map].action = function(current_menu)
+				main_map_left[#main_map_left].action = function(current_menu)
 				menu(current_menu,'')
 				end
 				chat_log_env['scrolling'] = true
@@ -722,6 +761,14 @@ function menu(menunumber,c)
 				chat_log_env['scroll_num']['main'] = last_scroll
 				reload_text()
 			end
+		elseif menunumber == 'setup_menu' then
+			if TextWindow.setup:visible() then
+				TextWindow.setup:visible(false)
+			else
+				setup_menu()
+			end
+		elseif menunumber == 'setup_option' then
+			addon_command(setup_window_commands[tonumber(c)])
 		end
 
 end

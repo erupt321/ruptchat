@@ -100,3 +100,8 @@ default_settings = {
 
 tab_ids = {}
 all_tabs = {}
+
+setup_window_toggles = { 'battle_all','battle_off','strict_width','strict_length',
+'incoming_pause','drag_status','battle_flash','chat_input','snapback','split_drops','drops_window','archive'}
+setup_window_commands = { 'battle_all','battle_off','strict_width','strict_length',
+'incoming_pause','drag','battle_flash','chatinput','snapback','splitdrops','dropswindow','archive'}

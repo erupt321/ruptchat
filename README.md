@@ -18,6 +18,11 @@ for the text.
 
 **Changelog**
 
+	__08.15.20__
+	Made a setup menu, if you right click on the [rChat] in the main menu a setup menu will open up,
+	which you can then click on all the setup options to do either a quick setting change or just to 
+	view all your changes.  Right clicking the [rChat] again will close the menu.
+
 	__08.14.20__
 	Rewrote the scrolling code and chat processor to be universally compatible with scrolling ability.
 	Now undocked tab can be scrolled just like the Main window and Drops window, and in the future adding
