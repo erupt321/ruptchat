@@ -79,7 +79,11 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			end
 		end
 		if TextWindow.setup:visible() and texts.hover(TextWindow.setup,x,y) then
-			local setup_pos_x,setup_pos_y = texts.pos(TextWindow.setup)
+			ext_x,ext_y = TextWindow.setup:extents()
+			local main_ext_x,main_ext_y = TextWindow.main:extents()
+			local main_pos_x,main_pos_y = TextWindow.main:pos()
+			setup_pos_y = main_pos_y-ext_y
+			local setup_pos_x,_ = texts.pos(TextWindow.setup)
 			for i,v in ipairs(setup_map_left) do
 				if (x < setup_pos_x+v.x_end and x > setup_pos_x+v.x_start) and (y > setup_pos_y+v.y_start and y < setup_pos_y+v.y_end) then
 					v.action(i)

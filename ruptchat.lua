@@ -637,12 +637,14 @@ function setup_menu()
 	if ext_x and ext_x > 10 then
 		local main_ext_x,main_ext_y = TextWindow.main:extents()
 		local main_pos_x,main_pos_y = TextWindow.main:pos()
-		TextWindow.setup:pos((main_pos_x+main_ext_x)-ext_x,(main_pos_y-ext_y))
+		setup_pos_y = main_pos_y-ext_y
+		TextWindow.setup:pos((main_pos_x+main_ext_x)-ext_x,setup_pos_y)
 		TextWindow.setup:visible(true)
 	else
 		ext_x,ext_y = TextWindow.setup:extents()
 		local main_ext_x,main_ext_y = TextWindow.main:extents()
 		local main_pos_x,main_pos_y = TextWindow.main:pos()
+		setup_pos_y = main_pos_y-ext_y
 		TextWindow.setup:pos((main_pos_x+main_ext_x)-ext_x,(main_pos_y-ext_y))
 		TextWindow.setup:visible(true)
 		coroutine.schedule(setup_menu,0.1)
