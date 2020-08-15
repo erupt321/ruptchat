@@ -1,13 +1,10 @@
 
 local dragged = nil
-local clicked = false
 last_scroll = 0
 
 function cap(val, min, max)
     return val > max and max or val < min and min or val
 end
-
-alt_down = false
 
 windower.register_event('keyboard', function(dik,pressed,flags,blocked)
 	if dik == 56 then
@@ -79,10 +76,7 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			end
 		end
 		if TextWindow.setup:visible() and texts.hover(TextWindow.setup,x,y) then
-			ext_x,ext_y = TextWindow.setup:extents()
-			local main_pos_x,main_pos_y = TextWindow.main:pos()
-			setup_pos_y = main_pos_y-ext_y
-			local setup_pos_x,_ = texts.pos(TextWindow.setup)
+			local setup_pos_x,setup_pos_y = windower.text.get_location(TextWindow.setup._name)
 			for i,v in ipairs(setup_map_left) do
 				if (x < setup_pos_x+v.x_end and x > setup_pos_x+v.x_start) and (y > setup_pos_y+v.y_start and y < setup_pos_y+v.y_end) then
 					v.action(i)
