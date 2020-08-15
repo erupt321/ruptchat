@@ -80,7 +80,6 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 		end
 		if TextWindow.setup:visible() and texts.hover(TextWindow.setup,x,y) then
 			ext_x,ext_y = TextWindow.setup:extents()
-			local main_ext_x,main_ext_y = TextWindow.main:extents()
 			local main_pos_x,main_pos_y = TextWindow.main:pos()
 			setup_pos_y = main_pos_y-ext_y
 			local setup_pos_x,_ = texts.pos(TextWindow.setup)
@@ -115,13 +114,15 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			end
 		end
 	elseif eventtype == 4 then --right click on
-		local pos_x = texts.pos_x(TextWindow.main)
-		local pos_y = texts.pos_y(TextWindow.main)
-		for i,v in ipairs(main_map_right) do
-			if (x < pos_x+v.x_end and x > pos_x+v.x_start) and (y > pos_y+v.y_start and y < pos_y+v.y_end) then
-				v.action()
-				right_clicked = true
-				return true
+		if hovered then
+			local pos_x = texts.pos_x(TextWindow.main)
+			local pos_y = texts.pos_y(TextWindow.main)
+			for i,v in ipairs(main_map_right) do
+				if (x < pos_x+v.x_end and x > pos_x+v.x_start) and (y > pos_y+v.y_start and y < pos_y+v.y_end) then
+					v.action()
+					right_clicked = true
+					return true
+				end
 			end
 		end
 	elseif eventtype == 5 then --right click off
