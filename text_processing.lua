@@ -140,7 +140,7 @@ function header()
 		new_text_header = new_text_header..'[Find Next]\n'
 		TextWindow.notification:text("Searching for: \\cs(0,255,0)"..find_table['last_find'].."\\cr")
 		TextWindow.notification:visible(true)
-	elseif chat_log_env['scrolling'] then
+	elseif chat_log_env['scrolling'] and last_scroll_type == 'main' then
 		new_text_header = new_text_header..'[Jump to Bottom]\n'
 		TextWindow.notification:visible(false)
 	else
@@ -149,10 +149,16 @@ function header()
 	if not chat_log_env['scrolling'] and not chat_log_env['finding'] then
 		load_chat_tab(false,'main')
 	else
-		load_chat_tab(chat_log_env['scroll_num'],'main')
+		if chat_log_env['scrolling'] and last_scroll_type == 'main' then
+			load_chat_tab(chat_log_env['scroll_num']['main'],'main')
+		else
+			load_chat_tab(false,'main')
+		end
 	end
 	if settings.undocked_window then
-		load_chat_tab(0,'undocked')
+		if not chat_log_env['scrolling'] and last_scroll_type ~= 'undocked' then
+			load_chat_tab(false,'undocked')
+		end
 	end
 end
 
@@ -176,9 +182,11 @@ function load_chat_tab(scroll_start,window)
 		tab = current_tab
 		length = settings.log_length
 	else
+		if not scroll_start or scroll_start == 0 then
+			scroll_start = false
+		end
 		if window == 'undocked' then
 			tab = settings.undocked_tab
-			scroll_start = false
 		elseif window == 'Drops' then
 			tab = 'Drops'
 --			scroll_start = false
@@ -211,7 +219,7 @@ function load_chat_tab(scroll_start,window)
 			loop_end = scroll_start + length
 		end
 		loop_count = (loop_end - loop_start)-1
-	end	
+	end
 	local temp_table = ''
 	local prev_table = ''
 	local broke_free = false
@@ -263,19 +271,16 @@ function load_chat_tab(scroll_start,window)
 		end
 	else
 		if temp_table ~= '' then
-			if window == 'undocked' then
-				TextWindow.undocked:text('[ \\cs(255,69,0)'..tab..'\\cr ]... .. .\n'..temp_table)
-				texts.size(TextWindow.undocked, texts.size(TextWindow.main))
-				texts.bg_alpha(TextWindow.undocked, texts.bg_alpha(TextWindow.main))
-				texts.font(TextWindow.undocked, texts.font(TextWindow.main))
-				TextWindow.undocked:visible(true)
-			elseif window == 'Drops' then
-				TextWindow.drops:text('[ \\cs(255,69,0)'..tab..'\\cr ]... .. .\n'..temp_table)
-				texts.size(TextWindow.drops, texts.size(TextWindow.main))
-				texts.bg_alpha(TextWindow.drops, texts.bg_alpha(TextWindow.main))
-				texts.font(TextWindow.drops, texts.font(TextWindow.main))
-				TextWindow.drops:visible(true)
+			if chat_log_env['scrolling'] and last_scroll_type == window then
+				scroll_head = '[Scrolling]'
+			else
+				scroll_head = ''
 			end
+			texts.text(TextWindow[window],'[ \\cs(255,69,0)'..tab..'\\cr ]... .. .\n'..scroll_head..temp_table)
+			texts.size(TextWindow[window], texts.size(TextWindow.main))
+			texts.bg_alpha(TextWindow[window], texts.bg_alpha(TextWindow.main))
+			texts.font(TextWindow[window], texts.font(TextWindow.main))
+			texts.visible(TextWindow[window],true)
 		end
 	end
 end

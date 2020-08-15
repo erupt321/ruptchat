@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.8.081320.1'
+_addon.version = '0.8.081420.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -180,11 +180,13 @@ TextWindow.input:size(settings.text.size)
 TextWindow.input:bg_alpha(255)
 
 --Drops Window
-TextWindow.drops = texts.new(default_settings)
-TextWindow.drops:visible(false)
-TextWindow.drops:size(settings.text.size)
-TextWindow.drops:bg_alpha(settings.bg.alpha)
-TextWindow.drops:pos(300,300)
+TextWindow.Drops = texts.new(default_settings)
+TextWindow.Drops:visible(false)
+TextWindow.Drops:size(settings.text.size)
+TextWindow.Drops:bg_alpha(settings.bg.alpha)
+TextWindow.Drops:pos(300,300)
+
+Scrolling_Windows = {'main','undocked','Drops'}
 
 
 function split(s, delimiter)
@@ -526,7 +528,7 @@ function addon_command(...)
 				scroll = 0
 			end
 			load_chat_tab(scroll,'Drops')
-			TextWindow.drops:show()
+			TextWindow.Drops:show()
 		elseif cmd == 'archive' then
 			if settings.archive then
 				log('Setting archive to false')
@@ -636,7 +638,7 @@ end
 
 function reset_tab()
 	chat_log_env['scrolling'] = false
-	chat_log_env['scroll_num'] = false
+--	chat_log_env['scroll_num'] = {}
 	find_table['last_find'] = false
 	find_table['last_index'] = 1
 	chat_log_env['finding'] = false
@@ -661,7 +663,7 @@ function menu(menunumber,c)
 			reload_text()
 		elseif menunumber == #image_map then  --Bottom menu
 			chat_log_env['scrolling'] = false
-			chat_log_env['scroll_num'] = false
+			--chat_log_env['scroll_num'] = false
 			if current_tab == battle_tabname then
 				last_scroll = #battle_table - settings.log_length
 			else
@@ -680,7 +682,7 @@ function menu(menunumber,c)
 					image_map[#image_map].action = function(current_menu)
 						menu('findnext','')
 						end
-					chat_log_env['scroll_num'] = last_scroll
+					chat_log_env['scroll_num']['main'] = last_scroll
 					reload_text()
 				end
 			else
@@ -699,7 +701,7 @@ function menu(menunumber,c)
 					end
 					find_table['last_find'] = c
 					last_scroll = next_item
-					chat_log_env['scroll_num'] = last_scroll
+					chat_log_env['scroll_num']['main'] = last_scroll
 					reload_text()
 				end
 			end
@@ -717,7 +719,7 @@ function menu(menunumber,c)
 				return
 			else
 				last_scroll = next_item
-				chat_log_env['scroll_num'] = last_scroll
+				chat_log_env['scroll_num']['main'] = last_scroll
 				reload_text()
 			end
 		end
@@ -848,9 +850,9 @@ function save_chat_log()
 	else
 		TextWindow.input:hide()
 	end
-	if settings.split_drops and texts.visible(TextWindow.drops) then
+	if settings.split_drops and texts.visible(TextWindow.Drops) then
 		if os.clock() > drops_timer then
-			TextWindow.drops:hide()
+			TextWindow.Drops:hide()
 		end
 	end
 	if chat_log_env['mention_found'] and settings.battle_flash and chat_log_env['last_mention_tab'] == battle_tabname then
@@ -883,7 +885,6 @@ end)
 
 windower.register_event('load', function()
 	if windower.ffxi.get_info().logged_in then
-		print('Running Load')
 		rupt_savefile = 'chatlogs/'..windower.ffxi.get_player().name..'-current'
 		rupt_db = files.new(rupt_savefile..'.lua')
 		style_templates = require('templates')

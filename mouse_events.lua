@@ -88,20 +88,38 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			end
 		end
 	elseif eventtype == 10 then
-		if hovered or (settings.split_drops and texts.hover(TextWindow.drops,x,y)) then
+			hovered = false
+			for _,windowObj in pairs(Scrolling_Windows) do
+				if texts.hover(TextWindow[windowObj],x,y) then
+					if windowObj == 'Drops' then
+						current_chat = chat_tables['Drops']
+					end
+					if windowObj == 'main' then
+						current_chat = chat_tables[current_tab]
+					elseif windowObj == 'undocked' then
+						current_chat = chat_tables[settings.undocked_tab]
+						if settings.undocked_tab == battle_tabname then
+							current_chat = battle_table
+						end
+					end
+					if last_scroll_type and last_scroll_type ~= windowObj then
+						if last_scroll_type == 'main' and chat_log_env['scrolling'] then
+							chat_log_env['scrolling'] = false
+							reload_text()
+						end
+ 						chat_log_env['scroll_num'][last_scroll_type] = false
+						last_scroll = 0
+					end
+					last_scroll_type = windowObj
+					hovered = true
+				end
+			end
+			if not hovered then return end
 			if current_tab == battle_tabname then
 				current_chat = battle_table
-			else
-				current_chat = chat_tables[current_tab]
 			end
-			if texts.hover(TextWindow.drops,x,y) then
-				current_chat = chat_tables['Drops']
-				last_scroll_type = 'drops'
-			elseif not chat_log_env['scrolling'] then
-				last_scroll_type = 'main'
-				chat_log_env['scroll_num'] = false
-			end
-			if current_chat and (last_scroll == 0 or chat_log_env['scroll_num'] == false) then
+	
+			if current_chat and (last_scroll == 0 or chat_log_env['scroll_num'][last_scroll_type] == false) then
 				if #current_chat > settings.log_length then
 					last_scroll = #current_chat - settings.log_length
 				else
@@ -113,27 +131,25 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 				if (last_scroll >= (#current_chat - settings.log_length)) and chat_log_env['scrolling'] then
 					last_scroll = #current_chat - settings.log_length
 					chat_log_env['scrolling'] = false
-					chat_log_env['scroll_num'] = false
+					chat_log_env['scroll_num'][last_scroll_type] = false
+					last_scroll = 0
+					load_chat_tab(false,last_scroll_type)
+					reload_text()
 				else
 					if last_scroll > 0 and last_scroll <= (#current_chat - settings.log_length) then
-						chat_log_env['scroll_num'] = last_scroll
 						chat_log_env['scrolling'] = true
+						chat_log_env['scroll_num'][last_scroll_type] = last_scroll
 					end
 				end
-				if texts.hover(TextWindow.drops,x,y) then
-					if chat_log_env['scrolling'] then
-						load_chat_tab(chat_log_env['scroll_num'],'Drops')
-						chat_log_env['scrolling'] = false
+				if chat_log_env['scrolling'] then
+					if last_scroll_type ~= 'main' then
+						load_chat_tab(chat_log_env['scroll_num'][last_scroll_type],last_scroll_type)
 					else
-						last_scroll = cap(last_scroll - delta, 1, #current_chat - (settings.log_length - 1))
-						load_chat_tab(last_scroll,'Drops')
+						reload_text()
 					end
-				else
-					reload_text()
 				end
 			end
 			return true
-		end
     end
 end)
 

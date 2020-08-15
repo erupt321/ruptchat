@@ -18,6 +18,11 @@ for the text.
 
 **Changelog**
 
+	__08.14.20__
+	Rewrote the scrolling code and chat processor to be universally compatible with scrolling ability.
+	Now undocked tab can be scrolled just like the Main window and Drops window, and in the future adding
+	new scrollable windows will be much simplified.
+
 	__08.13.20__
 	Mostly backend cleaning up code and seperating the single file lua into seperate packages.
 

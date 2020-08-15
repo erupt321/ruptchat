@@ -99,11 +99,19 @@ return {
 		},
 	[12] = { -- tell
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)([^>]+)>>(.*)$',
-		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['incoming_tell_name']..')%2\\cr>>\\cs('..style_templates['incoming_tell_text']..')%3\\cr'
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['incoming_tell_name']..')%2\\cr>>\\cs('..style_templates['incoming_tell_text']..')%3\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['party_text']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['party_text']..')',
 		},
 	[13] = {  --party
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)[^%(]+%(([^%)]+)%)(.*)',
-		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr<\\cs('..style_templates['party_name']..')%2\\cr>\\cs('..style_templates['party_text']..')%3\\cr'
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr<\\cs('..style_templates['party_name']..')%2\\cr>\\cs('..style_templates['party_text']..')%3\\cr',
+		[3] = '{:',
+		[4] = '\\cs(0,255,0){\\cr\\cs('..style_templates['party_text']..')',
+		[5] = ':}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr\\cs('..style_templates['party_text']..')',
 		},
 	[14] = { -- ls1
 		[1] = '^([0-9]+:[0-9]+:[0-9]+)[^<]+<([^>]+)>(.*)',

@@ -16,7 +16,7 @@ rupt_subtable_length = 500 --How many lines before we throw out lines from sub t
 
 chat_log_env = {
 	['scrolling'] = false,
-	['scroll_num'] = false,
+	['scroll_num'] = {},
 	['finding'] = false,
 	['last_seen'] = os.time(),
 	['mention_found'] = false,
