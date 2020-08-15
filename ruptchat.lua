@@ -765,6 +765,7 @@ function menu(menunumber,c)
 		elseif menunumber == 'setup_menu' then
 			if TextWindow.setup:visible() then
 				texts.visible(TextWindow.setup,false)
+				ext_x = nil
 			else
 				setup_menu()
 			end
