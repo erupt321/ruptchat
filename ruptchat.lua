@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.8.081520.1'
+_addon.version = '0.8.081520.2'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -125,11 +125,11 @@ Click action for text box line (Click to reply to tell, etc..)
 --]]
 
 
-require 'logger'
-require 'strings'
-require 'tables'
-require 'sets'
-require 'chat'
+require('logger')
+require('strings')
+require('tables')
+require('sets')
+require('chat')
 require('coroutine')
 files = require('files')
 texts = require('texts')
@@ -249,28 +249,26 @@ reload_clock = os.clock()+1
 function write_db()
 	local start_time = os.clock()
 	local temp_table = {}
-	--Prune Battle_Log
 	local tinsert = table.insert
-	for i,v in ipairs(chat_tables[all_tabname]) do
-		tinsert(temp_table,v)
+	for i,v in pairs(chat_tables) do --Prune renamed / dead tab data
+		if not valid_tab(i) and i ~= 'Drops' then
+			chat_tables[i] = nil
+		end
 	end
-	chat_tables[all_tabname] = nil
-	chat_tables[all_tabname] = temp_table
 	--Prune Length
+	chat_tables['battle_tab'] = battle_table
 	for i,v in pairs(chat_tables) do
 		if i == all_tabname then max_length = rupt_table_length else max_length = rupt_subtable_length end
-		--print('Processing table: '..i..' With Length: '..#v)
 		if #v > max_length then
-			--print('Pruning table: '..i..' Has '..#v..' / '..max_length)
 			temp_table = {}
 			for j=#v-max_length,#v,1 do
 				tinsert(temp_table,v[j])
 			end
 			chat_tables[i] = temp_table
-			--print('Table chat_tables['..i..'] = '..#chat_tables[i]..' now.')
 		end
 	end
 	rupt_db:write('return ' ..T(chat_tables):tovstring())
+	chat_tables['battle_tab'] = nil
 	if settings.archive and #archive_table > 0 then
 		local archive_clock = os.clock()
 		print('Chatlog Save Finished in '..(archive_clock - start_time)..'s, Archiving New Text')
@@ -297,6 +295,10 @@ function load_db_file()
 		end
 		print('Loading Chat Tables '..rupt_savefile)
 		chat_tables = require(rupt_savefile)
+		if chat_tables['battle_tab'] then
+			battle_table = chat_tables.battle_tab
+			chat_tables.battle_tab = nil
+		end
 	end
 end
 
@@ -637,8 +639,7 @@ function setup_menu()
 	if ext_x and ext_x > 10 then
 		local main_ext_x,main_ext_y = TextWindow.main:extents()
 		local main_pos_x,main_pos_y = TextWindow.main:pos()
-		setup_pos_y = (main_pos_y-ext_y)
-		TextWindow.setup:pos((main_pos_x+main_ext_x)-ext_x,setup_pos_y)
+		TextWindow.setup:pos((main_pos_x+main_ext_x)-ext_x,(main_pos_y-ext_y))
 		TextWindow.setup:visible(true)
 	else
 		ext_x,ext_y = TextWindow.setup:extents()
@@ -647,8 +648,8 @@ function setup_menu()
 		TextWindow.setup:pos((main_pos_x+main_ext_x)-ext_x,(main_pos_y-ext_y))
 		TextWindow.setup:visible(true)
 		coroutine.schedule(setup_menu,0.2)
+		coroutine.schedule(build_maps,0.3)
 	end
-	build_maps()
 end
 
 function find_next(c)
@@ -765,7 +766,7 @@ function menu(menunumber,c)
 		elseif menunumber == 'setup_menu' then
 			if TextWindow.setup:visible() then
 				texts.visible(TextWindow.setup,false)
-				ext_x = nil
+			--	ext_x = nil
 			else
 				setup_menu()
 			end
@@ -920,7 +921,6 @@ function save_chat_log()
 end
 windower.register_event('prerender',save_chat_log)
 
-
 windower.register_event('login', function()
 	if windower.ffxi.get_info().logged_in then
 		rupt_savefile = 'chatlogs/'..windower.ffxi.get_player().name..'-current'
@@ -942,5 +942,3 @@ windower.register_event('load', function()
 	end
 	load_events()
 end)
-
-
