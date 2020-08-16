@@ -156,7 +156,7 @@ function header()
 		end
 	end
 	if settings.undocked_window then
-		if not chat_log_env['scrolling'] and last_scroll_type ~= 'undocked' then
+		if not chat_log_env['scrolling'] or last_scroll_type ~= 'undocked' then
 			load_chat_tab(false,'undocked')
 		end
 	end
