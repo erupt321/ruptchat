@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.8.081520.3'
+_addon.version = '0.8.081620.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -911,11 +911,11 @@ function save_chat_log()
 		TextWindow.undocked:bg_color(0,0,0)
 	end
 	if os.clock() > last_save+save_delay then
-		write_db()
+		coroutine.schedule(write_db,0)
 		last_save = os.clock()
 	end
 	if queue_reload_text and reload_clock < os.clock() then
-		reload_text()
+		coroutine.schedule(reload_text,0)
 		queue_reload_text = false
 	end
 end
