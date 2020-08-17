@@ -155,7 +155,7 @@ return {
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
 		[3] = '%[('..windower.ffxi.get_player().name..'\'?s?)%]',
-		[4] = '[\\cs('..style_templates['battle_text_1']..')%2\\cr]',
+		[4] = '[\\cs('..style_templates['battle_text_1']..')%1\\cr]',
 		[5] = '(.-)( [0-9]+%s)(.*)',
 		[6] = '%1\\cr\\cs('..style_templates['battle_dmg_1']..')%2\\cr%3',
 		[7] = '(.*) %-> (.*)',
