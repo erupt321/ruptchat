@@ -18,7 +18,6 @@ function wrap_text(txt,log_width)
 		if slen(txt) > log_width/font_pixel then
 			local wrap_tmp = ""
 			local wrap_cnt = 0
-			if string.find(txt,'Nusku') then words = true else words = false end
 			for w in txt:gmatch("([^%s]+)") do
 				cur_len = slen(w)
 				if cur_len+wrap_cnt > (log_width/font_pixel) then
@@ -29,8 +28,13 @@ function wrap_text(txt,log_width)
 						wrap_cnt = 0
 					else
 						suffix = ssub(w,end_len+1)
-						wrap_tmp = wrap_tmp..' '..new_word..'\n'..suffix
-						wrap_cnt = slen(suffix)
+						if string.find(new_word,'{:') then
+							wrap_tmp = wrap_tmp..'\n'..new_word..suffix
+							wrap_cnt = slen(new_word..suffix)
+						else
+							wrap_tmp = wrap_tmp..' '..new_word..'\n'..suffix
+							wrap_cnt = slen(suffix)
+						end
 					end
 				else
 					wrap_cnt = wrap_cnt+(cur_len+1)
