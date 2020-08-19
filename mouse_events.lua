@@ -40,7 +40,7 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			end
 			if dragged then
 				dragged.text:pos(x - dragged.x, y - dragged.y)
-				_,y_extent = texts.extents(TextWindow.main)
+				x_extent,y_extent = texts.extents(TextWindow.main)
 				TextWindow.notification:pos(x - dragged.x, (y - dragged.y)-20)
 				if settings.chat_input_placement == 1 then
 					TextWindow.input:pos(x - dragged.x, (y - dragged.y)+y_extent)
@@ -48,8 +48,7 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 					TextWindow.input:pos(x - dragged.x, (y - dragged.y)-40)
 				end	
 				if settings.snapback then
-					local boundry_table = {texts.extents(TextWindow.main)}
-					local x_boundry = boundry_table[1]+texts.pos_x(TextWindow.main)+2
+					local x_boundry = x_extent+texts.pos_x(TextWindow.main)+2
 					TextWindow.undocked:pos(x_boundry,texts.pos_y(TextWindow.main))
 				end
 				if TextWindow.setup:visible() then
@@ -190,25 +189,103 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
     end
 end)
 
+function calibrate_font()
+	if calibrate_go then
+		local size = calibrate_queue['size']
+		local extents_x,extents_y = texts.extents(TextWindow.calibrate)
+		local font = settings.text.font:lower()
+		if not font_wrap_sizes[font] then
+			font_wrap_sizes[font] = {}
+		end
+		if calibrate_queue['type'] == 'char' then
+			check_monospace = true
+			chat_log_env['monospace'] = false
+			font_wrap_sizes[font][size] = {
+				x_menu_scale = (extents_x-11) / #all_tabs,
+				y_scale = (extents_y+10) / 2,
+				y_scale_raw = extents_y / 2,
+				x_char_len = (extents_x+10) / calibrate_count,
+			}
+			font_wrap_sizes[font][size]['minimize_scale'] = font_wrap_sizes[font][size].x_menu_scale * 0.27
+			font_wrap_sizes[font][size]['rchat_scale'] = font_wrap_sizes[font][size].x_menu_scale * 0.75
+		else
+			font_wrap_sizes[font][size]['x_char_scale'] = (extents_x+10)/20
+			if check_monospace then
+				texts.text(TextWindow.calibrate,calibrate_width2)
+				coroutine.sleep(1)
+				local second_extents_x,_ = texts.extents(TextWindow.calibrate)
+				if extents_x == second_extents_x then
+					log("Using a Monospace font! Good for you!")
+					chat_log_env['monospace'] = true
+				end
+				check_monospace = false
+			end
+--			log("Xchar Len: "..font_wrap_sizes[font][size]['x_char_len'].." Xchar Scale: "..font_wrap_sizes[font][size].x_char_scale)
+		end
+		if size > 6 then
+			calibrate_queue['size'] = size-1
+			calibrate_go = false
+			TextWindow.calibrate:hide()
+			coroutine.schedule(calibrate_font,0.5)
+		else
+			TextWindow.calibrate:hide()
+			calibrate_go = false
+			if calibrate_queue['type'] == 'char' then
+				calibrate_queue['size'] = 12
+				calibrate_queue['type'] = 'space'
+				calibrate_queue['type_text'] = calibrate_width
+				coroutine.schedule(calibrate_font,0.5)
+			else
+				log('Completed calibration for font: '..font)
+				coroutine.schedule(build_maps,1)
+			end
+		end
+	else
+		if calibrate_queue['size'] == 12  and  calibrate_queue['type'] == 'char' then
+			log('Calibrating font: '..settings.text.font)
+		end
+		texts.font(TextWindow.calibrate,settings.text.font)
+		texts.size(TextWindow.calibrate,calibrate_queue.size)
+		texts.pad(TextWindow.calibrate,5)
+		texts.text(TextWindow.calibrate,calibrate_queue['type_text'])
+		texts.show(TextWindow.calibrate)
+		calibrate_go = true
+		coroutine.schedule(calibrate_font,0.5)
+	end
+end
+
 function build_maps()
 	main_map_left = {}
 	main_map_right = {}
-	local x_base = 6.8
-	local y_base = 1.5
 	local font = texts.font(TextWindow.main):lower()
-	if font_wrap_sizes[font] then
-		x_base = x_base*font_wrap_sizes[font][3]
-		y_base = y_base*font_wrap_sizes[font][4]
+	local size = texts.size(TextWindow.main)
+	if not font_wrap_sizes then
+		font_wrap_sizes = {}
 	end
-	x_scale = texts.size(TextWindow.main) * x_base
-	y_scale = texts.size(TextWindow.main) * y_base
+	if not font_wrap_sizes[font] or not font_wrap_sizes[font][size] then
+		calibrate_go = false
+		calibrate_queue = {}
+		calibrate_queue['type'] = 'char'
+		calibrate_queue['type_text'] = calibrate_text
+		calibrate_queue['size'] = 12
+		calibrate_font()
+		return
+	end
+	log('Building Click Maps..')
+	local x_scale = font_wrap_sizes[font][size].x_menu_scale
+	local y_scale = font_wrap_sizes[font][size].y_scale
+	local minimize_scale = font_wrap_sizes[font][size].minimize_scale
+	local rchat_scale = font_wrap_sizes[font][size].rchat_scale
+	local x_extent,_ = texts.extents(TextWindow.main)
 	for i,v in ipairs(all_tabs) do
 		if i == 1 then
 			main_map_left[i] = { ['x_start'] = 0, ['x_end'] = x_scale*i, ['y_start'] = 0, ['y_end'] = y_scale}
 		elseif i == 2 then
-			main_map_left[i] = { ['x_start'] = x_scale+1, ['x_end'] = x_scale*i, ['y_start'] = 0, ['y_end'] = y_scale}
-		elseif i > 2 then
-			main_map_left[i] = { ['x_start'] = main_map_left[i-1].x_end+1, ['x_end'] = x_scale*i, ['y_start'] = 0, ['y_end'] = y_scale}
+			main_map_left[i] = { ['x_start'] = x_scale+1, ['x_end'] = x_scale*i, ['y_start'] = 0, ['y_end'] = y_scale+5}
+		elseif i < #all_tabs then
+			main_map_left[i] = { ['x_start'] = main_map_left[i-1].x_end+1, ['x_end'] = x_scale*i, ['y_start'] = 0, ['y_end'] = y_scale+5}
+		else
+			main_map_left[i] = { ['x_start'] = main_map_left[i-1].x_end+1, ['x_end'] = x_scale*(i*0.99), ['y_start'] = 0, ['y_end'] = y_scale+5}
 		end
 		main_map_left[i].action = function(current_menu)
 			menu(current_menu,'')
@@ -216,20 +293,35 @@ function build_maps()
 	end
 	i = #main_map_left
 	settings.window_visible = true
-	main_map_left[i+1] = { ['x_start'] = main_map_left[i].x_end+1, ['x_end'] = x_scale*6.8, ['y_start'] = 0, ['y_end'] = y_scale}
+	main_map_left[i+1] = { ['x_start'] = main_map_left[i].x_end+1, ['x_end'] = main_map_left[i].x_end+minimize_scale, ['y_start'] = 0, ['y_end'] = y_scale}
 	main_map_left[i+1].action = function(current_menu)
 		if settings.window_visible then settings.window_visible = false else settings.window_visible = true end
 		config.save(settings, windower.ffxi.get_player().name)
 		reload_text()
 	end
-	main_map_left[i+2] = { ['x_start'] = 0, ['x_end'] = x_scale*1.5, ['y_start'] = y_scale+1, ['y_end'] = y_scale*2}
+	main_map_left[i+2] = { ['x_start'] = 0, ['x_end'] = x_scale*1.5, ['y_start'] = y_scale+6, ['y_end'] = (y_scale*2)+5}
 	main_map_left[i+2].action = function(current_menu)
 			menu(current_menu,'')
 	end
-	main_map_right[1] = { ['x_start'] = main_map_left[i].x_end+1, ['x_end'] = x_scale*6.8, ['y_start'] = 0, ['y_end'] = y_scale}
+	local rchat_end = main_map_left[i+1].x_end+rchat_scale
+	if rchat_end > x_extent then
+		rchat_end = x_extent
+	end
+	main_map_right[1] = { ['x_start'] = main_map_left[i+1].x_end+1, ['x_end'] = main_map_left[i+1].x_end+rchat_scale, ['y_start'] = 0, ['y_end'] = y_scale}
 	main_map_right[1].action = function()
 			menu('setup_menu','')
 	end
+	if settings.snapback then
+		local x_extent,_ = texts.extents(TextWindow.main)
+		local x_boundry = x_extent+texts.pos_x(TextWindow.main)+2
+		TextWindow.undocked:pos(x_boundry,texts.pos_y(TextWindow.main))
+	end
+end
+
+function setup_window_map()
+	local font = texts.font(TextWindow.main):lower()
+	local size = texts.size(TextWindow.main)
+	local x_scale = font_wrap_sizes[font][size].x_menu_scale
 	setup_map_left = {}
 	local _,y_setup_extent = TextWindow.setup:extents()
 	local setup_y_scale = y_setup_extent / (#setup_window_toggles+1)

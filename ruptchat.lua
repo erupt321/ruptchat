@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '0.8.081620.1'
+_addon.version = '1.0.081820.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -65,6 +65,8 @@ Console Commands
 //rchat strict_width (Toggle maintaining the max log width; avoid box shrinking and expanding)
 
 //rchat strict_length (Toggle maintaining the log length)
+
+//rchat enhancedwhitespace (Toggle using Figure Spaces for menus if your on a non monospace font)
 
 //rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
@@ -139,8 +141,32 @@ require('mouse_events')
 require('text_processing')
 require('globals')
 
+function fillspace(spaces)
+	local spacer = ''
+	if not settings then
+		settings = {
+			enh_whitespace = true
+		}
+	end
+	for i=1,spaces, 1 do
+		if not chat_log_env['monospace'] and (settings and settings.enh_whitespace) then
+			spacer = spacer..' '
+		else
+			spacer = spacer..' '
+		end
+	end
+	return spacer
+end
+
+
 for _,v in ipairs(tab_channels['Tabs']) do
 	table.insert(all_tabs,v.name)
+	local buffer = 14
+	local length = string.len(v.name)
+	local space = math.floor((buffer-length)/2)
+	local leftovers = buffer-(length+space)
+	calibrate_count = calibrate_count+length+space+leftovers
+	calibrate_text = calibrate_text..fillspace(space)..v.name..fillspace(leftovers)
 	default_settings['mentions'][v.name] = S{}
 	for _,cid in pairs(v.ids) do
 		tab_ids[tostring(cid)] = v.name
@@ -192,6 +218,11 @@ TextWindow.setup:visible(false)
 TextWindow.setup:size(settings.text.size)
 texts.pad(TextWindow.setup,5)
 
+--Calibration Window
+TextWindow.calibrate = texts.new(default_settings)
+TextWindow.calibrate:visible(false)
+TextWindow.calibrate:pos(300,300)
+
 Scrolling_Windows = {'main','undocked','Drops'}
 
 
@@ -217,8 +248,6 @@ function valid_tab(tab)
 	return false
 end
 
-build_maps()
-
 function undock(menu)
 	if settings.undocked_window and settings.undocked_tab == menu then
 		settings.undocked_window = false
@@ -233,14 +262,6 @@ function undock(menu)
 		reload_text()
 		config.save(settings, windower.ffxi.get_player().name)
 	end
-end
-
-function fillspace(spaces)
-	local spacer = ''
-	for i=1,spaces, 1 do
-		spacer = spacer..' '
-	end
-	return spacer
 end
 
 queue_reload_text = false
@@ -344,7 +365,12 @@ function addon_command(...)
 			texts.font(TextWindow.undocked, args_joined)
 			settings.text.font = args_joined
 			config.save(settings, windower.ffxi.get_player().name)
-			build_maps()
+			calibrate_go = false
+			calibrate_queue = {}
+			calibrate_queue['type'] = 'char'
+			calibrate_queue['type_text'] = calibrate_text
+			calibrate_queue['size'] = 12
+			calibrate_font()
 		elseif cmd == 'length' then
 			if args[1] and tonumber(args[1]) then
 				settings.log_length = tonumber(args[1])
@@ -537,6 +563,16 @@ function addon_command(...)
 			end
 			load_chat_tab(scroll,'Drops')
 			TextWindow.Drops:show()
+		elseif cmd == 'enhancedwhitespace' then
+			if settings.enh_whitespace then
+				log('Setting enh_whitespace to false')
+				settings.enh_whitespace = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting enh_whitespace to true')
+				settings.enh_whitespace = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
 		elseif cmd == 'archive' then
 			if settings.archive then
 				log('Setting archive to false')
@@ -606,6 +642,13 @@ function addon_command(...)
 				settings.mentions[tab]:remove(terms:lower())
 				config.save(settings, windower.ffxi.get_player().name)
 				log(terms..' Removed to tab ['..tab..']')
+		elseif cmd == 'calibrate' then
+			calibrate_go = false
+			calibrate_queue = {}
+			calibrate_queue['type'] = 'char'
+			calibrate_queue['type_text'] = calibrate_text
+			calibrate_queue['size'] = 12
+			calibrate_font()
 		elseif cmd == 'show' then
 			t:visible(true)
 		elseif cmd == 'hide' then
@@ -641,6 +684,7 @@ function setup_menu()
 		local main_pos_x,main_pos_y = TextWindow.main:pos()
 		TextWindow.setup:pos((main_pos_x+main_ext_x)-ext_x,(main_pos_y-ext_y))
 		TextWindow.setup:visible(true)
+		coroutine.schedule(setup_window_map,0.2)
 	else
 		ext_x,ext_y = TextWindow.setup:extents()
 		local main_ext_x,main_ext_y = TextWindow.main:extents()
@@ -648,7 +692,6 @@ function setup_menu()
 		TextWindow.setup:pos((main_pos_x+main_ext_x)-ext_x,(main_pos_y-ext_y))
 		TextWindow.setup:visible(true)
 		coroutine.schedule(setup_menu,0.2)
-		coroutine.schedule(build_maps,0.3)
 	end
 end
 
@@ -879,7 +922,6 @@ function load_events()
 	else
 		TextWindow.input:pos(t_pos_x,(t_pos_y-40))
 	end
-	build_maps()
 end
 
 function unload_events()
@@ -930,6 +972,7 @@ windower.register_event('login', function()
 	end
 	load_db_file()
 	load_events()
+	coroutine.schedule(build_maps,2.5)
 end)
 
 windower.register_event('load', function()
@@ -941,4 +984,5 @@ windower.register_event('load', function()
 		load_db_file()
 	end
 	load_events()
+	coroutine.schedule(build_maps,2.5)
 end)

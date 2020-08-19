@@ -18,6 +18,35 @@ for the text.
 
 **Changelog**
 
+	__08.18.20__
+	Huge backend change to how fonts are handled and how width is handled in the addon.
+	
+	First big thing is there is now a Font Calibrator built into the addon.  What this does
+	is load a new font and attempt to figure out if its a Monospace font or not and then
+	detect how large the average letter is to more accurately map out click controls and
+	word wrap functions.
+	
+	With this change width settings have changed from Character based to Pixel based width settings.
+	So if you had a 115 width prior your new width is probably going to be more like 700.
+	
+	I've also tweeked some default settings for first time users, I've made both the strict* settings
+	on by default as this is one of the most common questions I get about the addon.  The default font
+	has been changed to 'Lucida Sans Typewriter', this was only chosen because it's a default installed
+	windows monospace font.
+	
+	About monospace vs non.  Monospaced fonts have exact width size per character which is the ideal
+	type of font for this addon.  If you notice your window moving even with strict on maybe a couple
+	pixels chances are you aren't using a monospace font.  The font calibrator will tell you if your 
+	font is 100% monospaced during it's test.  For non monospaced font I have put alot of work into
+	trying to make the addon accomodate for your font's shortcomings.  There's a new option called
+	enhancedwhitespace which is defaulted to on. If the addon detects you aren't using a monospace font
+	it'll try to use this alternative whitespace character to build the menu's.  There is a chance
+	some fonts don't actually have this character and will show up as blocky garbage in the menu.
+	You can disable this using the rChat setup menu by right clicking [rChat] or //rchat enhancedwhitespace.
+	
+	Hopefully this will new addition will help some new users that are scared about switching their
+	chat windows over.
+
 	__08.15.20__
 	Made a setup menu, if you right click on the [rChat] in the main menu a setup menu will open up,
 	which you can then click on all the setup options to do either a quick setting change or just to 
@@ -224,6 +253,8 @@ for the text.
 	//rchat strict_width (Toggle maintaining the max log width; avoid box shrinking and expanding)
 
 	//rchat strict_length (Toggle maintaining the log length)
+	
+	//rchat enhancedwhitespace (Toggle using Figure Spaces for menus if your on a non monospace font)
 
 	//rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 

@@ -1,29 +1,67 @@
+function string.flen(txt,pixel)
+	_,n = string.gsub(txt,"[^%s]","")
+	_,m = string.gsub(txt,"%s","")
+	return (n+m)*pixel
+end
+
 function wrap_text(txt,log_width)
 	local slen = string.len
 	local ssub = string.sub
 	local sgsub = string.gsub
-	if slen(txt) > log_width then
-		local wrap_tmp = ""
-		local wrap_cnt = 0
-		for w in txt:gmatch("([^%s]+)") do
-			cur_len = slen(w)
-			if cur_len > log_width then
-				end_len = (log_width*font_wrap_sizes[texts.font(TextWindow.main):lower()][2]) - wrap_cnt
-				suffix = ssub(w,end_len+1)
-				wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
-				wrap_cnt = slen(suffix)
-			else
-				wrap_cnt = wrap_cnt+(cur_len+1)
-				if wrap_cnt < log_width then
-					wrap_tmp = wrap_tmp..' '..w
+	local log_width = log_width+(log_width*.038)
+	if not font_wrap_sizes or not font_wrap_sizes[texts.font(TextWindow.main):lower()] or not font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)] or not font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)]['x_char_scale'] then
+		font_pixel = 9
+	else
+		font_pixel = font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)]['x_char_len'] or 9
+	end
+	if chat_log_env['monospace'] then
+		if slen(txt) > log_width/font_pixel then
+			local wrap_tmp = ""
+			local wrap_cnt = 0
+			for w in txt:gmatch("([^%s]+)") do
+				cur_len = slen(w)
+				if cur_len+wrap_cnt > (log_width/font_pixel) then
+					end_len = (log_width/font_pixel) - wrap_cnt
+					suffix = ssub(w,end_len+1)
+					wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
+					wrap_cnt = slen(suffix)
 				else
-					wrap_cnt = 10
-					wrap_tmp = wrap_tmp..'\n'..w
+					wrap_cnt = wrap_cnt+(cur_len+1)
+					if wrap_cnt < (log_width/font_pixel) then
+						wrap_tmp = wrap_tmp..' '..w
+					else
+						wrap_cnt = 10
+						wrap_tmp = wrap_tmp..'\n'..w
+					end
 				end
 			end
+			if wrap_tmp ~= "" then
+				txt = wrap_tmp
+			end
 		end
-		if wrap_tmp ~= "" then
-			txt = wrap_tmp
+	else
+		local txt_len = string.flen(txt,font_pixel)
+		if txt_len > log_width+10 then
+			local wrap_tmp = ""
+			local wrap_cnt = 0
+			local log_char = math.ceil(((log_width+3) / font_pixel))-1
+			for w in txt:gmatch("[^%s]+") do
+				cur_len = slen(w)*font_pixel
+				if wrap_cnt+cur_len > log_width+10 then
+--					print("Wrap+Cur: "..wrap_cnt..'+'..cur_len..' Log: '..log_width)
+					local end_len = log_char - ((wrap_cnt+cur_len)/font_pixel)
+					local suffix = ssub(w,end_len+1)
+					wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
+--					print('End Len: '..end_len..' Suffix: '..suffix..' Wrap Cnt: '..wrap_cnt..' Log Char: '..log_char..' Full Cnt: '..wrap_cnt+cur_len)
+					wrap_cnt = string.flen(suffix,font_pixel)
+				else
+					wrap_cnt = (wrap_cnt+cur_len+font_pixel)
+					wrap_tmp = wrap_tmp..' '..w
+				end
+			end
+			if wrap_tmp ~= "" then
+				txt = wrap_tmp
+			end
 		end
 	end
 	return txt
@@ -51,9 +89,10 @@ function convert_text(txt,tab_style)
 	else
 		log_width = settings.log_dwidth
 	end
+	txt = sgsub(txt,'[^%z\1-\127]','')
 	txt = wrap_text(txt,log_width)
 	txt = sgsub(txt,'^ ','')
-	txt = sgsub(txt,'[^%z\1-\127]','')
+
 	if tab_styles[id] then
 		styles = tab_styles[id]
 		for i=1,#styles,2 do
@@ -74,8 +113,11 @@ end
 
 function header()
 	local cur_font = texts.font(TextWindow.main):lower()
-	if not font_wrap_sizes[cur_font] then
-		font_wrap_sizes[cur_font] = { 1.9,0.8,1,1 }
+	if not font_wrap_sizes or not font_wrap_sizes[texts.font(TextWindow.main):lower()] or not font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)] or not font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)]['x_char_scale'] then
+		font_pixel = 9
+		space_pixel = 9
+	else
+		font_pixel = font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)]['x_char_len']
 	end
 	if current_tab == 'Tell' or current_tab == all_tabname then chat_log_env['last_seen'] = os.time() end
 	if chat_log_env['mention_found'] and (current_tab == chat_log_env['last_mention_tab'] or (settings.undocked_window and settings.undocked_tab == chat_log_env['last_mention_tab'])) then
@@ -85,8 +127,9 @@ function header()
 			TextWindow.notification:visible(false)
 		end
 	end
-	local buffer = 15
+	local buffer = 14
 	new_text_header = ''
+	
 	for i,v in ipairs(all_tabs) do
 		local length = string.len(v)
 		if current_tab == v then length = length+4 end
@@ -126,13 +169,27 @@ function header()
 		end
 	end
 	if settings.window_visible then
-		new_text_header = new_text_header..'[ - ]   [rChat]'
+		if not chat_log_env['monospace'] and settings.enh_whitespace then
+			new_text_header = new_text_header..'[ - ]   [rChat]'
+		else
+			new_text_header = new_text_header..'[ - ]   [rChat]'
+		end
 	else
-		new_text_header = new_text_header..'[ + ]   [rChat]'
+		if not chat_log_env['monospace'] and settings.enh_whitespace then
+			new_text_header = new_text_header..'[ + ]   [rChat]'
+		else
+			new_text_header = new_text_header..'[ + ]   [rChat]'
+		end
 	end
 	if settings.strict_width then
-		blank_space = (settings.log_width*font_wrap_sizes[texts.font(TextWindow.main):lower()][1]) - string.len(new_text_header)
-		new_text_header = new_text_header..fillspace(blank_space)..'\n'
+--		print('N+M: '..n+m..' Str.len: '..headlen..' Log Char: '..log_char..' Log Width: '..settings.log_width..' Pixel: '..font_pixel)
+		blank_space = ((settings.log_width+(settings.log_width*0.038)) - ((calibrate_count+15)*font_pixel)) / font_pixel
+		if (calibrate_count+15) < (settings.log_width / font_pixel) then
+--			print((settings.log_width / font_pixel) - calibrate_count)
+		end
+--		print("Calibrate: "..(calibrate_count+15).." Pixel: "..font_pixel)
+--		print("Blank_Space: "..blank_space)
+		new_text_header = new_text_header..fillspace(math.ceil(blank_space))..'\n'
 	else
 		new_text_header = new_text_header..'\n'
 	end
@@ -189,7 +246,6 @@ function load_chat_tab(scroll_start,window)
 			tab = settings.undocked_tab
 		elseif window == 'Drops' then
 			tab = 'Drops'
---			scroll_start = false
 		end
 		if tab:lower() == battle_tabname:lower() then
 			current_chat = battle_table
@@ -276,7 +332,20 @@ function load_chat_tab(scroll_start,window)
 			else
 				scroll_head = ''
 			end
-			texts.text(TextWindow[window],'[ \\cs(255,69,0)'..tab..'\\cr ]... .. .\n'..scroll_head..temp_table)
+			if not font_wrap_sizes or not font_wrap_sizes[texts.font(TextWindow.main):lower()] or not font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)] or not font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)]['x_char_scale'] then
+				font_pixel = 9
+			else
+				font_pixel = font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)]['x_char_len']
+			end
+			local header = '[ \\cs(255,69,0)'..tab..'\\cr ]... .. .'
+			if settings.log_dwidth == 0 then
+				log_width = settings.log_width
+			else
+				log_width = settings.log_dwidth
+			end
+			local log_char = math.ceil(log_width / font_pixel)
+			blank_space = log_char+6 - (string.len(header)-18)
+			texts.text(TextWindow[window],header..fillspace(blank_space)..'\n'..scroll_head..temp_table)
 			texts.size(TextWindow[window], texts.size(TextWindow.main))
 			texts.bg_alpha(TextWindow[window], texts.bg_alpha(TextWindow.main))
 			texts.font(TextWindow[window], texts.font(TextWindow.main))

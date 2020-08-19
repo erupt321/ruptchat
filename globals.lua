@@ -23,6 +23,7 @@ chat_log_env = {
 	['mention_count'] = 0,
 	['last_mention_tab'] = false,
 	['last_text_line'] = false,
+	['monospace'] = false,
 }
 
 
@@ -41,17 +42,6 @@ archive_table = {}
 -- Format is {[Header Width Multiplier],[Word Wrap Multiplier],[Click Map Width],[Click Map Height]}
 -- for some just changing your //rchat width will get you more mileage.
 
-font_wrap_sizes = { -- Defaults to 1.9,0.8,1,1 if no font profile found
-	['arial'] = { 1.75,1,1,1.4 },
-	['microsoft sans serif'] = { 1.8,0.9,1,1.4 },
-	['chiller'] = { 1.4,0.7,0.92,1.5 },
-	['corbel'] = { 1.90 ,0.5,0.91,1.7 },
-	['papyrus'] = { 2.02,0.4,0.99,1.6},
-	['verdana'] = { 1.6,0.8,1.26,1.6},
-	['poor richard'] = { 2.0,0.50,0.85,1.5},
-	['book antiqua'] = { 1.75,0.7,1.05,1.5},
-	['unispace'] = { 1.2,1.2,1.9,1.5},
-}
 
 
 find_table = {
@@ -62,7 +52,7 @@ find_table = {
 
 default_settings = {
 	log_length = 12,
-	log_width = 85,
+	log_width = 400,
 	log_dwidth = 0, -- 0 Disables and defaults to log_width value
 	log_dlength = 0, -- 0 Disable and defaults to log_length value
 	battle_all = true, -- Display Battle text in All tab
@@ -79,6 +69,7 @@ default_settings = {
 	chat_input_placement = 1,
 	split_drops = false,
 	drops_window = true,
+	enh_whitespace = true,
 	archive = false,
 	flags = {
 		draggable = false,
@@ -102,7 +93,13 @@ default_settings = {
 tab_ids = {}
 all_tabs = {}
 
+calibrate_text = ""
+calibrate_width  = "WIBIWIBIWIBIWIBIWIBI\nWIBIWIBIWIBIWIBIWIBI"
+calibrate_width2 = "WIIIWIIIWIIIWIIIWIII\nWIIIWIIIWIIIWIIIWIiI"
+calibrate_count = 0
+
+
 setup_window_toggles = { 'battle_all','battle_off','strict_width','strict_length',
-'incoming_pause','drag_status','battle_flash','chat_input','snapback','split_drops','drops_window','archive'}
+'incoming_pause','drag_status','battle_flash','chat_input','snapback','split_drops','drops_window','enh_whitespace','archive'}
 setup_window_commands = { 'battle_all','battle_off','strict_width','strict_length',
-'incoming_pause','drag','battle_flash','chatinput','snapback','splitdrops','dropswindow','archive'}
+'incoming_pause','drag','battle_flash','chatinput','snapback','splitdrops','dropswindow','enhancedwhitespace','archive'}
