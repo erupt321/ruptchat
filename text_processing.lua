@@ -18,13 +18,20 @@ function wrap_text(txt,log_width)
 		if slen(txt) > log_width/font_pixel then
 			local wrap_tmp = ""
 			local wrap_cnt = 0
+			if string.find(txt,'Nusku') then words = true else words = false end
 			for w in txt:gmatch("([^%s]+)") do
 				cur_len = slen(w)
 				if cur_len+wrap_cnt > (log_width/font_pixel) then
-					end_len = (log_width/font_pixel) - wrap_cnt
-					suffix = ssub(w,end_len+1)
-					wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
-					wrap_cnt = slen(suffix)
+					end_len = ((log_width/font_pixel) - wrap_cnt)-1
+					local new_word = ssub(w,1,end_len)
+					if slen(wrap_tmp)+slen(new_word) > (log_width/font_pixel) then
+						wrap_tmp = wrap_tmp..'\n'..new_word..' '..suffix
+						wrap_cnt = 0
+					else
+						suffix = ssub(w,end_len+1)
+						wrap_tmp = wrap_tmp..' '..new_word..'\n'..suffix
+						wrap_cnt = slen(suffix)
+					end
 				else
 					wrap_cnt = wrap_cnt+(cur_len+1)
 					if wrap_cnt < (log_width/font_pixel) then
@@ -50,10 +57,15 @@ function wrap_text(txt,log_width)
 				if wrap_cnt+cur_len > log_width+10 then
 --					print("Wrap+Cur: "..wrap_cnt..'+'..cur_len..' Log: '..log_width)
 					local end_len = log_char - ((wrap_cnt+cur_len)/font_pixel)
+					local new_word = ssub(w,1,end_len)
 					local suffix = ssub(w,end_len+1)
-					wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
---					print('End Len: '..end_len..' Suffix: '..suffix..' Wrap Cnt: '..wrap_cnt..' Log Char: '..log_char..' Full Cnt: '..wrap_cnt+cur_len)
-					wrap_cnt = string.flen(suffix,font_pixel)
+					if string.flen(wrap_tmp,font_pixel)+string.flen(new_word,font_pixel) > log_width+10 then
+						wrap_tmp = wrap_tmp..'\n'..ssub(w,1,end_len)..' '..suffix
+						wrap_cnt = 0
+					else
+						wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
+						wrap_cnt = string.flen(suffix,font_pixel)
+					end
 				else
 					wrap_cnt = (wrap_cnt+cur_len+font_pixel)
 					wrap_tmp = wrap_tmp..' '..w
