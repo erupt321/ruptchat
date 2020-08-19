@@ -24,7 +24,7 @@ function wrap_text(txt,log_width)
 					end_len = ((log_width/font_pixel) - wrap_cnt)-1
 					local new_word = ssub(w,1,end_len)
 					if slen(wrap_tmp)+slen(new_word) > (log_width/font_pixel) then
-						wrap_tmp = wrap_tmp..'\n'..new_word..' '..suffix
+						wrap_tmp = wrap_tmp..'\n'..w
 						wrap_cnt = 0
 					else
 						suffix = ssub(w,end_len+1)
@@ -32,8 +32,13 @@ function wrap_text(txt,log_width)
 							wrap_tmp = wrap_tmp..'\n'..new_word..suffix
 							wrap_cnt = slen(new_word..suffix)
 						else
-							wrap_tmp = wrap_tmp..' '..new_word..'\n'..suffix
-							wrap_cnt = slen(suffix)
+							if slen(new_word) < 3 then
+								wrap_tmp = wrap_tmp..'\n'..new_word..suffix
+								wrap_cnt = 0
+							else
+								wrap_tmp = wrap_tmp..' '..new_word..'\n'..suffix
+								wrap_cnt = slen(suffix)
+							end
 						end
 					end
 				else
