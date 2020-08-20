@@ -217,6 +217,9 @@ function calibrate_font()
 				if extents_x == second_extents_x then
 					log("Using a Monospace font! Good for you!")
 					chat_log_env['monospace'] = true
+					font_wrap_sizes[font]['monospace_flag'] = true
+				else
+					font_wrap_sizes[font]['monospace_flag'] = false
 				end
 				check_monospace = false
 			end
@@ -237,6 +240,7 @@ function calibrate_font()
 				coroutine.schedule(calibrate_font,0.5)
 			else
 				log('Completed calibration for font: '..font)
+				fonts_db:write('return ' ..T(font_wrap_sizes):tovstring())
 				coroutine.schedule(build_maps,1)
 			end
 		end
@@ -271,6 +275,7 @@ function build_maps()
 		calibrate_font()
 		return
 	end
+	chat_log_env['monospace'] = font_wrap_sizes[font]['monospace_flag']
 	log('Building Click Maps..')
 	local x_scale = font_wrap_sizes[font][size].x_menu_scale
 	local y_scale = font_wrap_sizes[font][size].y_scale
@@ -334,5 +339,20 @@ function setup_window_map()
 		setup_map_left[i].action = function(current_option)
 			menu('setup_option',current_option)
 		end
+	end
+end
+
+
+
+
+function mirror_textboxes()
+	coroutine.sleep(0.2)
+	for _,window in pairs({'undocked','Drops','setup','notification'}) do
+		texts.bg_alpha(TextWindow[window],texts.bg_alpha(TextWindow.main))
+		texts.bold(TextWindow[window],texts.bold(TextWindow.main))
+		texts.size(TextWindow[window],texts.size(TextWindow.main))
+		texts.alpha(TextWindow[window],texts.alpha(TextWindow.main))
+		texts.stroke_width(TextWindow[window],texts.stroke_width(TextWindow.main))
+		texts.stroke_alpha(TextWindow[window],texts.stroke_alpha(TextWindow.main))
 	end
 end

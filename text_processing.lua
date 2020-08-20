@@ -8,36 +8,45 @@ function wrap_text(txt,log_width)
 	local slen = string.len
 	local ssub = string.sub
 	local sgsub = string.gsub
-	local log_width = log_width+(log_width*.038)
 	if not font_wrap_sizes or not font_wrap_sizes[texts.font(TextWindow.main):lower()] or not font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)] or not font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)]['x_char_scale'] then
 		font_pixel = 9
 	else
 		font_pixel = font_wrap_sizes[texts.font(TextWindow.main):lower()][texts.size(TextWindow.main)]['x_char_len'] or 9
 	end
 	if chat_log_env['monospace'] then
+		local log_width = log_width
 		if slen(txt) > log_width/font_pixel then
 			local wrap_tmp = ""
 			local wrap_cnt = 0
 			for w in txt:gmatch("([^%s]+)") do
-				cur_len = slen(w)
+				local cnt_deflate_pre = 0
+				local cnt_deflate_suf = 0
+				if string.find(w,'{:') then
+					cnt_deflate_pre = 1
+				end
+				if string.find(w,':}') then
+					cnt_deflate_suf = 1
+				end
+				cur_len = slen(w)-cnt_deflate_pre-cnt_deflate_suf
 				if cur_len+wrap_cnt > (log_width/font_pixel) then
 					end_len = ((log_width/font_pixel) - wrap_cnt)-1
 					local new_word = ssub(w,1,end_len)
-					if slen(wrap_tmp)+slen(new_word) > (log_width/font_pixel) then
+					
+					if slen(wrap_tmp)+slen(new_word)-cnt_deflate_pre > (log_width/font_pixel) then
 						wrap_tmp = wrap_tmp..'\n'..w
-						wrap_cnt = 0
+						wrap_cnt = 0-cnt_deflate_suf
 					else
 						suffix = ssub(w,end_len+1)
 						if string.find(new_word,'{:') then
 							wrap_tmp = wrap_tmp..'\n'..new_word..suffix
-							wrap_cnt = slen(new_word..suffix)
+							wrap_cnt = slen(new_word..suffix)-1
 						else
-							if slen(new_word) < 3 then
+							if slen(new_word) < 7 then
 								wrap_tmp = wrap_tmp..'\n'..new_word..suffix
-								wrap_cnt = 0
+								wrap_cnt = 10-cnt_deflate_pre-cnt_deflate_suf
 							else
 								wrap_tmp = wrap_tmp..' '..new_word..'\n'..suffix
-								wrap_cnt = slen(suffix)
+								wrap_cnt = slen(suffix)-cnt_deflate_suf
 							end
 						end
 					end
@@ -56,24 +65,42 @@ function wrap_text(txt,log_width)
 			end
 		end
 	else
+		local log_width = log_width+(log_width*.038)
 		local txt_len = string.flen(txt,font_pixel)
 		if txt_len > log_width+10 then
 			local wrap_tmp = ""
 			local wrap_cnt = 0
 			local log_char = math.ceil(((log_width+3) / font_pixel))-1
 			for w in txt:gmatch("[^%s]+") do
-				cur_len = slen(w)*font_pixel
-				if wrap_cnt+cur_len > log_width+10 then
---					print("Wrap+Cur: "..wrap_cnt..'+'..cur_len..' Log: '..log_width)
+				local cnt_deflate_pre = 0
+				local cnt_deflate_suf = 0
+				if string.find(w,'{:') then
+					cnt_deflate_pre = 1
+				end
+				if string.find(w,':}') then
+					cnt_deflate_suf = 1
+				end
+				cur_len = (slen(w)-cnt_deflate_pre-cnt_deflate_suf)*font_pixel
+				if wrap_cnt+cur_len > log_width+6 then
 					local end_len = log_char - ((wrap_cnt+cur_len)/font_pixel)
 					local new_word = ssub(w,1,end_len)
 					local suffix = ssub(w,end_len+1)
-					if string.flen(wrap_tmp,font_pixel)+string.flen(new_word,font_pixel) > log_width+10 then
-						wrap_tmp = wrap_tmp..'\n'..ssub(w,1,end_len)..' '..suffix
+					if string.flen(wrap_tmp,font_pixel)+string.flen(new_word,font_pixel) > log_width+6 then
+						wrap_tmp = wrap_tmp..'\n'..w
 						wrap_cnt = 0
 					else
-						wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
-						wrap_cnt = string.flen(suffix,font_pixel)
+						if string.find(new_word,'{:') then
+							wrap_tmp = wrap_tmp..'\n'..new_word..suffix
+							wrap_cnt = string.flen(new_word..suffix,font_pixel)
+						else
+							if slen(new_word) < 7 then
+								wrap_tmp = wrap_tmp..'\n'..new_word..suffix
+								wrap_cnt = 0
+							else
+								wrap_tmp = wrap_tmp..' '..ssub(w,1,end_len)..'\n'..suffix
+								wrap_cnt = string.flen(suffix,font_pixel)
+							end
+						end
 					end
 				else
 					wrap_cnt = (wrap_cnt+cur_len+font_pixel)
@@ -161,7 +188,6 @@ function header()
 			local tmp = '[-\\cs(255,69,0)'..v..'\\cr-]'..fillspace(leftovers)..'\\cr'
 			new_text_header = new_text_header..tmp
 		elseif v == 'Tell' then
-			--print('Tell: '..chat_tables[v][#chat_tables[v]])
 			if not chat_tables[v] then chat_tables[v] = {} end
 			if #chat_tables[v] > 0 then
 				last_msg = string.match(chat_tables[v][#chat_tables[v]],'^[0-9]+') or false		
@@ -203,13 +229,7 @@ function header()
 		end
 	end
 	if settings.strict_width then
---		print('N+M: '..n+m..' Str.len: '..headlen..' Log Char: '..log_char..' Log Width: '..settings.log_width..' Pixel: '..font_pixel)
 		blank_space = ((settings.log_width+(settings.log_width*0.038)) - ((calibrate_count+15)*font_pixel)) / font_pixel
-		if (calibrate_count+15) < (settings.log_width / font_pixel) then
---			print((settings.log_width / font_pixel) - calibrate_count)
-		end
---		print("Calibrate: "..(calibrate_count+15).." Pixel: "..font_pixel)
---		print("Blank_Space: "..blank_space)
 		new_text_header = new_text_header..fillspace(math.ceil(blank_space))..'\n'
 	else
 		new_text_header = new_text_header..'\n'
@@ -396,6 +416,9 @@ function chat_add(id, chat)
 	chat = string.gsub(chat,string.char(0x07, 0x0A),'')
 	chat = string.gsub(chat,'"','\"')
 	if settings.archive then
+		if not archive_table then
+			archive_table = {}
+		end
 		table.insert(archive_table,os.date('[%x@%X]')..':'..id..':'..chat)
 	end
 	if settings.split_drops then

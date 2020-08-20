@@ -299,7 +299,7 @@ function write_db()
 		end
 		local fappend = files.append
 		fappend(archive_filename,table.concat(archive_table,'\n'))
-		archive_table = {}
+		archive_table = nil
 --		print('Archived in '..(os.clock()-archive_clock)..'s')
 	else
 		print('Saved Chatlog')
@@ -320,6 +320,11 @@ function load_db_file()
 			battle_table = chat_tables.battle_tab
 			chat_tables.battle_tab = nil
 		end
+		fontfile = 'data/'..windower.ffxi.get_player().name..'-fontsizes.lua'
+		fonts_db = files.new(fontfile)
+		if fonts_db:exists() then
+			font_wrap_sizes = dofile(windower.addon_path..fontfile)
+		end
 	end
 end
 
@@ -337,6 +342,15 @@ function addon_command(...)
 			texts.bg_alpha(TextWindow.main, tonumber(args[1]))
 			texts.bg_alpha(TextWindow.undocked, tonumber(args[1]))
 			settings.bg_alpha = tonumber(args[1])
+			config.save(settings, windower.ffxi.get_player().name)
+		elseif cmd == 'bold' then
+			if settings.flags and settings.flags.bold then
+				settings.flags.bold = false
+			else
+				settings.flags.bold = true
+			end
+			texts.bold(TextWindow.main, settings.flags.bold)
+			mirror_textboxes()
 			config.save(settings, windower.ffxi.get_player().name)
 		elseif cmd == 'stroke_width' then
 			texts.stroke_width(TextWindow.main, tonumber(args[1]))
@@ -934,7 +948,7 @@ last_save = os.clock()-560
 
 function save_chat_log()
 	if settings.chat_input and windower.chat.is_open() then
-		chat,_ = windower.chat.get_input()
+		local chat,_ = windower.chat.get_input()
 		chat = windower.convert_auto_trans(chat)
 		chat = chat:strip_format()
 		TextWindow.input:text(chat)

@@ -18,6 +18,11 @@ for the text.
 
 **Changelog**
 
+	__08.20.20__
+	Added cacheing for font data now, Should only need on font calibration to populate everything.
+	Fine tuning the wrapping functions some more, namely for breaking up words instead of wrapping
+	to the next line.  
+
 	__08.18.20__
 	Huge backend change to how fonts are handled and how width is handled in the addon.
 	
