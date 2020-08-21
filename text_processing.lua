@@ -27,6 +27,11 @@ function wrap_text(txt,log_width)
 				if string.find(w,':}') then
 					cnt_deflate_suf = 1
 				end
+				if settings.vanilla_mode then
+					if string.find(w,'['..string.char(0x1E, 0x1F)..'].') then
+						cnt_deflate_pre = cnt_deflate_pre + 1
+					end
+				end
 				cur_len = slen(w)-cnt_deflate_pre-cnt_deflate_suf
 				if cur_len+wrap_cnt > (log_width/font_pixel) then
 					end_len = ((log_width/font_pixel) - wrap_cnt)-1
@@ -80,6 +85,11 @@ function wrap_text(txt,log_width)
 				if string.find(w,':}') then
 					cnt_deflate_suf = 1
 				end
+				if settings.vanilla_mode then
+					if string.find(w,'['..string.char(0x1E, 0x1F)..'].') then
+						cnt_deflate_pre = cnt_deflate_pre + 1
+					end
+				end
 				cur_len = (slen(w)-cnt_deflate_pre-cnt_deflate_suf)*font_pixel
 				if wrap_cnt+cur_len > log_width+6 then
 					local end_len = log_char - ((wrap_cnt+cur_len)/font_pixel)
@@ -128,7 +138,7 @@ function convert_text(txt,tab_style)
 		timestamp = os.date('%X',matches[1])
 		txt = matches[2]
 	end
-	txt = timestamp..':'..txt
+	if not settings.vanilla_mode then txt = timestamp..':'..txt end
 	local slen = string.len
 	local ssub = string.sub
 	local sgsub = string.gsub
@@ -137,24 +147,70 @@ function convert_text(txt,tab_style)
 	else
 		log_width = settings.log_dwidth
 	end
-	txt = sgsub(txt,'[^%z\1-\127]','')
+	if not settings.vanilla_mode then
+		txt = txt:gsub('['..string.char(0x1E, 0x1F, 0x7F)..'].', '')
+		txt = sgsub(txt,'[^%z\1-\127]','')
+	else
+		--txt = string.gsub(txt,string.char(0x1E, 0x01),'')
+	end
 	txt = wrap_text(txt,log_width)
 	txt = sgsub(txt,'^ ','')
-
-	if tab_styles[id] then
-		styles = tab_styles[id]
-		for i=1,#styles,2 do
-			txt = sgsub(txt,styles[i],styles[i+1])
+	if not settings.vanilla_mode then
+		if tab_styles[id] then
+			styles = tab_styles[id]
+			for i=1,#styles,2 do
+				txt = sgsub(txt,styles[i],styles[i+1])
+			end
+		else
+			if battle_ids[id] then
+				styles = tab_styles['battle']
+			else
+				styles = tab_styles['default']
+			end
+			for i=1,#styles,2 do
+				txt = sgsub(txt,styles[i],styles[i+1])
+			end
 		end
 	else
-		if battle_ids[id] then
-			styles = tab_styles['battle']
-		else
-			styles = tab_styles['default']
+		if string.find(txt,'['..string.char(0x1E, 0x1F)..']') then
+			txt = string.gsub(txt,'['..string.char(0x1F)..'](.)',function(w)
+			local col = tonumber(string.byte(w))
+			print('Code: '..col..txt)
+			if col == 1 then
+				col = id
+			end
+			if vanilla_color_codes[col] and vanilla_color_codes[col] ~= '' then
+				return '\\cs('..vanilla_color_codes[col]..')'
+			else 
+				return
+			end
+			end)
+		
+			if string.find(txt,string.char(0x1E)) then
+				txt = string.gsub(txt,'['..string.char(0x1E)..'](.)',function(w)
+				local col = tonumber(string.byte(w))
+				print('Code2: '..col..txt)
+				if col == 1 then
+					col = id
+				end
+			if vanilla_color_codes[col] and vanilla_color_codes[col] ~= '' then
+				return '\\cs('..vanilla_color_codes[col]..')'
+			else return  end
+			end)
 		end
-		for i=1,#styles,2 do
-			txt = sgsub(txt,styles[i],styles[i+1])
+
 		end
+		if vanilla_color_codes[id] == '' or vanilla_color_codes[id] == nil then
+			vanilla_color_codes[id] = "225, 222, 247"
+		end
+		txt = sgsub(txt,"{(\n?):",'%1\\cs(0,255,0){\\cr\\cs('..vanilla_color_codes[id]..')')
+		txt = sgsub(txt,":(\n?)}",'\\cr\\cs(255,0,0)}\\cr%1\\cs('..vanilla_color_codes[id]..')')
+		txt = sgsub(txt,'[^%z\1-\127]','')
+		txt = txt:gsub('.$', '')
+		txt = string.gsub(txt,string.char(0x1E, 0x01),'\\cr')
+		txt = txt:gsub('['..string.char(0x7F)..']', '')
+		txt = '\\cs('..vanilla_color_codes[id]..')'..txt..'\\cr'
+
 	end
 	return txt
 end
@@ -401,7 +457,9 @@ function reload_text()
 end
 
 function chat_add(id, chat)
-	chat = chat:strip_colors()
+	if not settings.vanilla_mode then
+		chat = chat:strip_colors()
+	end
     chat = string.gsub(chat,string.char(0xEF, 0x27),'{:')
     chat = string.gsub(chat,string.char(0xEF, 0x28)..'.',':}')
 	if chat_debug then print('ID: '..id..' Txt: '..chat) end
@@ -469,6 +527,8 @@ function chat_add(id, chat)
 		reload_clock = os.clock()+1
 	end
 end
+
+vanilla_color_codes = dofile(windower.addon_path..'data/colors.lua')
 
 function process_incoming_text(original,modified,orig_id,id,injected,blocked)
 	if duplidoc_ids[id] then -- Handle some npc text that comes in duplicate.

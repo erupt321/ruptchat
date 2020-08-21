@@ -18,6 +18,14 @@ for the text.
 
 **Changelog**
 
+	__08.21.20__
+	Added vanilla_mode option which turns off the styles portion of the addon and enables direct
+	text from the vanilla client, still not 100% on all color codes for this mode.  This option can
+	be accessed from //rchat vanilla_mode or from the setup menu.
+	Did some rewrites on the save functions that was having issues with the recent inclusion of
+	battle log to the saved file.  Old table was not being wiped and was causing a error during the
+	save if currently had a large unpurged battle log.
+
 	__08.20.20__
 	Added cacheing for font data now, Should only need on font calibration to populate everything.
 	Fine tuning the wrapping functions some more, namely for breaking up words instead of wrapping
@@ -283,6 +291,11 @@ for the text.
 	//rchat dropswindow (Toggle if pop up window for split drops shows up automatically)
 
 	//rchat showdrops (Forces drops window to open for 120 seconds)
+	
+	//rchat archive (Turns on Archiving, this will make permanent monthly log files)
+	
+	//rchat vanilla_mode (Turns on vanilla log mode which turns off styles and uses unchanged
+	client text with color conversion.
 	
 	//rchat incoming_pause 
 	

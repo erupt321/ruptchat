@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '1.0.081820.1'
+_addon.version = '1.0.082020.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -277,7 +277,7 @@ function write_db()
 		end
 	end
 	--Prune Length
-	chat_tables['battle_tab'] = battle_table
+	chat_tables[battle_tabname] = battle_table
 	for i,v in pairs(chat_tables) do
 		if i == all_tabname then max_length = rupt_table_length else max_length = rupt_subtable_length end
 		if #v > max_length then
@@ -289,7 +289,8 @@ function write_db()
 		end
 	end
 	rupt_db:write('return ' ..T(chat_tables):tovstring())
-	chat_tables['battle_tab'] = nil
+	battle_table = chat_tables[battle_tabname]
+	chat_tables[battle_tabname] = nil
 	if settings.archive and #archive_table > 0 then
 		local archive_clock = os.clock()
 		print('Chatlog Save Finished in '..(archive_clock - start_time)..'s, Archiving New Text')
@@ -316,9 +317,9 @@ function load_db_file()
 		end
 		print('Loading Chat Tables '..rupt_savefile)
 		chat_tables = require(rupt_savefile)
-		if chat_tables['battle_tab'] then
-			battle_table = chat_tables.battle_tab
-			chat_tables.battle_tab = nil
+		if chat_tables[battle_tabname] then
+			battle_table = chat_tables[battle_tabname]
+			chat_tables[battle_tabname] = nil
 		end
 		fontfile = 'data/'..windower.ffxi.get_player().name..'-fontsizes.lua'
 		fonts_db = files.new(fontfile)
@@ -327,6 +328,7 @@ function load_db_file()
 		end
 	end
 end
+
 
 load_db_file()
 
@@ -595,6 +597,20 @@ function addon_command(...)
 			else
 				log('Setting archive to true')
 				settings.archive = true
+				config.save(settings, windower.ffxi.get_player().name)
+			end
+		elseif cmd == 'vanilla_mode' then
+			if settings.vanilla_mode then
+				log('Setting vanilla_mode to false')
+				settings.vanilla_mode = false
+				TextWindow.main:bg_color(0,0,0)
+				TextWindow.undocked:bg_color(0,0,0)
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting vanilla_mode to true')
+				settings.vanilla_mode = true
+				TextWindow.main:bg_color(30,30,74)
+				TextWindow.undocked:bg_color(30,30,74)
 				config.save(settings, windower.ffxi.get_player().name)
 			end
 		elseif cmd == 'drag' then
@@ -931,6 +947,13 @@ function load_events()
 	TextWindow.undocked:stroke_width(texts.stroke_width(TextWindow.main))
 	TextWindow.undocked:stroke_alpha(texts.stroke_alpha(TextWindow.main))
 	TextWindow.undocked:stroke_color(texts.stroke_color(TextWindow.main))
+	TextWindow.undocked:bg_color(texts.bg_color(TextWindow.main))
+	TextWindow.undocked:bg_alpha(texts.bg_alpha(TextWindow.main))
+	TextWindow.Drops:stroke_width(texts.stroke_width(TextWindow.main))
+	TextWindow.Drops:stroke_alpha(texts.stroke_alpha(TextWindow.main))
+	TextWindow.Drops:stroke_color(texts.stroke_color(TextWindow.main))
+	TextWindow.Drops:bg_color(texts.bg_color(TextWindow.main))
+	TextWindow.Drops:bg_alpha(texts.bg_alpha(TextWindow.main))
 	if settings.chat_input_placement == 1 then
 		TextWindow.input:pos(t_pos_x,(t_pos_y+y_extent))
 	else

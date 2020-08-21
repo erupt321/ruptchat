@@ -320,7 +320,7 @@ return {
 		[8] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
 	},
 	[110] = { --ws mob
-		[1] = '^([0-9]+:[0-9]+:[0-9]+.+)('..windower.ffxi.get_player().name..'\'?s?)%]?%s?(.+)',
+		[1] = '^([0-9]+:[0-9]+:[0-9]+.+)(%['..windower.ffxi.get_player().name..'\'?s?)%]?%s?(.+)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr\\cs('..style_templates['battle_text_1']..')%2\\cr] %3',
 		[3] = '^([0-9]+:[0-9]+:[0-9]+.+)%[([^%]]+)%]?%s?(.+)',
 		[4] = '\\cs('..style_templates['timestamp']..')%1\\cr[\\cs('..style_templates['battle_name_2']..')%2\\cr] %3',

@@ -71,8 +71,10 @@ default_settings = {
 	drops_window = true,
 	enh_whitespace = true,
 	archive = false,
+	vanilla_mode = false,
 	flags = {
 		draggable = false,
+		bold = false,
 	},
 	mentions = {
 		All = S{},
@@ -83,12 +85,28 @@ default_settings = {
 		Battle = S{},
 	},
 	text = {
+		font = 'Lucida Sans Typewriter',
 		size = 10,
+		alpha = 255,
+		red = 255,
+		green = 255,
+		blue = 255,
+		stroke = {
+			width = 0,
+			alpha = 255,
+			red = 0,
+			green = 0,
+			blue = 0,
+		},
 	},
 	bg = {
 		alpha = 200,
+		red = 0,
+		green = 0,
+		blue = 0,
 	},
 }
+
 
 tab_ids = {}
 all_tabs = {}
@@ -100,6 +118,6 @@ calibrate_count = 0
 
 
 setup_window_toggles = { 'battle_all','battle_off','strict_width','strict_length',
-'incoming_pause','drag_status','battle_flash','chat_input','snapback','split_drops','drops_window','enh_whitespace','archive'}
+'incoming_pause','drag_status','battle_flash','chat_input','snapback','split_drops','drops_window','enh_whitespace','archive','vanilla_mode'}
 setup_window_commands = { 'battle_all','battle_off','strict_width','strict_length',
-'incoming_pause','drag','battle_flash','chatinput','snapback','splitdrops','dropswindow','enhancedwhitespace','archive'}
+'incoming_pause','drag','battle_flash','chatinput','snapback','splitdrops','dropswindow','enhancedwhitespace','archive','vanilla_mode'}
