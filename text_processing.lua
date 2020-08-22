@@ -175,7 +175,7 @@ function convert_text(txt,tab_style)
 		if string.find(txt,'['..string.char(0x1E, 0x1F)..']') then
 			txt = string.gsub(txt,'['..string.char(0x1F)..'](.)',function(w)
 			local col = tonumber(string.byte(w))
-			print('Code: '..col..txt)
+			--print('Code: '..col..txt)
 			if col == 1 then
 				col = id
 			end
@@ -189,7 +189,7 @@ function convert_text(txt,tab_style)
 			if string.find(txt,string.char(0x1E)) then
 				txt = string.gsub(txt,'['..string.char(0x1E)..'](.)',function(w)
 				local col = tonumber(string.byte(w))
-				print('Code2: '..col..txt)
+				--print('Code2: '..col..txt)
 				if col == 1 then
 					col = id
 				end
@@ -341,8 +341,10 @@ function load_chat_tab(scroll_start,window)
 		end
 		if window == 'undocked' then
 			tab = settings.undocked_tab
-		elseif window == 'Drops' then
-			tab = 'Drops'
+		elseif chat_tables[window] then
+			tab = window
+		else
+			return
 		end
 		if tab:lower() == battle_tabname:lower() then
 			current_chat = battle_table

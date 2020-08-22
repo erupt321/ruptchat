@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '1.0.082020.1'
+_addon.version = '1.1.082120.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -93,6 +93,9 @@ You may also hold down the Alt key and click on a tab name to open a undocked wi
 //rchat showdrops (Forces drops window to open for 120 seconds)
 
 //rchat archive (Turns on Archiving, this will make permanent monthly log files)
+
+//rchat vanilla_mode (Turns on vanilla log mode which turns off styles and uses unchanged
+client text with color conversion.
 
 //rchat incoming_pause 
 Will turn off vanilla windows receiving chat
@@ -223,7 +226,13 @@ TextWindow.calibrate = texts.new(default_settings)
 TextWindow.calibrate:visible(false)
 TextWindow.calibrate:pos(300,300)
 
-Scrolling_Windows = {'main','undocked','Drops'}
+--Search Window
+TextWindow.search = texts.new(default_settings)
+TextWindow.search:visible(false)
+TextWindow.search:size(settings.text.size)
+TextWindow.search:bg_alpha(settings.bg.alpha)
+
+Scrolling_Windows = {'main','undocked','Drops','search'}
 
 
 function split(s, delimiter)
@@ -321,16 +330,34 @@ function load_db_file()
 			battle_table = chat_tables[battle_tabname]
 			chat_tables[battle_tabname] = nil
 		end
+		if windower.ffxi.get_info().logged_in then
 		fontfile = 'data/'..windower.ffxi.get_player().name..'-fontsizes.lua'
 		fonts_db = files.new(fontfile)
 		if fonts_db:exists() then
 			font_wrap_sizes = dofile(windower.addon_path..fontfile)
+		end
 		end
 	end
 end
 
 
 load_db_file()
+
+function find_all(s)
+	s = s:gsub(' ','.'):lower()
+	local found = false
+	for i,tab in pairs(chat_tables) do
+		if i ~= 'search' then
+			for line,txt in ipairs(tab) do
+				if string.lower(txt):find(s) then
+					found = true
+					table.insert(chat_tables['search'],txt)
+				end
+			end
+		end
+	end
+	return found
+end
 
 function addon_command(...)
     local args = T{...}
@@ -340,6 +367,12 @@ function addon_command(...)
     if cmd then
 		if cmd == 'find' then
 			menu('find',args_joined)
+		elseif cmd == 'findall' then
+			chat_tables['search'] = {}
+					if find_all(args_joined) then
+						load_chat_tab(0,'search')
+						TextWindow.search:show()
+					end
 		elseif cmd == 'alpha' then
 			texts.bg_alpha(TextWindow.main, tonumber(args[1]))
 			texts.bg_alpha(TextWindow.undocked, tonumber(args[1]))
@@ -750,6 +783,7 @@ function find_next(c)
 	return false
 end
 
+
 function reset_tab()
 	chat_log_env['scrolling'] = false
 --	chat_log_env['scroll_num'] = {}
@@ -1006,6 +1040,8 @@ windower.register_event('login', function()
 		rupt_db = files.new(rupt_savefile..'.lua')
 		style_templates = require('templates')
 		tab_styles = require('styles')
+		fontfile = 'data/'..windower.ffxi.get_player().name..'-fontsizes.lua'
+		fonts_db = files.new(fontfile)
 	end
 	load_db_file()
 	load_events()
@@ -1018,6 +1054,8 @@ windower.register_event('load', function()
 		rupt_db = files.new(rupt_savefile..'.lua')
 		style_templates = require('templates')
 		tab_styles = require('styles')
+		fontfile = 'data/'..windower.ffxi.get_player().name..'-fontsizes.lua'
+		fonts_db = files.new(fontfile)
 		load_db_file()
 	end
 	load_events()

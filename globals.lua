@@ -52,7 +52,7 @@ find_table = {
 
 default_settings = {
 	log_length = 12,
-	log_width = 400,
+	log_width = 500,
 	log_dwidth = 0, -- 0 Disables and defaults to log_width value
 	log_dlength = 0, -- 0 Disable and defaults to log_length value
 	battle_all = true, -- Display Battle text in All tab

@@ -127,15 +127,16 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 			hovered = false
 			for _,windowObj in pairs(Scrolling_Windows) do
 				if texts.hover(TextWindow[windowObj],x,y) then
-					if windowObj == 'Drops' then
-						current_chat = chat_tables['Drops']
-					end
 					if windowObj == 'main' then
 						current_chat = chat_tables[current_tab]
 					elseif windowObj == 'undocked' then
 						current_chat = chat_tables[settings.undocked_tab]
 						if settings.undocked_tab == battle_tabname then
 							current_chat = battle_table
+						end
+					else
+						if chat_tables[windowObj] then
+							current_chat = chat_tables[windowObj]
 						end
 					end
 					if last_scroll_type and last_scroll_type ~= windowObj then
