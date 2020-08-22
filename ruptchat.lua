@@ -358,12 +358,17 @@ function find_all(s)
 			for line,txt in ipairs(tab) do
 				if string.lower(txt):find(s) then
 					found = true
-					table.insert(chat_tables['search'],txt)
+					if not txt:find('RuptChat') then
+						table.insert(chat_tables['search'],txt)
+					end
 				end
 			end
 		end
 	end
 	chat_tables[battle_tabname] = nil
+	if found then
+		table.insert(chat_tables['search'],os.time()..':207:RuptChat: Search Completed with '..#chat_tables['search']..' results')
+	end
 	return found
 end
 
