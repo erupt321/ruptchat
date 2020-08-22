@@ -161,26 +161,32 @@ function fillspace(spaces)
 	return spacer
 end
 
-
-for _,v in ipairs(tab_channels['Tabs']) do
-	table.insert(all_tabs,v.name)
-	local buffer = 14
-	local length = string.len(v.name)
-	local space = math.floor((buffer-length)/2)
-	local leftovers = buffer-(length+space)
-	calibrate_count = calibrate_count+length+space+leftovers
-	calibrate_text = calibrate_text..fillspace(space)..v.name..fillspace(leftovers)
-	default_settings['mentions'][v.name] = S{}
-	for _,cid in pairs(v.ids) do
-		tab_ids[tostring(cid)] = v.name
-	end
-	if v.tab_type == 'Battle' then
-		battle_tabname = v.name
-	end
-	if v.tab_type == 'All' then
-		all_tabname = v.name
+function setup_tabs()
+	all_tabs = {}
+	calibrate_count = 0
+	calibrate_text = ''
+	for _,v in ipairs(tab_channels['Tabs']) do
+		table.insert(all_tabs,v.name)
+		local buffer = 14
+		local length = string.len(v.name)
+		local space = math.floor((buffer-length)/2)
+		local leftovers = buffer-(length+space)
+		calibrate_count = calibrate_count+length+space+leftovers
+		calibrate_text = calibrate_text..fillspace(space)..v.name..fillspace(leftovers)
+		default_settings['mentions'][v.name] = S{}
+		for _,cid in pairs(v.ids) do
+			tab_ids[tostring(cid)] = v.name
+		end
+		if v.tab_type == 'Battle' then
+			battle_tabname = v.name
+		end
+		if v.tab_type == 'All' then
+			all_tabname = v.name
+		end
 	end
 end
+
+setup_tabs()
 
 current_tab = all_tabname
 
@@ -346,8 +352,10 @@ load_db_file()
 function find_all(s)
 	s = s:gsub(' ','.'):lower()
 	local found = false
+	chat_tables[battle_tabname] = battle_table
 	for i,tab in pairs(chat_tables) do
 		if i ~= 'search' then
+			print('Searching Table: '..i)
 			for line,txt in ipairs(tab) do
 				if string.lower(txt):find(s) then
 					found = true
@@ -356,6 +364,7 @@ function find_all(s)
 			end
 		end
 	end
+	chat_tables[battle_tabname] = nil
 	return found
 end
 
@@ -369,10 +378,12 @@ function addon_command(...)
 			menu('find',args_joined)
 		elseif cmd == 'findall' then
 			chat_tables['search'] = {}
-					if find_all(args_joined) then
-						load_chat_tab(0,'search')
-						TextWindow.search:show()
-					end
+			if find_all(args_joined) then
+				load_chat_tab(0,'search')
+				TextWindow.search:show()
+			else
+				log('No Results for: '..args_joined)
+			end
 		elseif cmd == 'alpha' then
 			texts.bg_alpha(TextWindow.main, tonumber(args[1]))
 			texts.bg_alpha(TextWindow.undocked, tonumber(args[1]))
@@ -706,6 +717,7 @@ function addon_command(...)
 				config.save(settings, windower.ffxi.get_player().name)
 				log(terms..' Removed to tab ['..tab..']')
 		elseif cmd == 'calibrate' then
+			setup_tabs()
 			calibrate_go = false
 			calibrate_queue = {}
 			calibrate_queue['type'] = 'char'
@@ -713,9 +725,10 @@ function addon_command(...)
 			calibrate_queue['size'] = 12
 			calibrate_font()
 		elseif cmd == 'show' then
-			t:visible(true)
+			TextWindow.main:visible(true)
 		elseif cmd == 'hide' then
-			t:visible(false)
+			TextWindow.main:visible(false)
+			TextWindow.undocked:visible(false)
 		elseif cmd == 'save' then
 			write_db()
 		elseif cmd == 'debug' then

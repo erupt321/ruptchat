@@ -117,6 +117,18 @@ windower.register_event('mouse', function(eventtype, x, y, delta, blocked)
 					return true
 				end
 			end
+		else
+			for i,window in pairs(Scrolling_Windows) do
+				if window ~= 'main' and window ~= 'undocked' then
+					if TextWindow[window]:hover(x,y) then
+						if texts.visible(TextWindow[window]) then
+							texts.hide(TextWindow[window])
+							right_clicked = true
+							return true
+						end
+					end
+				end
+			end
 		end
 	elseif eventtype == 5 then --right click off
 		if right_clicked then

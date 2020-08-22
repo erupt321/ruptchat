@@ -6,6 +6,14 @@ chatlog without using sandbox if your multiboxing.  After coding a majority of i
 to a bigger chat system replacement.  Still a work in progress making style patterns
 for the text.
 
+**Font Calibration**
+
+	Font's calibrate upon loading them for the first time, but there's a couple of things to note.
+	If you change the number of tabs you will need to run calibration again.  Use //rchat calibrate
+	to force your current font and setup to calibrate again.  Also if you are using a non-monospace
+	font and spaces are showing up as blocks, then turn off the enhancedwhitespace option and then
+	run calibrate again and this will recalibrate the menu click settings without the enhancedwhitespace.
+
 
 **Templates**
 
@@ -18,6 +26,7 @@ for the text.
 
 **Changelog**
 
+
 	__08.21.20__
 	Added vanilla_mode option which turns off the styles portion of the addon and enables direct
 	text from the vanilla client, still not 100% on all color codes for this mode.  This option can
@@ -25,6 +34,11 @@ for the text.
 	Did some rewrites on the save functions that was having issues with the recent inclusion of
 	battle log to the saved file.  Old table was not being wiped and was causing a error during the
 	save if currently had a large unpurged battle log.
+	
+	There is also now a new search function, use //rchat findall to search all the tabs for text and 
+	then this will compile them into a new window with all the search results which you can scroll
+	like the other windows.  I've also made the extra floating windows like (Drops, search) able to 
+	be closed by right clicking them.
 
 	__08.20.20__
 	Added cacheing for font data now, Should only need on font calibration to populate everything.
