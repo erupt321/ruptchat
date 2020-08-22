@@ -243,7 +243,9 @@ for the text.
 																			 ■
 	//rchat save (Force a chatlog save)
 
-	//rchat find <search terms> (Search current selected tab for search terms
+	//rchat find <search terms> (Search current selected tab for search terms)
+	
+	//rchat findall <search terms> (Searches all tabs and puts results in a pop up window)
 
 	//rchat mentions (Shows mention phrases you have saved for tabs)
 

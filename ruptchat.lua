@@ -355,7 +355,6 @@ function find_all(s)
 	chat_tables[battle_tabname] = battle_table
 	for i,tab in pairs(chat_tables) do
 		if i ~= 'search' then
-			print('Searching Table: '..i)
 			for line,txt in ipairs(tab) do
 				if string.lower(txt):find(s) then
 					found = true
