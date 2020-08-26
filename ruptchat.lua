@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '1.1.082120.1'
+_addon.version = '1.1.082520.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -194,7 +194,7 @@ TextWindow = {}
 
 --main window
 settings = config.load(default_settings)
-TextWindow.main = texts.new(settings)
+TextWindow.main = texts.new('${rchat|rChat}',settings)
 texts.bg_visible(TextWindow.main, true)
 
 --Notification Window
@@ -314,7 +314,21 @@ function write_db()
 			files.create(archive_filename)
 		end
 		local fappend = files.append
-		fappend(archive_filename,table.concat(archive_table,'\n'))
+		if #archive_table > 200 then
+			i = 1
+			while i < #archive_table do
+				local end_range
+				if (i + 200) > #archive_table then
+					end_range = #archive_table
+				else
+					end_range = i+200
+				end
+				fappend(archive_filename,table.concat(archive_table,'\n',i,end_range))
+				i = end_range
+			end
+		else
+			fappend(archive_filename,table.concat(archive_table,'\n'))		
+		end
 		archive_table = nil
 --		print('Archived in '..(os.clock()-archive_clock)..'s')
 	else
@@ -350,13 +364,13 @@ end
 load_db_file()
 
 function find_all(s)
-	s = s:gsub(' ','.'):lower()
+	local s_pat = s:gsub(' ','.'):lower()
 	local found = false
 	chat_tables[battle_tabname] = battle_table
 	for i,tab in pairs(chat_tables) do
 		if i ~= 'search' then
 			for line,txt in ipairs(tab) do
-				if string.lower(txt):find(s) then
+				if string.lower(txt):find(s_pat) then
 					found = true
 					if not txt:find('RuptChat') then
 						table.insert(chat_tables['search'],txt)
@@ -367,7 +381,7 @@ function find_all(s)
 	end
 	chat_tables[battle_tabname] = nil
 	if found then
-		table.insert(chat_tables['search'],os.time()..':207:RuptChat: Search Completed with '..#chat_tables['search']..' results')
+		table.insert(chat_tables['search'],os.time()..':207:RuptChat: Search for ['..s..'] completed with '..#chat_tables['search']..' results')
 	end
 	return found
 end
@@ -1050,6 +1064,7 @@ function save_chat_log()
 	end
 end
 windower.register_event('prerender',save_chat_log)
+
 
 windower.register_event('login', function()
 	if windower.ffxi.get_info().logged_in then
