@@ -13,6 +13,7 @@ for the text.
 	to force your current font and setup to calibrate again.  Also if you are using a non-monospace
 	font and spaces are showing up as blocks, then turn off the enhancedwhitespace option and then
 	run calibrate again and this will recalibrate the menu click settings without the enhancedwhitespace.
+	Activating Bold or Italic will usually require a re-calibration.
 
 
 **Templates**
@@ -26,6 +27,10 @@ for the text.
 
 **Changelog**
 
+
+	__08.31.20__
+	Activated Bold/Italic settings if your font has a variant.  Also made window format copying function to
+	run after different window cosmetic options are run.
 
 	__08.21.20__
 	Added vanilla_mode option which turns off the styles portion of the addon and enables direct
@@ -264,6 +269,10 @@ for the text.
 	//rchat size <font size> (Change font size, this will increase whole window size)
 	
 	//rchat font <font name> (Change font, some fonts that are grossly different sizes will affect clickables)
+	
+	//rchat bold (Toggle Bold for current font, if font doesn't have a bold variant may error out)
+	
+	//rchat italic (Toggle Italic for current font, if font doesn't have a italic variant may error out)
 	
 	//rchat stroke_alpha <0-255> (Change text stroke transparency)
 

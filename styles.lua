@@ -256,14 +256,14 @@ return {
 		[6] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
 		[7] = '^(.+[0-9]+:[0-9]+:[0-9]+.-)('..windower.ffxi.get_player().name..') ([A-Za-z]+) .-([^%(]+)%(([^%)]+)%)',
 		[8] = '%1[\\cs('..style_templates['battle_text_1']..')%2\\cr] %3 ->\\cs('..style_templates['battle_name_2']..')%4\\cr(%5)',
-	},
+	}, 
 	[59] = { -- No effect casted on you aoe
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
 		[3] = '(.*) %-> (.*)',
 		[4] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
-		[5] = '^(.+[0-9]+:[0-9]+:[0-9]+.-)('..windower.ffxi.get_player().name..') ([A-Za-z]+) .-([^%(]+)%(([^%)]+)%)',
-		[6] = '%1[\\cs('..style_templates['battle_text_1']..')%2\\cr] %3 ->\\cs('..style_templates['battle_name_2']..')%4\\cr(%5)',
+--		[5] = '^(.+[0-9]+:[0-9]+:[0-9]+.-)('..windower.ffxi.get_player().name..') ([A-Za-z]+) .-([^%(]+)%(([^%)]+)%)',
+--		[6] = '%1[\\cs('..style_templates['battle_text_1']..')%2\\cr] %3 ->\\cs('..style_templates['battle_name_2']..')%4\\cr(%5)',
 	},
 	[63] = { -- No effect spell / Resist
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',

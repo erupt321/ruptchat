@@ -334,6 +334,7 @@ function build_maps()
 		local x_boundry = x_extent+texts.pos_x(TextWindow.main)+2
 		TextWindow.undocked:pos(x_boundry,texts.pos_y(TextWindow.main))
 	end
+	mirror_textboxes()
 end
 
 function setup_window_map()
@@ -359,13 +360,14 @@ end
 
 
 function mirror_textboxes()
-	coroutine.sleep(0.2)
-	for _,window in pairs({'undocked','Drops','setup','notification'}) do
+	for _,window in pairs({'undocked','Drops','setup','search','calibrate'}) do
 		texts.bg_alpha(TextWindow[window],texts.bg_alpha(TextWindow.main))
+		texts.bg_color(TextWindow[window],texts.bg_color(TextWindow.main))
 		texts.bold(TextWindow[window],texts.bold(TextWindow.main))
 		texts.size(TextWindow[window],texts.size(TextWindow.main))
 		texts.alpha(TextWindow[window],texts.alpha(TextWindow.main))
 		texts.stroke_width(TextWindow[window],texts.stroke_width(TextWindow.main))
 		texts.stroke_alpha(TextWindow[window],texts.stroke_alpha(TextWindow.main))
+		texts.stroke_color(TextWindow[window],texts.stroke_color(TextWindow.main))
 	end
 end

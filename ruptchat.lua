@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '1.1.082520.1'
+_addon.version = '1.1.083120.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -43,6 +43,10 @@ Console Commands
 //rchat size <font size> (Change font size, this will increase whole window size)
 
 //rchat font <font name> (Change font, some fonts that are grossly different sizes will affect clickables)
+
+//rchat bold (Toggle Bold for current font, if font doesn't have a bold variant may error out)
+
+//rchat italic (Toggle Italic for current font, if font doesn't have a italic variant may error out)
 
 //rchat stroke_alpha <0-255> (Change text stroke transparency)
 
@@ -194,7 +198,7 @@ TextWindow = {}
 
 --main window
 settings = config.load(default_settings)
-TextWindow.main = texts.new('${rchat|rChat}',settings)
+TextWindow.main = texts.new(settings)
 texts.bg_visible(TextWindow.main, true)
 
 --Notification Window
@@ -205,26 +209,21 @@ TextWindow.notification:visible(false)
 default_settings.flags.draggable = true
 TextWindow.undocked = texts.new(default_settings)
 TextWindow.undocked:visible(false)
-TextWindow.undocked:size(settings.text.size)
 texts.pad(TextWindow.undocked,5)
 
 --Text Input Window
 TextWindow.input = texts.new(default_settings)
 TextWindow.input:visible(false)
-TextWindow.input:size(settings.text.size)
 TextWindow.input:bg_alpha(255)
 
 --Drops Window
 TextWindow.Drops = texts.new(default_settings)
 TextWindow.Drops:visible(false)
-TextWindow.Drops:size(settings.text.size)
-TextWindow.Drops:bg_alpha(settings.bg.alpha)
 TextWindow.Drops:pos(300,300)
 
 --Setup Window
 TextWindow.setup = texts.new({flags = {draggable=false}})
 TextWindow.setup:visible(false)
-TextWindow.setup:size(settings.text.size)
 texts.pad(TextWindow.setup,5)
 
 --Calibration Window
@@ -235,8 +234,6 @@ TextWindow.calibrate:pos(300,300)
 --Search Window
 TextWindow.search = texts.new(default_settings)
 TextWindow.search:visible(false)
-TextWindow.search:size(settings.text.size)
-TextWindow.search:bg_alpha(settings.bg.alpha)
 
 Scrolling_Windows = {'main','undocked','Drops','search'}
 
@@ -404,9 +401,9 @@ function addon_command(...)
 			end
 		elseif cmd == 'alpha' then
 			texts.bg_alpha(TextWindow.main, tonumber(args[1]))
-			texts.bg_alpha(TextWindow.undocked, tonumber(args[1]))
 			settings.bg_alpha = tonumber(args[1])
 			config.save(settings, windower.ffxi.get_player().name)
+			mirror_textboxes()			
 		elseif cmd == 'bold' then
 			if settings.flags and settings.flags.bold then
 				settings.flags.bold = false
@@ -416,22 +413,31 @@ function addon_command(...)
 			texts.bold(TextWindow.main, settings.flags.bold)
 			mirror_textboxes()
 			config.save(settings, windower.ffxi.get_player().name)
+		elseif cmd == 'italic' then
+			if settings.flags and settings.flags.italic then
+				settings.flags.italic = false
+			else
+				settings.flags.italic = true
+			end
+			texts.italic(TextWindow.main, settings.flags.italic)
+			mirror_textboxes()
+			config.save(settings, windower.ffxi.get_player().name)
 		elseif cmd == 'stroke_width' then
 			texts.stroke_width(TextWindow.main, tonumber(args[1]))
-			texts.stroke_width(TextWindow.undocked, tonumber(args[1]))
 			config.save(settings, windower.ffxi.get_player().name)
+			mirror_textboxes()
 		elseif cmd == 'stroke_color' then
 			if #args > 3 then
 				log('Missing a Color')
 				return
 			end
 			texts.stroke_color(TextWindow.main, tonumber(args[1]),tonumber(args[2]),tonumber(args[3]))
-			texts.stroke_color(TextWindow.undocked, tonumber(args[1]),tonumber(args[2]),tonumber(args[3]))
 			config.save(settings, windower.ffxi.get_player().name)
+			mirror_textboxes()
 		elseif cmd == 'stroke_alpha' then
 			texts.stroke_alpha(TextWindow.main, tonumber(args[1]))
-			texts.stroke_alpha(TextWindow.undocked, tonumber(args[1]))
 			config.save(settings, windower.ffxi.get_player().name)
+			mirror_textboxes()
 		elseif cmd == 'size' then
 			texts.size(TextWindow.main, tonumber(args[1]))
 			texts.size(TextWindow.undocked, tonumber(args[1]))
@@ -918,6 +924,7 @@ function mention_check()
 	if chat_log_env['mention_found'] and current_tab == chat_log_env['last_mention_tab'] then
 		chat_log_env['mention_found'] = false
 		TextWindow.notification:bg_color(0,0,0)
+		mirror_textboxes()
 	end
 end
 
@@ -1009,21 +1016,12 @@ function load_events()
 	coroutine.sleep(1)
 	x_extent,y_extent = texts.extents(TextWindow.main)
 	TextWindow.undocked:pos((x_extent+t_pos_x+2),t_pos_y)
-	TextWindow.undocked:stroke_width(texts.stroke_width(TextWindow.main))
-	TextWindow.undocked:stroke_alpha(texts.stroke_alpha(TextWindow.main))
-	TextWindow.undocked:stroke_color(texts.stroke_color(TextWindow.main))
-	TextWindow.undocked:bg_color(texts.bg_color(TextWindow.main))
-	TextWindow.undocked:bg_alpha(texts.bg_alpha(TextWindow.main))
-	TextWindow.Drops:stroke_width(texts.stroke_width(TextWindow.main))
-	TextWindow.Drops:stroke_alpha(texts.stroke_alpha(TextWindow.main))
-	TextWindow.Drops:stroke_color(texts.stroke_color(TextWindow.main))
-	TextWindow.Drops:bg_color(texts.bg_color(TextWindow.main))
-	TextWindow.Drops:bg_alpha(texts.bg_alpha(TextWindow.main))
 	if settings.chat_input_placement == 1 then
 		TextWindow.input:pos(t_pos_x,(t_pos_y+y_extent))
 	else
 		TextWindow.input:pos(t_pos_x,(t_pos_y-40))
 	end
+	mirror_textboxes()
 end
 
 function unload_events()
@@ -1052,7 +1050,6 @@ function save_chat_log()
 	if chat_log_env['mention_found'] and settings.battle_flash and chat_log_env['last_mention_tab'] == battle_tabname then
 		local t = os.clock()%1 -- Flashing colors from Byrth's answering machine
 		TextWindow.notification:bg_color(100,100+150*math.sin(t*math.pi),100+150*math.sin(t*math.pi))
-		TextWindow.undocked:bg_color(0,0,0)
 	end
 	if os.clock() > last_save+save_delay then
 		coroutine.schedule(write_db,0)
@@ -1074,6 +1071,7 @@ windower.register_event('login', function()
 		tab_styles = require('styles')
 		fontfile = 'data/'..windower.ffxi.get_player().name..'-fontsizes.lua'
 		fonts_db = files.new(fontfile)
+		coroutine.sleep(0.1)
 	end
 	load_db_file()
 	load_events()
@@ -1088,6 +1086,7 @@ windower.register_event('load', function()
 		tab_styles = require('styles')
 		fontfile = 'data/'..windower.ffxi.get_player().name..'-fontsizes.lua'
 		fonts_db = files.new(fontfile)
+		coroutine.sleep(0.1)
 		load_db_file()
 	end
 	load_events()
