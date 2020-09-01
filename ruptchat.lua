@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '1.1.083120.1'
+_addon.version = '1.1.090120.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -1049,7 +1049,7 @@ function save_chat_log()
 	end
 	if chat_log_env['mention_found'] and settings.battle_flash and chat_log_env['last_mention_tab'] == battle_tabname then
 		local t = os.clock()%1 -- Flashing colors from Byrth's answering machine
-		TextWindow.notification:bg_color(100,100+150*math.sin(t*math.pi),100+150*math.sin(t*math.pi))
+		windower.text.set_bg_color(TextWindow.notification._name,255,100,100+150*math.sin(t*math.pi),100+150*math.sin(t*math.pi))
 	end
 	if os.clock() > last_save+save_delay then
 		coroutine.schedule(write_db,0)

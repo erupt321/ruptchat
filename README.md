@@ -27,6 +27,9 @@ for the text.
 
 **Changelog**
 
+	__09.01.20__
+	Small bug fix for Battle Flash mentions where the bg color change would also change other windows
+	bg color due to some issues with windowers text library.
 
 	__08.31.20__
 	Activated Bold/Italic settings if your font has a variant.  Also made window format copying function to
