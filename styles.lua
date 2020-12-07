@@ -509,6 +509,22 @@ return {
 		[5] = ':(\n?)}',
 		[6] = '\\cr\\cs(255,0,0)}\\cr%1\\cs('..style_templates['linkshell2_text']..')',
 		},
+	[221] = { -- outgoing assist channel
+		[1] = '^([0-9]+:[0-9]+:[0-9]+):([^%:]+)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr:\\cs('..style_templates['party_name']..')%2\\cr\\cs('..style_templates['party_text']..')%3\\cr',
+		[3] = '{(\n?):',
+		[4] = '%1\\cs(0,255,0){\\cr\\cs('..style_templates['party_text']..')',
+		[5] = ':(\n?)}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr%1\\cs('..style_templates['party_text']..')',
+	},
+	[222] = { -- incoming assist channel
+		[1] = '^([0-9]+:[0-9]+:[0-9]+):([^%:]+)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr:\\cs('..style_templates['party_name']..')%2\\cr\\cs('..style_templates['party_text']..')%3\\cr',
+		[3] = '{(\n?):',
+		[4] = '%1\\cs(0,255,0){\\cr\\cs('..style_templates['party_text']..')',
+		[5] = ':(\n?)}',
+		[6] = '\\cr\\cs(255,0,0)}\\cr%1\\cs('..style_templates['party_text']..')',
+	},
 	['default'] = {  --failsafe's if no id checks out it'll try to use these.
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(%a+):(.*)', --Addon log message
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr[\\cs('..style_templates['addon_log_header']..')%2\\cr]\\cs('..style_templates['addon_log']..')%3\\cr',

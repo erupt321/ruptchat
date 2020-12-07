@@ -27,6 +27,15 @@ for the text.
 
 **Changelog**
 
+	__12.07.20__
+	I've been on a bit of a break from the game, but I've added support for the new Assist Channel, some
+	beta support for Rank #'s showing, but I do not have a mentor character to test fully atm.  I've also
+	fixed some issues with the font calibrator.  Namely if the system detects a font that is not support it
+	will default back to Arial font and re-calibrate again.  There's alot of instances where players systems
+	just seem to not even support what is supposed to be a windows native font I have set.  Windower's text
+	system does not actually detect if you give it a bad font and it will continue to set windows with any
+	font name you give it.
+
 	__09.01.20__
 	Small bug fix for Battle Flash mentions where the bg color change would also change other windows
 	bg color due to some issues with windowers text library.
@@ -321,6 +330,8 @@ for the text.
 	//rchat showdrops (Forces drops window to open for 120 seconds)
 	
 	//rchat archive (Turns on Archiving, this will make permanent monthly log files)
+	
+	//rchat resetpos (Resets the chat window to 200x200 location on your screen)
 	
 	//rchat vanilla_mode (Turns on vanilla log mode which turns off styles and uses unchanged
 	client text with color conversion.

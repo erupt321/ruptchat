@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '1.1.090120.1'
+_addon.version = '1.2.120720.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -97,6 +97,8 @@ You may also hold down the Alt key and click on a tab name to open a undocked wi
 //rchat showdrops (Forces drops window to open for 120 seconds)
 
 //rchat archive (Turns on Archiving, this will make permanent monthly log files)
+
+//rchat resetpos (Resets the chat window to 200x200 location on your screen)
 
 //rchat vanilla_mode (Turns on vanilla log mode which turns off styles and uses unchanged
 client text with color conversion.
@@ -303,7 +305,7 @@ function write_db()
 	rupt_db:write('return ' ..T(chat_tables):tovstring())
 	battle_table = chat_tables[battle_tabname]
 	chat_tables[battle_tabname] = nil
-	if settings.archive and #archive_table > 0 then
+	if settings.archive and archive_table and #archive_table > 0 then
 		local archive_clock = os.clock()
 		print('Chatlog Save Finished in '..(archive_clock - start_time)..'s, Archiving New Text')
 		archive_filename = files.new('chatlogs/'..windower.ffxi.get_player().name..'-'..os.date('%Y%m')..'.log')
@@ -748,6 +750,8 @@ function addon_command(...)
 			calibrate_queue['type_text'] = calibrate_text
 			calibrate_queue['size'] = 12
 			calibrate_font()
+		elseif cmd == 'resetpos' then
+			TextWindow.main:pos(200,200)
 		elseif cmd == 'show' then
 			TextWindow.main:visible(true)
 		elseif cmd == 'hide' then
@@ -755,6 +759,8 @@ function addon_command(...)
 			TextWindow.undocked:visible(false)
 		elseif cmd == 'save' then
 			write_db()
+		elseif cmd == 'testline' then
+			chat_add(222,"ï4üAlamihgoû(E) : Feel free to use this chat channel if you have any questions about FFXI, monk-related or otherwise.")
 		elseif cmd == 'debug' then
 			if chat_debug then chat_debug = false else chat_debug = true end
 		end

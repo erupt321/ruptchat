@@ -459,6 +459,18 @@ function reload_text()
 end
 
 function chat_add(id, chat)
+	if id == 221 or id == 222 then
+		local rank = ""
+		rank = string.sub(chat,1,1)
+		if rank == string.char(195) then
+			rank = string.sub(chat,3,3)+2
+				print('Found Rank: '..rank)
+				chat = "[R"..rank..']'..string.sub(chat,4)
+				chat = string.gsub(chat,"ü","")
+		end
+--		table.insert(archive_table,os.date('[%x@%X]')..':'..id..':'..chat)
+--		if chat_debug then print('ID: '..id..' Txt: '..chat) end
+	end
 	if not settings.vanilla_mode then
 		chat = chat:strip_colors()
 	end

@@ -206,6 +206,20 @@ function calibrate_font()
 	if calibrate_go then
 		local size = calibrate_queue['size']
 		local extents_x,extents_y = texts.extents(TextWindow.calibrate)
+		if extents_x == 10 then
+			print("Looks like a failed font, defaulting back to Arial")
+			texts.font(TextWindow.main, 'arial')
+			texts.font(TextWindow.undocked, 'arial')
+			settings.text.font = 'arial'
+			config.save(settings, windower.ffxi.get_player().name)
+			calibrate_go = false
+			calibrate_queue = {}
+			calibrate_queue['type'] = 'char'
+			calibrate_queue['type_text'] = calibrate_text
+			calibrate_queue['size'] = 12
+			calibrate_font()
+			return
+		end
 		local font = settings.text.font:lower()
 		if not font_wrap_sizes[font] then
 			font_wrap_sizes[font] = {}

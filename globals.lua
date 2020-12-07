@@ -33,7 +33,7 @@ duplidoc_ids = { [190]=true }
 filter_ids = { [23]=true,[24]=true,[31]=true,[151]=true,[152]=true }
 
 -- Last adds 144 / 190
-pause_ids = { [0]=true,[1]=true,[4]=true,[5]=true,[6]=true,[7]=true,[8]=true,[9]=true,[10]=true,[11]=true,[12]=true,[13]=true,[14]=true,[15]=true,[38]=true,[59]=true,[64]=true,[90]=true,[91]=true,[121]=true,[123]=true,[127]=true,[131]=true,[144]=true,[146]=true,[148]=true,[160]=true,[161]=true,[190]=true,[204]=true,[207]=true,[208]=true,[210]=true,[212]=true,[213]=true,[214]=true,[245]=true }
+pause_ids = { [0]=true,[1]=true,[4]=true,[5]=true,[6]=true,[7]=true,[8]=true,[9]=true,[10]=true,[11]=true,[12]=true,[13]=true,[14]=true,[15]=true,[38]=true,[59]=true,[64]=true,[90]=true,[91]=true,[121]=true,[123]=true,[127]=true,[131]=true,[144]=true,[146]=true,[148]=true,[160]=true,[161]=true,[190]=true,[204]=true,[207]=true,[208]=true,[210]=true,[212]=true,[213]=true,[214]=true,[221]=true,[245]=true }
 chat_tables = {}
 battle_table = {}
 archive_table = {}
@@ -85,8 +85,8 @@ default_settings = {
 		Battle = S{},
 	},
 	text = {
-		font = 'Lucida Sans Typewriter',
-		fonts = {'Courier New','Arial'},
+		font = 'Courier New',
+		fonts = {'Arial','Lucida Sans Typewriter'},
 		size = 10,
 		alpha = 255,
 		red = 255,
