@@ -27,6 +27,11 @@ for the text.
 
 **Changelog**
 
+	__01.25.21__
+	Made auto undocked window hiding.  This will allow the secondary tab to auto disappear when there's
+	been no activity for 30 seconds.  So for battle log if nothing has happened it will auto hide, it'll
+	reappear as soon as a log entry shows up.
+	
 	__12.07.20__
 	I've been on a bit of a break from the game, but I've added support for the new Assist Channel, some
 	beta support for Rank #'s showing, but I do not have a mentor character to test fully atm.  I've also
@@ -309,6 +314,8 @@ for the text.
 	//rchat tab [tab name] (Change tab's without mouse input, goes to next tab if empty)
 
 	//rchat undock [tab name] (Opens a second dedicated chat window for that tab, off if empty)
+	
+	//rchat undocked_hide (Hides the undocked window after 30 seconds of inactivity)
 	
 	//rchat snapback (When enabled the undocked window will follow your main window
 	

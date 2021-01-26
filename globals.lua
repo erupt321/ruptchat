@@ -6,6 +6,7 @@ style_templates = ''
 battlemod_loaded = false
 chat_debug = false
 drops_timer = os.clock()
+undocked_timer = os.clock()+30
 if windower.ffxi.get_info().logged_in then
 	rupt_savefile = 'chatlogs/'..windower.ffxi.get_player().name..'-current'
 	rupt_db = files.new(rupt_savefile..'.lua')
@@ -61,6 +62,7 @@ default_settings = {
 	strict_length = true,
 	undocked_window = false,
 	undocked_tab = all_tabname,
+	undocked_hide = false,
 	incoming_pause = false,
 	drag_status = true,
 	battle_flash = false,

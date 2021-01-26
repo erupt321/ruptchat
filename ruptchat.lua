@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '1.2.120720.1'
+_addon.version = '1.2.01252021.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the
@@ -76,6 +76,8 @@ Console Commands
 
 //rchat undock [tab name] (Opens a second dedicated chat window for that tab, off if empty)
 You may also hold down the Alt key and click on a tab name to open a undocked window.
+
+//rchat undocked_hide (Hides the undocked window after 30 seconds of inactivity)
 
 //rchat snapback (When enabled the undocked window will follow your main window)
 
@@ -517,6 +519,16 @@ function addon_command(...)
 				if settings.undocked_tab then
 					undock(settings.undocked_tab)
 				end
+			end
+		elseif cmd == 'undocked_hide' then
+			if settings.undocked_hide then
+				log('Setting undocked_hide to false')
+				settings.undocked_hide = false
+				config.save(settings, windower.ffxi.get_player().name)
+			else
+				log('Setting undocked_hide to true')
+				settings.undocked_hide = true
+				config.save(settings, windower.ffxi.get_player().name)
 			end
 		elseif cmd == 'battle_all' then
 			if settings.battle_all then
@@ -1051,6 +1063,11 @@ function save_chat_log()
 	if settings.split_drops and texts.visible(TextWindow.Drops) then
 		if os.clock() > drops_timer then
 			TextWindow.Drops:hide()
+		end
+	end
+	if settings.undocked_hide and texts.visible(TextWindow.undocked) then
+		if os.clock() > undocked_timer then
+			TextWindow.undocked:hide()
 		end
 	end
 	if chat_log_env['mention_found'] and settings.battle_flash and chat_log_env['last_mention_tab'] == battle_tabname then

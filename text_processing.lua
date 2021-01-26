@@ -519,6 +519,10 @@ function chat_add(id, chat)
 --		table.insert(battle_table,battle_text)
 		if not T(tab_channels['Battle_Exclusions']):contains(id) then
 			table.insert(battle_table,os.time()..':'..id..':'..chat)
+			if settings.undocked_hide and settings.undocked_tab == battle_tabname then
+				TextWindow.undocked:show()
+				undocked_timer = os.clock()+30
+			end
 		end
 		if settings.battle_all then
 --			table.insert(chat_tables[all_tabname],'**'..battle_text)
@@ -535,6 +539,10 @@ function chat_add(id, chat)
 		local chat_type = tab_id
 		if not chat_tables[chat_type] then chat_tables[chat_type] = {} end
 		table.insert(chat_tables[chat_type],os.time()..':'..id..':'..chat)
+		if settings.undocked_hide and settings.undocked_tab == chat_type then
+			TextWindow.undocked:show()
+			undocked_timer = os.clock()+30
+		end
 	end
 	if not queue_reload_text then --Avoid having 8 messages that are received at the same time process
 		queue_reload_text = true
