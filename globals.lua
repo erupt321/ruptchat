@@ -39,11 +39,6 @@ chat_tables = {}
 battle_table = {}
 archive_table = {}
 
--- If you care to use a custom font you can play with your own settings here 
--- Format is {[Header Width Multiplier],[Word Wrap Multiplier],[Click Map Width],[Click Map Height]}
--- for some just changing your //rchat width will get you more mileage.
-
-
 
 find_table = {
 	['last_find'] = false,

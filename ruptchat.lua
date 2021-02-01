@@ -1,7 +1,7 @@
 _addon.author = 'Erupt'
 _addon.commands = {'rchat'}
 _addon.name = 'RuptChat'
-_addon.version = '1.2.01252021.1'
+_addon.version = '1.2.02012021.1'
 --[[
 
 This was originally written as just a text box replacement for tells and checking the

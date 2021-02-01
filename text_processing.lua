@@ -461,15 +461,21 @@ end
 function chat_add(id, chat)
 	if id == 221 or id == 222 then
 		local rank = ""
-		rank = string.sub(chat,1,1)
-		if rank == string.char(195) then
-			rank = string.sub(chat,3,3)+2
+		first_word = string.match(chat,'[^%s]+ ')
+		rank = string.match(first_word,'%d') or 0
+		print('Found Rank: '..rank)
+		if rank then
+--			rank = string.sub(chat,3,3)+2
 				print('Found Rank: '..rank)
-				chat = "[R"..rank..']'..string.sub(chat,4)
+				if rank == 0 then 
+					chat = "[R"..rank..']'..chat
+				else
+					chat = "[R"..(rank+2)..']'..string.sub(chat,4)
+				end
 				chat = string.gsub(chat,"ü","")
 		end
---		table.insert(archive_table,os.date('[%x@%X]')..':'..id..':'..chat)
---		if chat_debug then print('ID: '..id..' Txt: '..chat) end
+		table.insert(archive_table,os.date('[%x@%X]')..':'..id..':'..chat)
+		if chat_debug then print('ID: '..id..' Txt: '..chat) end
 	end
 	if not settings.vanilla_mode then
 		chat = chat:strip_colors()
@@ -539,7 +545,7 @@ function chat_add(id, chat)
 		local chat_type = tab_id
 		if not chat_tables[chat_type] then chat_tables[chat_type] = {} end
 		table.insert(chat_tables[chat_type],os.time()..':'..id..':'..chat)
-		if settings.undocked_hide and settings.undocked_tab == chat_type then
+		if settings.undocked_hide and settings.undocked_tab == chat_type then	
 			TextWindow.undocked:show()
 			undocked_timer = os.clock()+30
 		end
