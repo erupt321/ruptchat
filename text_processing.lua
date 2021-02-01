@@ -463,7 +463,6 @@ function chat_add(id, chat)
 		local rank = ""
 		first_word = string.match(chat,'[^%s]+ ')
 		rank = string.match(first_word,'%d') or 0
-		print('Found Rank: '..rank)
 		if rank then
 --			rank = string.sub(chat,3,3)+2
 				print('Found Rank: '..rank)
