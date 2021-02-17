@@ -460,18 +460,34 @@ end
 
 function chat_add(id, chat)
 	if id == 221 or id == 222 then
-		local first_word = string.match(chat,'[^%s]+ ')
-		local rank = string.match(first_word,'%d') or 0
-		if rank then
---			rank = string.sub(chat,3,3)+2
-				if rank == 0 then 
-					chat = "[R"..rank..']'..chat
-				else
-					chat = "[R"..(rank+2)..']'..string.sub(chat,4)
+		local player_name = string.match(chat,"[^a-zA-Z]+([a-zA-Z]+)")
+		local chat_head = string.match(chat,"([^a-zA-Z]+)")
+		local rank = 0
+		local mentor_flag = 'B'
+		local rank_match = false
+		if player_name then
+			for _,flag in pairs(assist_flags.labels) do
+				local cur_flag = assist_flags[flag]
+				for cur_rank,rank_hex in pairs(cur_flag) do
+					rank_match = string.find(chat_head,rank_hex) or false
+					if rank_match then
+						rank = cur_rank
+						mentor_flag = string.upper(string.sub(flag,1,1))
+						break
+					end
 				end
-				chat = string.gsub(chat,"ü","")
+				if rank_match then
+					break
+				end
+			end
 		end
 		table.insert(archive_table,os.date('[%x@%X]')..':'..id..':'..chat)
+		if rank == 0 then 
+			chat = "[R"..rank..']'..chat
+		else
+			chat = "["..mentor_flag.."-R"..rank..']'..string.sub(chat,4)
+		end
+		chat = string.gsub(chat,"ü","")
 		if chat_debug then print('ID: '..id..' Txt: '..chat) end
 	end
 	if not settings.vanilla_mode then
