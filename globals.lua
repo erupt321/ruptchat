@@ -39,7 +39,46 @@ chat_tables = {}
 battle_table = {}
 archive_table = {}
 
-
+-- Thanks Kenshi for building these.
+assist_flags = { 
+	labels = {'bronze','silver','gold' },
+	bronze = {
+	[1] = string.char(0x2F),
+	[2] = string.char(0x30),
+	[3] = string.char(0x31),
+	[4] = string.char(0x32),
+	[5] = string.char(0x33),
+	[6] = string.char(0x34),
+	[7] = string.char(0x35),
+--	[8] = string.char(0x36),
+--	[9] = string.char(0x37),
+--	[10] = string.char(0x38),
+	},
+	silver = {
+	[1] = string.char(0x39),
+	[2] = string.char(0x3A),
+	[3] = string.char(0x3B),
+	[4] = string.char(0x3C),
+	[5] = string.char(0x3D),
+	[6] = string.char(0x3E),
+	[7] = string.char(0x3F),
+--	[8] = string.char(0x40),
+--	[9] = string.char(0x41),
+--	[10] = string.char(0x42)
+	},
+	gold = {
+	[1] = string.char(0x43),
+	[2] = string.char(0x44),
+	[3] = string.char(0x45),
+	[4] = string.char(0x46),
+	[5] = string.char(0x47),
+	[6] = string.char(0x48),
+	[7] = string.char(0x49),
+--	[8] = string.char(0x4A),
+--	[9] = string.char(0x4B),
+--	[10] = string.char(0x4C),
+	},
+}
 find_table = {
 	['last_find'] = false,
 	['last_index'] = 1,
