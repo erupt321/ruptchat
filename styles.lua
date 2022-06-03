@@ -187,6 +187,30 @@ return {
 		[9] = '(.*) %-> (.*)',
 		[10] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
 	},
+	[26] = { -- battle     
+		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
+		[3] = '%[?('..windower.ffxi.get_player().name..'\'?s?)%]?',
+		[4] = '[\\cs('..style_templates['battle_name_1']..')%1\\cr]',
+		[5] = '(.-)( [0-9]+%s)(.*)',
+		[6] = '%1\\cr\\cs('..style_templates['battle_dmg_1']..')%2\\cr%3',
+		[7] = '^(.+[0-9]+:[0-9]+:[0-9]+.+)%[([^%]]+)%](.+)',--
+		[8] = '%1[\\cs('..style_templates['battle_name_2']..')%2\\cr]%3',--
+		[9] = '(.*) %-> (.*)',
+		[10] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
+	},
+	[27] = { -- battle     
+		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
+		[3] = '%[?('..windower.ffxi.get_player().name..'\'?s?)%]?',
+		[4] = '[\\cs('..style_templates['battle_name_1']..')%1\\cr]',
+		[5] = '(.-)( [0-9]+%s)(.*)',
+		[6] = '%1\\cr\\cs('..style_templates['battle_dmg_1']..')%2\\cr%3',
+		[7] = '^(.+[0-9]+:[0-9]+:[0-9]+.+)%[([^%]]+)%](.+)',--
+		[8] = '%1[\\cs('..style_templates['battle_name_2']..')%2\\cr]%3',--
+		[9] = '(.*) %-> (.*)',
+		[10] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
+	},
 	[28] = { --battle
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
@@ -232,6 +256,30 @@ return {
 		[4] = '%1->\\cs(240,230,140) %2\\cr',
 		[5] = '(.*)-> ('..windower.ffxi.get_player().name..')',
 		[6] = '%1-> \\cs(0,255,255)%2\\cr',
+	},
+	[32] = {
+		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
+		[3] = '%[?('..windower.ffxi.get_player().name..'\'?s?)%]?',
+		[4] = '[\\cs('..style_templates['battle_name_1']..')%1\\cr]',
+		[5] = '(.-)( [0-9]+%s)(.*)',
+		[6] = '%1\\cr\\cs('..style_templates['battle_dmg_1']..')%2\\cr%3',
+		[7] = '^(.+[0-9]+:[0-9]+:[0-9]+.+)%[([^%]]+)%](.+)',--
+		[8] = '%1[\\cs('..style_templates['battle_name_2']..')%2\\cr]%3',--
+		[9] = '(.*) %-> ([^%[]+)',
+		[10] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',	
+	},
+	[33] = {
+		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
+		[3] = '%[?('..windower.ffxi.get_player().name..'\'?s?)%]?',
+		[4] = '[\\cs('..style_templates['battle_name_1']..')%1\\cr]',
+		[5] = '(.-)( [0-9]+%s)(.*)',
+		[6] = '%1\\cr\\cs('..style_templates['battle_dmg_1']..')%2\\cr%3',
+		[7] = '^(.+[0-9]+:[0-9]+:[0-9]+.+)%[([^%]]+)%](.+)',--
+		[8] = '%1[\\cs('..style_templates['battle_name_2']..')%2\\cr]%3',--
+		[9] = '(.*) %-> ([^%[]+)',
+		[10] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',	
 	},
 	[36] = { -- defeats
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
@@ -282,6 +330,14 @@ return {
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
 		[3] = '(.*) %-> (.*)',
 		[4] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
+	},
+	[64] = { -- No effect spell
+		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
+		[3] = '(.*) %-> (.*)',
+		[4] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
+		[5] = '^(.+[0-9]+:[0-9]+:[0-9]+.-)('..windower.ffxi.get_player().name..') ([A-Za-z]+) .-([^%(]+)%(([^%)]+)%)',
+		[6] = '%1[\\cs('..style_templates['battle_text_1']..')%2\\cr] %3 ->\\cs('..style_templates['battle_name_2']..')%4\\cr(%5)',
 	},
 	[69] = { -- No effect spell
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
@@ -338,6 +394,18 @@ return {
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
 		[3] = '%[('..windower.ffxi.get_player().name..'\'?s?)%]',
 		[4] = '[\\cs('..style_templates['battle_name_1']..')%1\\cr]',
+		[5] = '^(.+[0-9]+:[0-9]+:[0-9]+[^%[%(]-)%[([^%]]+)%](.+)',
+		[6] = '%1[\\cs('..style_templates['battle_name_2']..')%2\\cr]%3',
+		[7] = '(.*) %-> (.*)',
+		[8] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
+	},
+	[109] = { -- job ability
+		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
+		[3] = '%[('..windower.ffxi.get_player().name..'\'?s?)%]',
+		[4] = '[\\cs('..style_templates['battle_name_1']..')%1\\cr]',
+--		[3] = '^(.+[0-9]+:[0-9]+:[0-9]+.-)%[?('..windower.ffxi.get_player().name..'\'?s?)%]?(.+)',
+--		[4] = '%1[\\cs('..style_templates['battle_text_1']..')%2\\cr]%3',
 		[5] = '^(.+[0-9]+:[0-9]+:[0-9]+[^%[%(]-)%[([^%]]+)%](.+)',
 		[6] = '%1[\\cs('..style_templates['battle_name_2']..')%2\\cr]%3',
 		[7] = '(.*) %-> (.*)',
