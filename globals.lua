@@ -29,7 +29,7 @@ chat_log_env = {
 
 
 -- 20 21 22 24 28 29 30 31 35 36 50 56 57 63 81 101 102 110 111 114 122 157 191 209
-battle_ids = { [20]=true,[21]=true,[22]=true,[23]=true,[24]=true,[28]=true,[29]=true,[30]=true,[31]=true,[35]=true,[36]=true,[40]=true,[50]=true,[56]=true,[57]=true,[59]=true,[63]=true,[81]=true,[101]=true,[102]=true,[107]=true,[110]=true,[111]=true,[112]=true,[114]=true,[122]=true,[157]=true,[191]=true,[209]=true }
+battle_ids = { [20]=true,[21]=true,[22]=true,[23]=true,[24]=true,[25]=true,[28]=true,[29]=true,[30]=true,[31]=true,[35]=true,[36]=true,[40]=true,[50]=true,[56]=true,[57]=true,[59]=true,[63]=true,[81]=true,[101]=true,[102]=true,[107]=true,[110]=true,[111]=true,[112]=true,[114]=true,[122]=true,[157]=true,[191]=true,[209]=true }
 duplidoc_ids = { [190]=true }
 filter_ids = { [23]=true,[24]=true,[31]=true,[151]=true,[152]=true }
 
