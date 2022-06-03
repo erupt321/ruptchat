@@ -175,6 +175,18 @@ return {
 		[11] = '(.*) %-> (.*)',
 		[12] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
 	},
+	[25] = { -- battle     
+		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
+		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
+		[3] = '%[?('..windower.ffxi.get_player().name..'\'?s?)%]?',
+		[4] = '[\\cs('..style_templates['battle_name_1']..')%1\\cr]',
+		[5] = '(.-)( [0-9]+%s)(.*)',
+		[6] = '%1\\cr\\cs('..style_templates['battle_dmg_1']..')%2\\cr%3',
+		[7] = '^(.+[0-9]+:[0-9]+:[0-9]+.+)%[([^%]]+)%](.+)',--
+		[8] = '%1[\\cs('..style_templates['battle_name_2']..')%2\\cr]%3',--
+		[9] = '(.*) %-> (.*)',
+		[10] = '%1 ->\\cs('..style_templates['battle_name_2']..') %2\\cr',
+	},
 	[28] = { --battle
 		[1] = '^([0-9]+:[0-9]+:[0-9]+:)(.*)',
 		[2] = '\\cs('..style_templates['timestamp']..')%1\\cr%2',
