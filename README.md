@@ -27,6 +27,9 @@ for the text.
 
 **Changelog**
 
+        __06.07.22__
+        Added some battle IDs that seem to be new to the tables.
+
 	__01.25.21__
 	Made auto undocked window hiding.  This will allow the secondary tab to auto disappear when there's
 	been no activity for 30 seconds.  So for battle log if nothing has happened it will auto hide, it'll
